@@ -1,0 +1,15 @@
+rootProject.name = "HubEleven"
+
+include(
+        "common",
+        "company",
+        "config",
+        "delivery",
+        "eurekaServer",
+        "gateWay",
+        "hub",
+        "notification",
+        "order",
+        "product",
+        "user"
+)
