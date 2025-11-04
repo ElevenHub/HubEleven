@@ -1,0 +1,2 @@
+package com.hubEleven.common.code;public enum SuccessCode {
+}
