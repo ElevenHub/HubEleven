@@ -1,16 +1,17 @@
 package com.hubEleven.common.request;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-public record PageRequest(
+public record CommonPageRequest(
         int page,
         int size,
         SortType sortType,
         Sort.Direction direction,
         String keyword
 ) {
-    public PageRequest {
+    public CommonPageRequest {
         if (page < 0) {
             page = 0;
         }
@@ -29,8 +30,9 @@ public record PageRequest(
     }
 
     public Pageable toPageable() {
-        return org.springframework.data.domain.PageRequest.of()
+        return PageRequest.of(page, size, Sort.by(direction, sortType.getFieldName()));
     }
+
     public enum SortType {
         CREATED_AT("createdAt"),
         UPDATED_AT("updatedAt");
