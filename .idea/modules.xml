@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/HubEleven.iml" filepath="$PROJECT_DIR$/.idea/HubEleven.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.iml" filepath="$PROJECT_DIR$/.idea/modules/common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/company.iml" filepath="$PROJECT_DIR$/.idea/modules/company.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/company.main.iml" filepath="$PROJECT_DIR$/.idea/modules/company.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/company.test.iml" filepath="$PROJECT_DIR$/.idea/modules/company.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/config.iml" filepath="$PROJECT_DIR$/.idea/modules/config.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/config.main.iml" filepath="$PROJECT_DIR$/.idea/modules/config.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/config.test.iml" filepath="$PROJECT_DIR$/.idea/modules/config.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/delivery.iml" filepath="$PROJECT_DIR$/.idea/modules/delivery.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/delivery.main.iml" filepath="$PROJECT_DIR$/.idea/modules/delivery.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/delivery.test.iml" filepath="$PROJECT_DIR$/.idea/modules/delivery.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/eurekaServer.iml" filepath="$PROJECT_DIR$/.idea/modules/eurekaServer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/eurekaServer.main.iml" filepath="$PROJECT_DIR$/.idea/modules/eurekaServer.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/eurekaServer.test.iml" filepath="$PROJECT_DIR$/.idea/modules/eurekaServer.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateWay.iml" filepath="$PROJECT_DIR$/.idea/modules/gateWay.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateWay.main.iml" filepath="$PROJECT_DIR$/.idea/modules/gateWay.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/gateWay.test.iml" filepath="$PROJECT_DIR$/.idea/modules/gateWay.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub.iml" filepath="$PROJECT_DIR$/.idea/modules/hub.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub.main.iml" filepath="$PROJECT_DIR$/.idea/modules/hub.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hub.test.iml" filepath="$PROJECT_DIR$/.idea/modules/hub.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notification.iml" filepath="$PROJECT_DIR$/.idea/modules/notification.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notification.main.iml" filepath="$PROJECT_DIR$/.idea/modules/notification.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/notification.test.iml" filepath="$PROJECT_DIR$/.idea/modules/notification.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/order.iml" filepath="$PROJECT_DIR$/.idea/modules/order.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/order.main.iml" filepath="$PROJECT_DIR$/.idea/modules/order.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/order.test.iml" filepath="$PROJECT_DIR$/.idea/modules/order.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/product.iml" filepath="$PROJECT_DIR$/.idea/modules/product.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/product.main.iml" filepath="$PROJECT_DIR$/.idea/modules/product.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/product.test.iml" filepath="$PROJECT_DIR$/.idea/modules/product.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user.iml" filepath="$PROJECT_DIR$/.idea/modules/user.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user.main.iml" filepath="$PROJECT_DIR$/.idea/modules/user.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/user.test.iml" filepath="$PROJECT_DIR$/.idea/modules/user.test.iml" />
+    </modules>
+  </component>
+</project>
