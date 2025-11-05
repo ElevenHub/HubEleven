@@ -1,11 +1,11 @@
-name: 🚧 CI - Build & Test (Spring Boot)
+name: Order - Build & Test (Spring Boot)
 
 on:
   pull_request:
     branches:
       - '**'
     paths:
-      - './order/**'
+      - 'order/**'
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./order
+        working-directory: order
 
     steps:
       - name: Checkout repository

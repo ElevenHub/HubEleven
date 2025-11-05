@@ -1,11 +1,11 @@
-name: 🚧 CI - Build & Test (Spring Boot)
+name: Hub - Build & Test (Spring Boot)
 
 on:
   pull_request:
     branches:
       - '**'
     paths:
-      - './hub/**'
+      - 'hub/**'
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./hub
+        working-directory: hub
 
     steps:
       - name: Checkout repository

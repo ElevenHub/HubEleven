@@ -1,11 +1,11 @@
-name: 🚧 CI - Build & Test (Spring Boot)
+name: Product - Build & Test (Spring Boot)
 
 on:
   pull_request:
     branches:
       - '**'
     paths:
-      - './product/**'
+      - 'product/**'
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./product
+        working-directory: product
 
     steps:
       - name: Checkout repository
