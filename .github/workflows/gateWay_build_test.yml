@@ -1,11 +1,11 @@
-name: 🚧 CI - Build & Test (Spring Boot)
+name: GateWay - Build & Test (Spring Boot)
 
 on:
   pull_request:
     branches:
       - '**'
     paths:
-      - './gateWay/**'
+      - 'gateWay/**'
 
 jobs:
   build:
@@ -13,7 +13,7 @@ jobs:
 
     defaults:
       run:
-        working-directory: ./gateWay
+        working-directory: gateWay
 
     steps:
       - name: Checkout repository
