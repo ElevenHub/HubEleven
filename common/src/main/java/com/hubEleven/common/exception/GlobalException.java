@@ -7,5 +7,5 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public class GlobalException extends RuntimeException {
-    private final StatusCode errorCode;
+	private final StatusCode errorCode;
 }
