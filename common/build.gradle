@@ -35,17 +35,17 @@ publishing {
 }
 
 dependencies {
-    implementation 'org.springframework:spring-context:6.1.2'
-    implementation 'org.springframework:spring-web:6.1.2'
-    implementation 'org.springframework.data:spring-data-commons:3.3.3'
-    implementation 'org.springframework.data:spring-data-jpa:3.3.3'
-
-    implementation 'org.hibernate.orm:hibernate-core:6.6.3.Final'
+    implementation 'org.springframework.boot:spring-boot-starter-web:3.5.7'
+    implementation 'org.springframework.boot:spring-boot-starter:3.5.7'
+    implementation 'org.springframework.data:spring-data-commons:3.5.5'
+    implementation 'org.springframework.data:spring-data-jpa:3.5.5'
+    implementation 'org.hibernate.orm:hibernate-core:6.6.33.Final'
     implementation 'jakarta.persistence:jakarta.persistence-api:3.1.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.5.7'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
 
-    compileOnly 'org.projectlombok:lombok'
-    annotationProcessor 'org.projectlombok:lombok'
-    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    compileOnly 'org.projectlombok:lombok:1.18.22'
+    annotationProcessor 'org.projectlombok:lombok:1.18.22'
 }
 
 tasks.named('test') {
