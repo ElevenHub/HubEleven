@@ -1,10 +1,10 @@
 package com.hubEleven.common.code;
 
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
 
 @RequiredArgsConstructor
 @Getter
@@ -14,8 +14,8 @@ public enum ErrorCode implements StatusCode {
 	private final HttpStatus httpStatus;
 	private final String message;
 
-    @Override
-    public String getName() {
-        return this.name();
-    }
+	@Override
+	public String getName() {
+		return this.name();
+	}
 }

@@ -1,7 +1,6 @@
 package com.hubEleven.common.utils;
 
 import com.hubEleven.common.response.CommonPageResponse;
-
 import java.util.function.Function;
 import org.springframework.data.domain.Page;
 

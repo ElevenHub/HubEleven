@@ -5,7 +5,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public record CommonPageRequest(
-
 		int page, int size, SortType sortType, Sort.Direction direction, String keyword) {
 	public CommonPageRequest {
 		if (page < 0) {

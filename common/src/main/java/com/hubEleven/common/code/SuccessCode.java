@@ -11,7 +11,6 @@ import org.springframework.http.HttpStatus;
 public enum SuccessCode {
 	SUCCESS(OK, "성공했습니다.");
 
-
 	private final HttpStatus status;
 	private final String message;
 }
