@@ -1,10 +1,8 @@
 spring:
-  application:
-    name: delivery-service
-  profiles:
-    active: native
   config:
     import: "configserver:"
+  application:
+    name: delivery-service
   cloud:
     config:
       discovery:

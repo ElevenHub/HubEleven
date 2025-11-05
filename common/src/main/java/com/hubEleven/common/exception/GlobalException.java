@@ -8,5 +8,5 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class GlobalException extends RuntimeException {
 
-    private final StatusCode errorCode;
+	private final StatusCode errorCode;
 }
