@@ -5,41 +5,47 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
 public record CommonPageRequest(
-		int page, int size, SortType sortType, Sort.Direction direction, String keyword) {
-	public CommonPageRequest {
-		if (page < 0) {
-			page = 0;
-		}
 
-		if (size != 10 && size != 30 && size != 50) {
-			size = 10;
-		}
+        int page,
+        int size,
+        SortType sortType,
+        Sort.Direction direction,
+        String keyword
+) {
+    public CommonPageRequest {
+        if (page < 0) {
+            page = 0;
+        }
 
-		if (sortType == null) {
-			sortType = SortType.CREATED_AT;
-		}
+        if (size != 10 && size != 30 && size != 50) {
+            size = 10;
+        }
 
-		if (direction == null) {
-			direction = Sort.Direction.DESC;
-		}
-	}
+        if (sortType == null) {
+            sortType = SortType.CREATED_AT;
+        }
 
-	public Pageable toPageable() {
-		return PageRequest.of(page, size, Sort.by(direction, sortType.getFieldName()));
-	}
+        if (direction == null) {
+            direction = Sort.Direction.DESC;
+        }
+    }
 
-	public enum SortType {
-		CREATED_AT("createdAt"),
-		UPDATED_AT("updatedAt");
+    public Pageable toPageable() {
+        return PageRequest.of(page, size, Sort.by(direction, sortType.getFieldName()));
+    }
 
-		private final String fieldName;
+    public enum SortType {
+        CREATED_AT("createdAt"),
+        UPDATED_AT("updatedAt");
 
-		SortType(String fieldName) {
-			this.fieldName = fieldName;
-		}
+        private final String fieldName;
 
-		public String getFieldName() {
-			return fieldName;
-		}
-	}
+        SortType(String fieldName) {
+            this.fieldName = fieldName;
+        }
+
+        public String getFieldName() {
+            return fieldName;
+        }
+    }
 }
