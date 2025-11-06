@@ -1,5 +1,6 @@
 jdk:
   - openjdk17
 
-before_install:
-  - cd common
+build:
+  modules:
+    - common
