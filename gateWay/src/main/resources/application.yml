@@ -1,0 +1,49 @@
+spring:
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/v1/user/**
+
+            - id: delivery-service
+              uri: lb://delivery-service
+              predicates:
+                - Path=/v1/delivery/**
+                - Path=/v1/delivery-managers/**
+
+            - id: company-service
+              uri: lb://company-service
+              predicates:
+                - Path=/v1/companies/**
+
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+                - Path=/v1/products/**
+
+            - id: hub-service
+              uri: lb://hub-service
+              predicates:
+                - Path=/v1/hubs/**
+                - Path=/v1/hub-routes/**
+
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/v1/order/**
+                - Path=/v1/orders/**
+          discovery:
+            locator:
+              enabled: true
+
+server:
+  port: 8080
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka
