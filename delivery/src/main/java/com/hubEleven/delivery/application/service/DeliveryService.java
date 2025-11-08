@@ -6,8 +6,6 @@ import com.hubEleven.delivery.application.dto.DeliveryResponseDto;
 import com.hubEleven.delivery.domain.Delivery;
 import com.hubEleven.delivery.domain.DeliveryRepository;
 import com.hubEleven.delivery.domain.DeliveryStatus;
-import com.hubEleven.delivery.infrastructure.client.CompanyFeignClient;
-import com.hubEleven.delivery.infrastructure.client.HubRouteFeignClient;
 import com.hubEleven.delivery.infrastructure.dto.DeliveryManagerFeignResponseDto;
 import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
 import com.hubEleven.delivery.infrastructure.dto.OrderFeignResponseDto;
@@ -39,10 +37,10 @@ public class DeliveryService {
 	private final OrderFeignService orderFeignService;
 	private final UserFeignService userFeignService;
 	private final DeliveryManagerFeignService deliveryManagerFeignService;
-    private final CompanyFeignService companyFeignService;
-    private final HubFeignService hubFeignService;
+	private final CompanyFeignService companyFeignService;
+	private final HubFeignService hubFeignService;
 
-    // Delivery 조회
+	// Delivery 조회
 	private Delivery delivery(UUID deliveryId) {
 		return deliveryRepository
 				.findById(deliveryId)
@@ -124,8 +122,8 @@ public class DeliveryService {
 		// 요청업체의 관리 허브 ID는 업체 테이블에 있음
 		// 주문 정보에 있는 요청 업체 소속 허브를 출발 허브로 수령 업체 소속 허브를 도착 허브로 생각하고
 		// 허브 경로에서 출발 허브 부터 도착 허브의 경로를 받아와서 그 갯수 만큼 배송 경로 생성
-        UUID fromHubId = companyFeignService.getCompanyInfo(fromCompanyId).HubId();
-		UUID toHubId =  companyFeignService.getCompanyInfo(fromCompanyId).HubId();
+		UUID fromHubId = companyFeignService.getCompanyInfo(fromCompanyId).HubId();
+		UUID toHubId = companyFeignService.getCompanyInfo(fromCompanyId).HubId();
 
 		// 유저정보에서 수령인, 수령인 슬랙ID 받아오기
 		UserFeignResponseDto toUser = userFeignService.getUserInfo(toCompanyId);
