@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: hub-service
+  config:
+    import: "configserver:"
+  cloud:
+    config:
+      discovery:
+        enabled: true
+        service-id: config
+
+
