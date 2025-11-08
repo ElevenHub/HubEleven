@@ -18,19 +18,19 @@ import lombok.Setter;
 public class Delivery extends BaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
-	@Column(name = "delivery_id", nullable = false)
+	@Column(name = "delivery_id", columnDefinition = "BINARY(16)")
 	private UUID id;
 
-	@Column(name = "order_id", nullable = false)
+	@Column(name = "order_id", nullable = false, columnDefinition = "BINARY(16)")
 	private UUID orderId;
 
 	@Column(name = "status", nullable = false)
 	private DeliveryStatus status;
 
-	@Column(name = "from_hub_id", nullable = false)
+	@Column(name = "from_hub_id", nullable = false, columnDefinition = "BINARY(16)")
 	private UUID fromHubId;
 
-	@Column(name = "to_hub_id", nullable = false)
+	@Column(name = "to_hub_id", nullable = false, columnDefinition = "BINARY(16)")
 	private UUID toHubId;
 
 	@Column(name = "recipient_name", nullable = false)

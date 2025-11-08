@@ -4,7 +4,6 @@ import com.hubEleven.delivery.domain.DeliveryStatus;
 import java.util.UUID;
 
 public record DeliveryRouteRequestDto(
-		UUID deliveryId,
 		Integer seq,
 		UUID toHubId,
 		Long deliveryManagerId,

@@ -24,16 +24,16 @@ public class DeliveryRoute extends BaseEntity {
 	private UUID id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "delivery_id", nullable = false)
+	@JoinColumn(name = "delivery_id", columnDefinition = "BINARY(16)")
 	private Delivery delivery;
 
 	@Column(name = "seq", nullable = false)
 	private Integer seq;
 
-	@Column(name = "from_hub_id", nullable = false)
+	@Column(name = "from_hub_id", nullable = false, columnDefinition = "BINARY(16)")
 	private UUID fromHubId;
 
-	@Column(name = "to_hub_id", nullable = false)
+	@Column(name = "to_hub_id", nullable = false, columnDefinition = "BINARY(16)")
 	private UUID toHubId;
 
 	@Column(name = "delivery_manager_id", nullable = false)

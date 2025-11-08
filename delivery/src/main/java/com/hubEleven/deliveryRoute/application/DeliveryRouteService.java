@@ -5,7 +5,6 @@ import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.domain.DeliveryRoute;
 import com.hubEleven.deliveryRoute.domain.DeliveryRouteRepository;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class DeliveryRouteService {
-	DeliveryRouteRepository deliveryRouteRepository;
+    private final DeliveryRouteRepository deliveryRouteRepository;
 
 	// 배달 경로 생성
 	@Transactional
@@ -26,10 +25,11 @@ public class DeliveryRouteService {
 	// 배달 경로 수정
 	@Transactional
 	public DeliveryRoute updateRoute(
-			UUID deliveryId, DeliveryRouteRequestDto deliveryRouteRequestDto) {
+			Delivery delivery, DeliveryRouteRequestDto deliveryRouteRequestDto) {
+
 		DeliveryRoute deliveryRoute =
 				deliveryRouteRepository
-						.findByDeliveryIdAndToHubId(deliveryId, deliveryRouteRequestDto.toHubId())
+						.findByDeliveryAndToHubId(delivery, deliveryRouteRequestDto.toHubId())
 						.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 배송 경로입니다."));
 
 		deliveryRoute.update(

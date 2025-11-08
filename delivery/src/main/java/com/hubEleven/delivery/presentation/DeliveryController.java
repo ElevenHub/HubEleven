@@ -10,12 +10,11 @@ import com.hubEleven.delivery.application.service.DeliveryService;
 import com.hubEleven.delivery.domain.DeliveryStatus;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteResponseDto;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -110,10 +109,9 @@ public class DeliveryController {
 	// 배송 경로 수정
 	@PatchMapping("/{deliveryId}/route")
 	public ResponseEntity<ApiResponse<DeliveryRouteResponseDto>> updateDelivery(
-			@PathVariable UUID deliveryId,
-			@RequestBody DeliveryRouteRequestDto deliveryRouteResponseDto) {
+			@PathVariable UUID deliveryId, @RequestBody DeliveryRouteRequestDto deliveryRouteRequestDto) {
 		DeliveryRouteResponseDto result =
-				deliveryService.updateDeliveryRoute(deliveryId, deliveryRouteResponseDto);
+				deliveryService.updateDeliveryRoute(deliveryId, deliveryRouteRequestDto);
 		return ApiResponseEntity.success(result);
 	}
 }
