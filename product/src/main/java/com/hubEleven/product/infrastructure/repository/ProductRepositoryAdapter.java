@@ -1,10 +1,13 @@
 package com.hubEleven.product.infrastructure.repository;
 
+import com.hubEleven.product.application.dto.ProductResult;
 import com.hubEleven.product.application.service.ProductService;
 import com.hubEleven.product.domain.model.Product;
 import com.hubEleven.product.domain.repository.ProductRepository;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -22,5 +25,10 @@ public class ProductRepositoryAdapter implements ProductRepository {
     @Override
     public boolean existsByCompanyIdAndNameAndHubId(UUID companyId, String name, UUID hubId) {
         return jpaProductRepository.existsByCompanyIdAndNameAndHubId(companyId, name, hubId);
+    }
+
+    @Override
+    public Page<Product> searchProducts(String keyword, Pageable pageable) {
+        return jpaProductRepository.searchProducts(keyword, pageable);
     }
 }

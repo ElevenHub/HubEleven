@@ -1,14 +1,19 @@
 package com.hubEleven.product.presentation.controller;
 
+import com.hubEleven.common.request.CommonPageRequest;
 import com.hubEleven.common.response.ApiResponse;
 import com.hubEleven.common.response.ApiResponseEntity;
+import com.hubEleven.common.response.CommonPageResponse;
+import com.hubEleven.common.utils.PagingUtils;
 import com.hubEleven.product.application.dto.ProductResult;
 import com.hubEleven.product.application.service.ProductService;
 import com.hubEleven.product.presentation.dto.request.ProductRequests;
 import com.hubEleven.product.presentation.dto.response.ProductResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +33,20 @@ public class ProductController {
     ) {
         ProductResult result = productService.create(request);
         return ApiResponseEntity.success(ProductResponse.from(result));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> getProducts(
+            CommonPageRequest request) {
+
+        // Service 계층에서 Product 도메인 엔티티를 ProductResult DTO로 변환하여 조회
+        Page<ProductResult> products = productService.searchProducts(
+                request.keyword(), // 검색 키워드
+                request.toPageable()); // 페이징 정보
+
+        // Application 계층의 ProductResult를 Presentation 계층의 ProductResponse로 변환
+        CommonPageResponse<ProductResponse> response = PagingUtils.convert(products,
+                ProductResponse::from);
+        return ApiResponseEntity.success(response);
     }
 }

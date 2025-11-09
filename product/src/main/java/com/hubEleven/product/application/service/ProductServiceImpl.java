@@ -15,6 +15,8 @@ import com.hubEleven.product.infrastructure.client.HubFeignClient.HubResponse;
 import com.hubEleven.product.presentation.dto.request.ProductRequests;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -71,5 +73,12 @@ public class ProductServiceImpl implements ProductService {
         Product savedProduct = productRepository.save(product);
 
         return ProductResult.from(savedProduct);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<ProductResult> searchProducts(String keyword, Pageable pageable) {
+        Page<Product> products = productRepository.searchProducts(keyword, pageable);
+        return products.map(ProductResult::from);
     }
 }
