@@ -122,4 +122,15 @@ public class ProductServiceImpl implements ProductService {
 
         return ProductResult.from(productRepository.save(product));
     }
+
+    @Override
+    @Transactional
+    public void deleteProduct(UUID productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+
+        // 논리 삭제 처리
+        productRepository.delete(product);
+    }
 }
