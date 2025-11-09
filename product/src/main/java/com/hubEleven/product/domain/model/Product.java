@@ -32,7 +32,7 @@ public class Product extends BaseEntity {
     @Column(name = "company_id", nullable = false)
     private UUID companyId;
 
-    @Column(name = "hub", nullable = false)
+    @Column(name = "hub_id", nullable = false)
     private UUID hubId;
 
     @Builder(access = AccessLevel.PRIVATE)
@@ -48,5 +48,12 @@ public class Product extends BaseEntity {
                 .companyId(companyId)
                 .hubId(hubId)
                 .build();
+    }
+
+    // 제품명 수정 메서드
+    public void update(String name) {
+        if (name != null && !name.isBlank()) {
+            this.name = name;
+        }
     }
 }

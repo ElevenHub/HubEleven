@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,6 +61,15 @@ public class ProductController {
 
         ProductResult result = productService.getProduct(productId);
 
+        return ApiResponseEntity.success(ProductResponse.from(result));
+    }
+
+    @PatchMapping("/{productId}")
+    public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
+            @PathVariable UUID productId,
+            @Valid @RequestBody ProductRequests.Update request) {
+
+        ProductResult result = productService.updateProduct(productId, request);
         return ApiResponseEntity.success(ProductResponse.from(result));
     }
 }

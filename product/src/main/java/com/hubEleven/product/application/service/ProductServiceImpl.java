@@ -15,6 +15,7 @@ import com.hubEleven.product.infrastructure.client.HubFeignClient;
 import com.hubEleven.product.infrastructure.client.HubFeignClient.HubResponse;
 import com.hubEleven.product.presentation.dto.request.ProductRequests;
 import feign.FeignException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -29,40 +30,55 @@ public class ProductServiceImpl implements ProductService {
     private final CompanyFeignClient companyFeignClient;
     private final HubFeignClient hubFeignClient;
 
-    @Override
-    @Transactional
-    public ProductResult create(ProductRequests.Create request) {
-
-        // 회사 존재 여부 확인
+    // 회사 존재 여부 확인 메서드
+    private void validateCompanyExists(UUID companyId) {
         try {
-            CompanyResponse company = companyFeignClient.getCompany(request.companyId());
+            CompanyResponse company = companyFeignClient.getCompany(companyId);
             if (company == null) {
                 throw new GlobalException(COMPANY_NOT_FOUND);
             }
         } catch (FeignException.NotFound e) {
             throw new GlobalException(COMPANY_NOT_FOUND);
         }
+    }
 
-        // 허브 존재 여부 확인
+    // 허브 존재 여부 확인 메서드
+    private void validateProductExists(UUID hubId) {
         try {
-            HubResponse hub = hubFeignClient.getHub(request.hubId());
+            HubResponse hub = hubFeignClient.getHub(hubId);
             if (hub == null) {
                 throw new GlobalException(HUB_NOT_FOUND);
             }
         } catch (FeignException.NotFound e) {
             throw new GlobalException(HUB_NOT_FOUND);
         }
+    }
 
-        // 중복 제품명 확인
+    // 중복 제품명 확인 메서드
+    private void validateDuplicateProductName(UUID companyId, String name, UUID hubId) {
         boolean isDuplicated = productRepository.existsByCompanyIdAndNameAndHubId(
-                request.companyId(),
-                request.name(),
-                request.hubId()
+                companyId,
+                name,
+                hubId
         );
 
         if (isDuplicated) {
             throw new GlobalException(PRODUCT_DUPLICATED);
         }
+    }
+
+    @Override
+    @Transactional
+    public ProductResult create(ProductRequests.Create request) {
+
+        // 회사 존재 여부 확인
+        validateCompanyExists(request.companyId());
+
+        // 허브 존재 여부 확인
+        validateProductExists(request.hubId());
+
+        // 중복 제품명 확인
+        validateDuplicateProductName(request.hubId(), request.name(), request.companyId());
 
         // 제품 생성 및 저장
         Product product = Product.create(
@@ -87,11 +103,23 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ProductResult getProduct(java.util.UUID productId) {
+    public ProductResult getProduct(UUID productId) {
 
         Product product = productRepository.findById(productId)
                 .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 
         return ProductResult.from(product);
+    }
+
+    @Override
+    @Transactional
+    public ProductResult updateProduct(UUID productId, ProductRequests.Update request) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+
+        product.update(request.name());
+
+        return ProductResult.from(productRepository.save(product));
     }
 }
