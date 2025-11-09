@@ -2,6 +2,7 @@ package com.hubEleven.product.domain.repository;
 
 import com.hubEleven.product.application.dto.ProductResult;
 import com.hubEleven.product.domain.model.Product;
+import java.util.Optional;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -12,4 +13,6 @@ public interface ProductRepository {
     boolean existsByCompanyIdAndNameAndHubId(UUID companyId, String name, UUID hubId);
 
     Page<Product> searchProducts(String keyword, Pageable pageable);
+
+    Optional<Product> findById(UUID productId);
 }

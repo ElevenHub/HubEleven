@@ -4,6 +4,7 @@ import com.hubEleven.product.application.dto.ProductResult;
 import com.hubEleven.product.application.service.ProductService;
 import com.hubEleven.product.domain.model.Product;
 import com.hubEleven.product.domain.repository.ProductRepository;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,5 +31,10 @@ public class ProductRepositoryAdapter implements ProductRepository {
     @Override
     public Page<Product> searchProducts(String keyword, Pageable pageable) {
         return jpaProductRepository.searchProducts(keyword, pageable);
+    }
+
+    @Override
+    public Optional<Product> findById(UUID productId) {
+        return jpaProductRepository.findById(productId);
     }
 }

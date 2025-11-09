@@ -3,6 +3,7 @@ package com.hubEleven.product.application.service;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.COMPANY_NOT_FOUND;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.HUB_NOT_FOUND;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_DUPLICATED;
+import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 
 import com.hubEleven.common.exception.GlobalException;
 import com.hubEleven.product.application.dto.ProductResult;
@@ -78,7 +79,19 @@ public class ProductServiceImpl implements ProductService {
     @Override
     @Transactional(readOnly = true)
     public Page<ProductResult> searchProducts(String keyword, Pageable pageable) {
+
         Page<Product> products = productRepository.searchProducts(keyword, pageable);
+
         return products.map(ProductResult::from);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProductResult getProduct(java.util.UUID productId) {
+
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+
+        return ProductResult.from(product);
     }
 }

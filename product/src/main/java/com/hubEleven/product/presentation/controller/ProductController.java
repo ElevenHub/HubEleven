@@ -10,10 +10,12 @@ import com.hubEleven.product.application.service.ProductService;
 import com.hubEleven.product.presentation.dto.request.ProductRequests;
 import com.hubEleven.product.presentation.dto.response.ProductResponse;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,9 +31,10 @@ public class ProductController {
 
     @PostMapping
     public ResponseEntity<ApiResponse<ProductResponse>> create(
-            @Valid @RequestBody ProductRequests.Create request
-    ) {
+            @Valid @RequestBody ProductRequests.Create request) {
+
         ProductResult result = productService.create(request);
+
         return ApiResponseEntity.success(ProductResponse.from(result));
     }
 
@@ -47,6 +50,16 @@ public class ProductController {
         // Application 계층의 ProductResult를 Presentation 계층의 ProductResponse로 변환
         CommonPageResponse<ProductResponse> response = PagingUtils.convert(products,
                 ProductResponse::from);
+
         return ApiResponseEntity.success(response);
+    }
+
+    @GetMapping("/{productId}")
+    public ResponseEntity<ApiResponse<ProductResponse>> getProductDetail(
+            @PathVariable UUID productId) {
+
+        ProductResult result = productService.getProduct(productId);
+
+        return ApiResponseEntity.success(ProductResponse.from(result));
     }
 }
