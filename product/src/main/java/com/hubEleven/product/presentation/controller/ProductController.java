@@ -71,13 +71,30 @@ public class ProductController {
             @Valid @RequestBody ProductRequests.Update request) {
 
         ProductResult result = productService.updateProduct(productId, request);
+
         return ApiResponseEntity.success(ProductResponse.from(result));
     }
 
     @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponse<Void>> deleteProduct(
             @PathVariable UUID productId) {
+
         productService.deleteProduct(productId);
+
         return ApiResponseEntity.success(null);
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> searchProducts(
+            CommonPageRequest request) {
+
+        Page<ProductResult> products = productService.searchProducts(
+                request.keyword(),
+                request.toPageable());
+
+        CommonPageResponse<ProductResponse> response = PagingUtils.convert(products,
+                ProductResponse::from);
+
+        return ApiResponseEntity.success(response);
     }
 }
