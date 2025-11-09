@@ -1,0 +1,26 @@
+package com.hubEleven.product.infrastructure.repository;
+
+import com.hubEleven.product.application.service.ProductService;
+import com.hubEleven.product.domain.model.Product;
+import com.hubEleven.product.domain.repository.ProductRepository;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+@RequiredArgsConstructor
+public class ProductRepositoryAdapter implements ProductRepository {
+
+    private final JpaProductRepository jpaProductRepository;
+
+    @Override
+    public Product save(Product product) {
+        return jpaProductRepository.save(product);
+    }
+
+    @Override
+    public boolean existsByCompanyIdAndNameAndHubId(UUID companyId, String name, UUID hubId) {
+        return jpaProductRepository.existsByCompanyIdAndNameAndHubId(companyId, name, hubId);
+    }
+}

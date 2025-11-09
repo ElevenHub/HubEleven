@@ -1,5 +1,6 @@
 package com.hubEleven.product.domain.model;
 
+import com.hubEleven.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -18,7 +19,7 @@ import org.hibernate.annotations.SoftDelete;
 @Table(name = "p_product")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SoftDelete // soft delete 커스텀 어노테이션
-public class Product {
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -33,4 +34,19 @@ public class Product {
 
     @Column(name = "hub", nullable = false)
     private UUID hubId;
+
+    @Builder(access = AccessLevel.PRIVATE)
+    private Product(String name, UUID companyId, UUID hubId) {
+        this.name = name;
+        this.companyId = companyId;
+        this.hubId = hubId;
+    }
+
+    public static Product create(String name, UUID companyId, UUID hubId) {
+        return Product.builder()
+                .name(name)
+                .companyId(companyId)
+                .hubId(hubId)
+                .build();
+    }
 }
