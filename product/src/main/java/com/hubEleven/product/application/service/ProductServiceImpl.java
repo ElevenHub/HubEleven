@@ -26,111 +26,110 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ProductServiceImpl implements ProductService {
 
-    private final ProductRepository productRepository;
-    private final CompanyFeignClient companyFeignClient;
-    private final HubFeignClient hubFeignClient;
+	private final ProductRepository productRepository;
+	private final CompanyFeignClient companyFeignClient;
+	private final HubFeignClient hubFeignClient;
 
-    // 회사 존재 여부 확인 메서드
-    private void validateCompanyExists(UUID companyId) {
-        try {
-            CompanyResponse company = companyFeignClient.getCompany(companyId);
-            if (company == null) {
-                throw new GlobalException(COMPANY_NOT_FOUND);
-            }
-        } catch (FeignException.NotFound e) {
-            throw new GlobalException(COMPANY_NOT_FOUND);
-        }
-    }
+	// 회사 존재 여부 확인 메서드
+	private void validateCompanyExists(UUID companyId) {
+		try {
+			CompanyResponse company = companyFeignClient.getCompany(companyId);
+			if (company == null) {
+				throw new GlobalException(COMPANY_NOT_FOUND);
+			}
+		} catch (FeignException.NotFound e) {
+			throw new GlobalException(COMPANY_NOT_FOUND);
+		}
+	}
 
-    // 허브 존재 여부 확인 메서드
-    private void validateProductExists(UUID hubId) {
-        try {
-            HubResponse hub = hubFeignClient.getHub(hubId);
-            if (hub == null) {
-                throw new GlobalException(HUB_NOT_FOUND);
-            }
-        } catch (FeignException.NotFound e) {
-            throw new GlobalException(HUB_NOT_FOUND);
-        }
-    }
+	// 허브 존재 여부 확인 메서드
+	private void validateProductExists(UUID hubId) {
+		try {
+			HubResponse hub = hubFeignClient.getHub(hubId);
+			if (hub == null) {
+				throw new GlobalException(HUB_NOT_FOUND);
+			}
+		} catch (FeignException.NotFound e) {
+			throw new GlobalException(HUB_NOT_FOUND);
+		}
+	}
 
-    // 중복 제품명 확인 메서드
-    private void validateDuplicateProductName(UUID companyId, String name, UUID hubId) {
-        boolean isDuplicated = productRepository.existsByCompanyIdAndNameAndHubId(
-                companyId,
-                name,
-                hubId
-        );
+	// 중복 제품명 확인 메서드
+	private void validateDuplicateProductName(UUID companyId, String name, UUID hubId) {
+		boolean isDuplicated =
+				productRepository.existsByCompanyIdAndNameAndHubId(companyId, name, hubId);
 
-        if (isDuplicated) {
-            throw new GlobalException(PRODUCT_DUPLICATED);
-        }
-    }
+		if (isDuplicated) {
+			throw new GlobalException(PRODUCT_DUPLICATED);
+		}
+	}
 
-    @Override
-    @Transactional
-    public ProductResult create(ProductRequests.Create request) {
+	@Override
+	@Transactional
+	public ProductResult create(ProductRequests.Create request) {
 
-        // 회사 존재 여부 확인
-        validateCompanyExists(request.companyId());
+		// 회사 존재 여부 확인
+		validateCompanyExists(request.companyId());
 
-        // 허브 존재 여부 확인
-        validateProductExists(request.hubId());
+		// 허브 존재 여부 확인
+		validateProductExists(request.hubId());
 
-        // 중복 제품명 확인
-        validateDuplicateProductName(request.hubId(), request.name(), request.companyId());
+		// 중복 제품명 확인
+		validateDuplicateProductName(request.hubId(), request.name(), request.companyId());
 
-        // 제품 생성 및 저장
-        Product product = Product.create(
-                request.name(),
-                request.companyId(),
-                request.hubId()
-        );
+		// 제품 생성 및 저장
+		Product product = Product.create(request.name(), request.companyId(), request.hubId());
 
-        Product savedProduct = productRepository.save(product);
+		Product savedProduct = productRepository.save(product);
 
-        return ProductResult.from(savedProduct);
-    }
+		return ProductResult.from(savedProduct);
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<ProductResult> searchProducts(String keyword, Pageable pageable) {
+	@Override
+	@Transactional(readOnly = true)
+	public Page<ProductResult> searchProducts(String keyword, Pageable pageable) {
 
-        Page<Product> products = productRepository.searchProducts(keyword, pageable);
+		Page<Product> products = productRepository.searchProducts(keyword, pageable);
 
-        return products.map(ProductResult::from);
-    }
+		return products.map(ProductResult::from);
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public ProductResult getProduct(UUID productId) {
+	@Override
+	@Transactional(readOnly = true)
+	public ProductResult getProduct(UUID productId) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+		Product product =
+				productRepository
+						.findById(productId)
+						.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 
-        return ProductResult.from(product);
-    }
+		return ProductResult.from(product);
+	}
 
-    @Override
-    @Transactional
-    public ProductResult updateProduct(UUID productId, ProductRequests.Update request) {
+	@Override
+	@Transactional
+	public ProductResult updateProduct(UUID productId, ProductRequests.Update request) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+		Product product =
+				productRepository
+						.findById(productId)
+						.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 
-        product.update(request.name());
+		product.update(request.name());
 
-        return ProductResult.from(productRepository.save(product));
-    }
+		return ProductResult.from(productRepository.save(product));
+	}
 
-    @Override
-    @Transactional
-    public void deleteProduct(UUID productId) {
+	@Override
+	@Transactional
+	public void deleteProduct(UUID productId) {
 
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+		Product product =
+				productRepository
+						.findById(productId)
+						.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 
-        // 논리 삭제 처리
-        productRepository.delete(product);
-    }
+		// 논리 삭제 처리
+		productRepository.delete(product);
+	}
 }

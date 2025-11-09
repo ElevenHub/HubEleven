@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "company-service")
 public interface CompanyFeignClient {
 
-    @GetMapping("/v1/companies/{companyId}")
-    CompanyResponse getCompany(@PathVariable UUID companyId);
+	@GetMapping("/v1/companies/{companyId}")
+	CompanyResponse getCompany(@PathVariable UUID companyId);
 
-    record CompanyResponse(UUID companyId, String name) {}
+	record CompanyResponse(UUID companyId, String name) {}
 }

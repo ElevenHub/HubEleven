@@ -29,72 +29,70 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ProductController {
 
-    private final ProductService productService;
+	private final ProductService productService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<ProductResponse>> create(
-            @Valid @RequestBody ProductRequests.Create request) {
+	@PostMapping
+	public ResponseEntity<ApiResponse<ProductResponse>> create(
+			@Valid @RequestBody ProductRequests.Create request) {
 
-        ProductResult result = productService.create(request);
+		ProductResult result = productService.create(request);
 
-        return ApiResponseEntity.success(ProductResponse.from(result));
-    }
+		return ApiResponseEntity.success(ProductResponse.from(result));
+	}
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> getProducts(
-            CommonPageRequest request) {
+	@GetMapping
+	public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> getProducts(
+			CommonPageRequest request) {
 
-        // Service 계층에서 Product 도메인 엔티티를 ProductResult DTO로 변환하여 조회
-        Page<ProductResult> products = productService.searchProducts(
-                request.keyword(), // 검색 키워드
-                request.toPageable()); // 페이징 정보
+		// Service 계층에서 Product 도메인 엔티티를 ProductResult DTO로 변환하여 조회
+		Page<ProductResult> products =
+				productService.searchProducts(
+						request.keyword(), // 검색 키워드
+						request.toPageable()); // 페이징 정보
 
-        // Application 계층의 ProductResult를 Presentation 계층의 ProductResponse로 변환
-        CommonPageResponse<ProductResponse> response = PagingUtils.convert(products,
-                ProductResponse::from);
+		// Application 계층의 ProductResult를 Presentation 계층의 ProductResponse로 변환
+		CommonPageResponse<ProductResponse> response =
+				PagingUtils.convert(products, ProductResponse::from);
 
-        return ApiResponseEntity.success(response);
-    }
+		return ApiResponseEntity.success(response);
+	}
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<ApiResponse<ProductResponse>> getProductDetail(
-            @PathVariable UUID productId) {
+	@GetMapping("/{productId}")
+	public ResponseEntity<ApiResponse<ProductResponse>> getProductDetail(
+			@PathVariable UUID productId) {
 
-        ProductResult result = productService.getProduct(productId);
+		ProductResult result = productService.getProduct(productId);
 
-        return ApiResponseEntity.success(ProductResponse.from(result));
-    }
+		return ApiResponseEntity.success(ProductResponse.from(result));
+	}
 
-    @PatchMapping("/{productId}")
-    public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
-            @PathVariable UUID productId,
-            @Valid @RequestBody ProductRequests.Update request) {
+	@PatchMapping("/{productId}")
+	public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
+			@PathVariable UUID productId, @Valid @RequestBody ProductRequests.Update request) {
 
-        ProductResult result = productService.updateProduct(productId, request);
+		ProductResult result = productService.updateProduct(productId, request);
 
-        return ApiResponseEntity.success(ProductResponse.from(result));
-    }
+		return ApiResponseEntity.success(ProductResponse.from(result));
+	}
 
-    @DeleteMapping("/{productId}")
-    public ResponseEntity<ApiResponse<Void>> deleteProduct(
-            @PathVariable UUID productId) {
+	@DeleteMapping("/{productId}")
+	public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable UUID productId) {
 
-        productService.deleteProduct(productId);
+		productService.deleteProduct(productId);
 
-        return ApiResponseEntity.success(null);
-    }
+		return ApiResponseEntity.success(null);
+	}
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> searchProducts(
-            CommonPageRequest request) {
+	@GetMapping("/search")
+	public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> searchProducts(
+			CommonPageRequest request) {
 
-        Page<ProductResult> products = productService.searchProducts(
-                request.keyword(),
-                request.toPageable());
+		Page<ProductResult> products =
+				productService.searchProducts(request.keyword(), request.toPageable());
 
-        CommonPageResponse<ProductResponse> response = PagingUtils.convert(products,
-                ProductResponse::from);
+		CommonPageResponse<ProductResponse> response =
+				PagingUtils.convert(products, ProductResponse::from);
 
-        return ApiResponseEntity.success(response);
-    }
+		return ApiResponseEntity.success(response);
+	}
 }

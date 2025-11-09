@@ -8,8 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(name = "hub-service")
 public interface HubFeignClient {
 
-    @GetMapping("/v1/hubs/{hubId}")
-    HubResponse getHub(@PathVariable UUID hubId);
+	@GetMapping("/v1/hubs/{hubId}")
+	HubResponse getHub(@PathVariable UUID hubId);
 
-    record HubResponse(UUID hubId, String name, String address) {}
+	record HubResponse(UUID hubId, String name, String address) {}
 }

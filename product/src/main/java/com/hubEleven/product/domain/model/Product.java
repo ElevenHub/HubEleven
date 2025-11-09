@@ -21,39 +21,35 @@ import org.hibernate.annotations.SoftDelete;
 @SoftDelete // soft delete 커스텀 어노테이션
 public class Product extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "product_id", nullable = false)
-    private UUID productId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "product_id", nullable = false)
+	private UUID productId;
 
-    @Column(name = "name", nullable = false, length = 20)
-    private String name;
+	@Column(name = "name", nullable = false, length = 20)
+	private String name;
 
-    @Column(name = "company_id", nullable = false)
-    private UUID companyId;
+	@Column(name = "company_id", nullable = false)
+	private UUID companyId;
 
-    @Column(name = "hub_id", nullable = false)
-    private UUID hubId;
+	@Column(name = "hub_id", nullable = false)
+	private UUID hubId;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Product(String name, UUID companyId, UUID hubId) {
-        this.name = name;
-        this.companyId = companyId;
-        this.hubId = hubId;
-    }
+	@Builder(access = AccessLevel.PRIVATE)
+	private Product(String name, UUID companyId, UUID hubId) {
+		this.name = name;
+		this.companyId = companyId;
+		this.hubId = hubId;
+	}
 
-    public static Product create(String name, UUID companyId, UUID hubId) {
-        return Product.builder()
-                .name(name)
-                .companyId(companyId)
-                .hubId(hubId)
-                .build();
-    }
+	public static Product create(String name, UUID companyId, UUID hubId) {
+		return Product.builder().name(name).companyId(companyId).hubId(hubId).build();
+	}
 
-    // 제품명 수정 메서드
-    public void update(String name) {
-        if (name != null && !name.isBlank()) {
-            this.name = name;
-        }
-    }
+	// 제품명 수정 메서드
+	public void update(String name) {
+		if (name != null && !name.isBlank()) {
+			this.name = name;
+		}
+	}
 }

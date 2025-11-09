@@ -9,13 +9,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 public interface ProductService {
-    ProductResult create(ProductRequests.Create request);
+	ProductResult create(ProductRequests.Create request);
 
-    Page<ProductResult> searchProducts(String keyword, Pageable pageable);
+	Page<ProductResult> searchProducts(String keyword, Pageable pageable);
 
-    ProductResult getProduct(UUID productId);
+	ProductResult getProduct(UUID productId);
 
-    ProductResult updateProduct(UUID productId, @Valid Update request);
+	ProductResult updateProduct(UUID productId, @Valid Update request);
 
-    void deleteProduct(UUID productId);
+	void deleteProduct(UUID productId);
 }
