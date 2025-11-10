@@ -1,8 +1,5 @@
 package com.hubEleven.user.application;
 
-import static com.hubEleven.user.domain.exception.ErrorCode.DUPLICATED_USERNAME;
-import static com.hubEleven.user.domain.exception.ErrorCode.FORBIDDEN_USER;
-
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.user.application.command.UserCreateCommand;
 import com.hubEleven.user.application.dto.UserCreateResult;
@@ -13,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import static com.hubEleven.user.domain.exception.ErrorCode.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -42,7 +41,8 @@ public class UserService {
 	}
 
 	public UserInfo findUserById(Long id) {
-		User user = userRepository.findById(id).orElseThrow(() -> new GlobalException(FORBIDDEN_USER));
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new GlobalException(NOT_FOUND_USER));
 		return UserInfo.from(user);
 	}
 

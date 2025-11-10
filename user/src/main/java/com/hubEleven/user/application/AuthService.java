@@ -1,5 +1,6 @@
 package com.hubEleven.user.application;
 
+import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.user.application.command.LoginCommand;
 import com.hubEleven.user.infrastructure.security.CustomUserDetails;
 import com.hubEleven.user.infrastructure.security.jwt.JwtProvider;
@@ -9,6 +10,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.stereotype.Service;
+
+import static com.hubEleven.user.domain.exception.ErrorCode.FAILED_LOGIN;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class AuthService {
 			CustomUserDetails user = (CustomUserDetails) auth.getPrincipal();
 			return jwtProvider.generateToken(user);
 		} catch (AuthenticationException e) {
-			throw new RuntimeException("Login Failed");
+			throw new GlobalException(FAILED_LOGIN);
 		}
 	}
 }

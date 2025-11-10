@@ -1,5 +1,6 @@
 package com.hubEleven.user.infrastructure.security;
 
+import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.user.domain.model.User;
 import com.hubEleven.user.domain.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -7,6 +8,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import static com.hubEleven.user.domain.exception.ErrorCode.FORBIDDEN_USER;
 
 @Service
 @RequiredArgsConstructor
@@ -19,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user =
 				userRepository
 						.findByUsername(username)
-						.orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+						.orElseThrow(() -> new GlobalException(FORBIDDEN_USER));
 		return new CustomUserDetails(user);
 	}
 }
