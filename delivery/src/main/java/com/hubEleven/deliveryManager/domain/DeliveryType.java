@@ -10,4 +10,12 @@ public enum DeliveryType {
 	COMPANY("업체 배송 담당자");
 
 	private final String description;
+
+	public boolean isHubManager() {
+		return this == HUB;
+	}
+
+	public boolean isCompanyManager() {
+		return this == COMPANY;
+	}
 }

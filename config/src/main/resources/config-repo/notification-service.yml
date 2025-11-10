@@ -27,3 +27,8 @@ spring:
 
 server:
   port: 0
+
+gemini:
+  api:
+    key: ${GEMINI_KEY}
+  model: gemini-2.5-flash

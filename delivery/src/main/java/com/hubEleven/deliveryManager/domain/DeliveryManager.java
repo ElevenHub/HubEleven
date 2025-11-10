@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -27,6 +28,8 @@ public class DeliveryManager {
 	@Column(updatable = false, nullable = false)
 	private int deliveryOrder;
 
+	private LocalDateTime lastDeliveryTime;
+
 	private DeliveryManager(
 			Long deliveryManagerId,
 			UUID hubId,
@@ -41,7 +44,18 @@ public class DeliveryManager {
 	}
 
 	public static DeliveryManager create(
-			Long id, UUID hubId, String slackId, DeliveryType deliveryType, int deliveryOrder) {
-		return new DeliveryManager(id, hubId, slackId, deliveryType, deliveryOrder);
+			Long deliveryManagerId,
+			UUID hubId,
+			String slackId,
+			DeliveryType deliveryType,
+			int deliveryOrder) {
+		return new DeliveryManager(deliveryManagerId, hubId, slackId, deliveryType, deliveryOrder);
 	}
+
+	public void recordDeliveryTime() {
+		this.lastDeliveryTime = LocalDateTime.now();
+	}
+
+	// 임시
+	public void softDelete(Long deletedBy) {}
 }

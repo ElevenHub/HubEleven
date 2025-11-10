@@ -3,8 +3,12 @@ package com.hubEleven.deliveryManager.application;
 import com.hubEleven.deliveryManager.domain.DeliveryManager;
 import com.hubEleven.deliveryManager.domain.DeliveryManagerRepository;
 import com.hubEleven.deliveryManager.domain.DeliveryType;
+import com.hubEleven.deliveryManager.presentation.dto.request.DeliveryManagerAssignRequestDto;
 import com.hubEleven.deliveryManager.presentation.dto.request.DeliveryManagerCreateRequestDto;
+import com.hubEleven.deliveryManager.presentation.dto.response.DeliveryManagerAssignResponseDto;
 import com.hubEleven.deliveryManager.presentation.dto.response.DeliveryManagerResponseDto;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -38,16 +42,18 @@ public class DeliveryManagerService {
 		log.info("[Service] 배달 담당자 생성 요청");
 		// 임시 데이터----------------------------
 		Long id = createRequestDto.deliveryManagerId();
-		UUID hubId = UUID.randomUUID();
+		UUID hubId = null; // UUID.fromString("1524dc79-9ed1-460b-a85f-521f0d8a28aa"); //null;
+		// //UUID.fromString("9090dc79-9ed1-460b-a85f-521f0d8a28aa"); // UUID.randomUUID();
 		String slackId = "slack001";
-		DeliveryType deliveryType = DeliveryType.COMPANY;
+		DeliveryType deliveryType = DeliveryType.HUB;
+
+		log.info("배송타입 : {}", deliveryType);
 		// ----------------------------------
 
 		// TODO: DB에 이미 존재하는 id 인지 확인
-		Integer maxOrder;
 
 		// 배송순번 부여
-		int deliveryOrder = setDeliveryOrder(deliveryType);
+		int deliveryOrder = setDeliveryOrder(deliveryType, hubId);
 
 		DeliveryManager deliveryManager =
 				DeliveryManager.create(id, hubId, slackId, deliveryType, deliveryOrder);
@@ -61,19 +67,75 @@ public class DeliveryManagerService {
 		return responseDto;
 	}
 
-	public int setDeliveryOrder(DeliveryType deliveryType) {
-		Integer maxOrder;
-		if (deliveryType == DeliveryType.HUB) {
-			maxOrder = deliveryManagerRepository.findMaxDeliveryOrderByDeliveryType(DeliveryType.HUB);
-			int nextOrder = maxOrder == null ? 1 : maxOrder + 1;
-			log.info("현재 마지막 순번 : {} , 생성된 배달 순번 : {}", maxOrder, nextOrder);
-			return nextOrder;
-		} else {
-			maxOrder = deliveryManagerRepository.findMaxDeliveryOrderByDeliveryType(DeliveryType.COMPANY);
-			int nextOrder = maxOrder == null ? 1 : maxOrder + 1;
-			log.info("현재 마지막 순번 : {} , 생성된 배달 순번 : {}", maxOrder, nextOrder);
+	@Transactional(readOnly = true)
+	public List<DeliveryManagerResponseDto> getAllDeliveryManager() {
+		/**
+		 * TODO: 검증사항 1. 조회 권한 검증(컨트롤러) 2. 세부 권한 검증(마스터는 전체조회 / 허브담당자는 본인허브 배달담당자만 조회 / 배달담당자는 본인만 조회)
+		 */
+		List<DeliveryManager> deliveryManager = deliveryManagerRepository.findAll();
+		return deliveryManager.stream().map(DeliveryManagerResponseDto::from).toList();
+	}
 
-			return nextOrder;
-		}
+	@Transactional(readOnly = true)
+	public DeliveryManagerResponseDto getDeliveryManager(Long managerId) {
+		/**
+		 * TODO: 검증사항 1. 조회 권한 검증(컨트롤러) 2. 세부 권한 검증(마스터는 모두 조회 가능 / 허브담당자는 본인허브 배달담당자만 조회 / 배달담당자는 본인만
+		 * 조회)
+		 */
+		Optional<DeliveryManager> deliveryManager = deliveryManagerRepository.findById(managerId);
+
+		return deliveryManager.map(DeliveryManagerResponseDto::from).orElse(null);
+	}
+
+	@Transactional(readOnly = true)
+	public void deleteDeliveryManager(Long managerId) {
+		DeliveryManager deliveryManager =
+				deliveryManagerRepository
+						.findById(managerId)
+						.orElseThrow(() -> new IllegalArgumentException("해당 배송 담당자가 존재하지 않습니다."));
+
+		// 임시 데이터
+		Long deletedBy = 1L;
+		deliveryManager.softDelete(deletedBy);
+		deliveryManagerRepository.save(deliveryManager);
+	}
+
+	@Transactional
+	public DeliveryManagerAssignResponseDto assignDeliveryManagers(
+			DeliveryManagerAssignRequestDto assignRequestDto) {
+
+		DeliveryType deliveryType = assignRequestDto.deliveryType();
+		UUID hubId = assignRequestDto.hubId();
+
+		// TODO : 해당 허브ID가 허브에 존재하는지 검증
+		DeliveryManager deliveryManager = getDeliveryManagerByType(deliveryType, hubId);
+		deliveryManager.recordDeliveryTime();
+		deliveryManagerRepository.save(deliveryManager);
+
+		UUID orderId = assignRequestDto.orderId();
+		return DeliveryManagerAssignResponseDto.of(orderId, deliveryManager);
+	}
+
+	private int setDeliveryOrder(DeliveryType deliveryType, UUID hubId) {
+
+		Integer maxOrder = deliveryManagerRepository.findMaxDeliveryOrderByHubId(hubId);
+
+		int nextOrder = (maxOrder == null) ? 1 : maxOrder + 1;
+
+		log.info("배송 타입: {}, 현재 마지막 순번: {}, 생성된 순번: {}", deliveryType, maxOrder, nextOrder);
+
+		return nextOrder;
+	}
+
+	private DeliveryManager getDeliveryManagerByType(DeliveryType deliveryType, UUID hubId) {
+
+		return switch (deliveryType) {
+			case HUB -> deliveryManagerRepository
+					.findFirstByHubIdIsNullOrderByLastDeliveryTimeAscDeliveryOrderAsc()
+					.orElseThrow(() -> new IllegalArgumentException("허브 배송 담당자가 존재하지 않습니다."));
+			case COMPANY -> deliveryManagerRepository
+					.findFirstByHubIdOrderByLastDeliveryTimeAscDeliveryOrderAsc(hubId)
+					.orElseThrow(() -> new IllegalArgumentException("업체 배송담당자가 존재하지 않습니다."));
+		};
 	}
 }

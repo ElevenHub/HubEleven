@@ -10,6 +10,7 @@ public record DeliveryManagerResponseDto(
 		String slackId,
 		DeliveryType deliveryType,
 		int deliveryOrder) {
+
 	public static DeliveryManagerResponseDto from(DeliveryManager deliveryManager) {
 		return new DeliveryManagerResponseDto(
 				deliveryManager.getDeliveryManagerId(),
