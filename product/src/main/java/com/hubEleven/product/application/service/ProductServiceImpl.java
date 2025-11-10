@@ -122,11 +122,11 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	@Transactional
-	public void deleteProduct(UUID productId) {
+	public void deleteProduct(UUID productId, Long userId) {
 
 		Product product = validateProductExists(productId);
 
 		// 논리 삭제 처리
-		productRepository.delete(product);
+        product.delete(userId);
 	}
 }

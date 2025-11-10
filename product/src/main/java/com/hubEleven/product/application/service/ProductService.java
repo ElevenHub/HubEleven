@@ -17,5 +17,5 @@ public interface ProductService {
 
 	ProductResult updateProduct(UUID productId, @Valid Update request);
 
-	void deleteProduct(UUID productId);
+	void deleteProduct(UUID productId, Long userId);
 }
