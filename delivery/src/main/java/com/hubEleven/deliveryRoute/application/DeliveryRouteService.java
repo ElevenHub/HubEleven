@@ -1,6 +1,8 @@
 package com.hubEleven.deliveryRoute.application;
 
+import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.delivery.domain.Delivery;
+import com.hubEleven.delivery.domain.DeliveryErrorCode;
 import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.domain.DeliveryRoute;
@@ -31,7 +33,7 @@ public class DeliveryRouteService {
 		DeliveryRoute deliveryRoute =
 				deliveryRouteRepository
 						.findByDeliveryAndToHubId(delivery, deliveryRouteRequestDto.toHubId())
-						.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 배송 경로입니다."));
+						.orElseThrow(() -> new GlobalException(DeliveryErrorCode.DELIVERY_NOT_FOUND));
 
 		deliveryRoute.update(
 				deliveryRouteRequestDto.seq(),
@@ -50,6 +52,10 @@ public class DeliveryRouteService {
 	@Transactional
 	public void deleteRoute(Delivery delivery, Long userId) {
 		List<DeliveryRoute> deliveryRoute = deliveryRouteRepository.findByDelivery(delivery);
+		if (deliveryRoute == null || deliveryRoute.isEmpty()) {
+			throw new GlobalException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND);
+		}
+
 		for (DeliveryRoute route : deliveryRoute) {
 			route.delete(userId);
 		}

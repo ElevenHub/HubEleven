@@ -107,6 +107,9 @@ public class DeliveryService {
 
 		// 배송 경로 조회
 		List<DeliveryRoute> deliveryRouteList = deliveryInfo.getDeliveryRoutes();
+		if (deliveryRouteList == null || deliveryRouteList.isEmpty()) {
+			throw new GlobalException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND);
+		}
 
 		// 엔티티 -> DTO로 변환해서 반환
 		return DeliveryDetailResponseDto.from(delivery(deliveryId), deliveryRouteList);
