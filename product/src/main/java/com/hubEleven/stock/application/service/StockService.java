@@ -9,5 +9,5 @@ public interface StockService {
 
 	StockResult create(@Valid Create request);
 
-    StockResult getStockByProductId(UUID productId);
+	StockResult getStockByProductId(UUID productId);
 }

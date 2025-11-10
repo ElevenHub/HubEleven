@@ -34,12 +34,11 @@ public class StockController {
 		return ApiResponseEntity.success(StockResponse.from(result));
 	}
 
-    @GetMapping("/{productId}")
-    public ResponseEntity<ApiResponse<StockResponse>> getStock(
-            @PathVariable UUID productId) {
+	@GetMapping("/{productId}")
+	public ResponseEntity<ApiResponse<StockResponse>> getStock(@PathVariable UUID productId) {
 
-        StockResult result = stockService.getStockByProductId(productId);
+		StockResult result = stockService.getStockByProductId(productId);
 
-        return ApiResponseEntity.success(StockResponse.from(result));
-    }
+		return ApiResponseEntity.success(StockResponse.from(result));
+	}
 }

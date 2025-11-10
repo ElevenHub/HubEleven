@@ -40,23 +40,27 @@ public class StockServiceImpl implements StockService {
 		return StockResult.from(savedStock, product.getName());
 	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public StockResult getStockByProductId(UUID productId) {
+	@Override
+	@Transactional(readOnly = true)
+	public StockResult getStockByProductId(UUID productId) {
 
-        // 상품 존재 여부 확인
-        Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+		// 상품 존재 여부 확인
+		Product product =
+				productRepository
+						.findById(productId)
+						.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 
-        // 삭제된 상품인지 확인
-        if (product.isDeleted()) {
-            throw new GlobalException(PRODUCT_DELETED);
-        }
+		// 삭제된 상품인지 확인
+		if (product.isDeleted()) {
+			throw new GlobalException(PRODUCT_DELETED);
+		}
 
-        // 재고 조회
-        Stock stock = stockRepository.findByProductId(productId)
-                .orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
+		// 재고 조회
+		Stock stock =
+				stockRepository
+						.findByProductId(productId)
+						.orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
 
-        return StockResult.from(stock, product.getName());
-    }
+		return StockResult.from(stock, product.getName());
+	}
 }

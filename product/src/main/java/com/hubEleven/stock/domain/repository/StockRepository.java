@@ -8,5 +8,5 @@ public interface StockRepository {
 
 	Stock save(Stock stock);
 
-    Optional<Stock> findByProductId(UUID productId);
+	Optional<Stock> findByProductId(UUID productId);
 }

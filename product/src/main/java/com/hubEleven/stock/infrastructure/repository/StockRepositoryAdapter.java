@@ -18,8 +18,8 @@ public class StockRepositoryAdapter implements StockRepository {
 		return jpaStockRepository.save(stock);
 	}
 
-    @Override
-    public Optional<Stock> findByProductId(UUID productId) {
-        return jpaStockRepository.findByProductId(productId);
-    }
+	@Override
+	public Optional<Stock> findByProductId(UUID productId) {
+		return jpaStockRepository.findByProductId(productId);
+	}
 }
