@@ -10,10 +10,12 @@ import com.hubEleven.order.application.service.OrderService;
 import com.hubEleven.order.presentation.dto.request.OrderRequests;
 import com.hubEleven.order.presentation.dto.response.OrderResponse;
 import jakarta.validation.Valid;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,5 +51,13 @@ public class OrderController {
                 PagingUtils.convert(orders, OrderResponse::from);
 
         return ApiResponseEntity.success(response);
+    }
+
+    @GetMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<OrderResponse>> getOrderDetail(@PathVariable UUID orderId) {
+
+        OrderResult result = orderService.getOrderDetail(orderId);
+
+        return ApiResponseEntity.success(OrderResponse.from(result));
     }
 }

@@ -1,5 +1,6 @@
 package com.hubEleven.order.application.service;
 
+import static com.hubEleven.order.domain.exception.OrderErrorCode.ORDER_NOT_FOUND;
 import static com.hubEleven.order.domain.exception.OrderErrorCode.PRODUCT_NOT_FOUND;
 import static com.hubEleven.order.domain.exception.OrderErrorCode.RECIPIENT_COMPANY_NOT_FOUND;
 import static com.hubEleven.order.domain.exception.OrderErrorCode.REQUESTOR_COMPANY_NOT_FOUND;
@@ -14,6 +15,7 @@ import com.hubEleven.order.infrastructure.client.ProductFeignClient;
 import com.hubEleven.order.infrastructure.client.ProductFeignClient.ProductResponse;
 import com.hubEleven.order.presentation.dto.request.OrderRequests;
 import feign.FeignException;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -85,4 +87,16 @@ public class OrderServiceImpl implements OrderService {
 
         return orders.map(OrderResult::from);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public OrderResult getOrderDetail(UUID orderId) {
+
+        Order order = orderRepository
+                .findById(orderId)
+                .orElseThrow(() -> new GlobalException(ORDER_NOT_FOUND));
+
+        return OrderResult.from(order);
+    }
+
 }

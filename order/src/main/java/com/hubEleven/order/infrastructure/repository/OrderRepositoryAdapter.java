@@ -2,6 +2,8 @@ package com.hubEleven.order.infrastructure.repository;
 
 import com.hubEleven.order.domain.model.Order;
 import com.hubEleven.order.domain.repository.OrderRepository;
+import java.util.Optional;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,11 @@ public class OrderRepositoryAdapter implements OrderRepository {
     @Override
     public Page<Order> searchOrders(String keyword, Pageable pageable) {
         return jpaOrderRepository.searchOrders(keyword, pageable);
+    }
+
+    @Override
+    public Optional<Order> findById(UUID orderId) {
+        return jpaOrderRepository.findById(orderId);
     }
 
 }
