@@ -57,10 +57,20 @@ spring:
                 - RewritePath=/springdoc/openapi3-product-service.json, /v3/api-docs
 
             # Hub Service Routes
-            - id: hub-service
+            - id: hub-service-hubs
               uri: lb://hub-service
               predicates:
-                - Path=/v1/hubs/**, /v1/hub-routes/**
+                - Path=/v1/hubs/**
+
+            - id: hub-service-hub-routes
+              uri: lb://hub-service
+              predicates:
+                - Path=/v1/hub-routes/**
+
+            - id: hub-service-hub-routes-internal
+              uri: lb://hub-service
+              predicates:
+                - Path=/v1/internal/hub-routes/**
 
             - id: hub-service-openapi
               uri: lb://hub-service

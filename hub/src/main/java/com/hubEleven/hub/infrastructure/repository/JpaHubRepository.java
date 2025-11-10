@@ -1,4 +1,4 @@
-package com.hubEleven.hub.infrastructure;
+package com.hubEleven.hub.infrastructure.repository;
 
 import com.hubEleven.hub.domain.model.Hub;
 import java.util.List;

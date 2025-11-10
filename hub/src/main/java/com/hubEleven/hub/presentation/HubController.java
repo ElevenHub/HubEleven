@@ -1,5 +1,7 @@
 package com.hubEleven.hub.presentation;
 
+import com.commonLib.common.response.ApiResponse;
+import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.hub.application.command.CreateHubCommand;
 import com.hubEleven.hub.application.command.DeleteHubCommand;
 import com.hubEleven.hub.application.command.UpdateHubCommand;
@@ -14,6 +16,8 @@ import com.hubEleven.hub.presentation.dto.response.HubResponseDto;
 import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -25,45 +29,48 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/v1/hubs")
+@RequiredArgsConstructor
 public class HubController {
 
 	private final HubService hubService;
 
-	public HubController(HubService hubService) {
-		this.hubService = hubService;
-	}
-
 	@PostMapping
-	public HubResponseDto createHub(@Valid @RequestBody HubCreateRequestDto request) {
+	public ResponseEntity<ApiResponse<HubResponseDto>> createHub(
+			@Valid @RequestBody HubCreateRequestDto request) {
 		CreateHubCommand command = request.toCommand();
 		HubResult result = hubService.createHub(command);
-		return HubResponseDto.from(result);
+		HubResponseDto response = HubResponseDto.from(result);
+		return ApiResponseEntity.success(response);
 	}
 
 	@PatchMapping("/{hubId}")
-	public HubResponseDto updateHub(
+	public ResponseEntity<ApiResponse<HubResponseDto>> updateHub(
 			@PathVariable UUID hubId, @Valid @RequestBody HubUpdateRequestDto request) {
 		UpdateHubCommand command = request.toCommand(hubId);
 		HubResult result = hubService.updateHub(command);
-		return HubResponseDto.from(result);
+		HubResponseDto response = HubResponseDto.from(result);
+		return ApiResponseEntity.success(response);
 	}
 
 	@DeleteMapping("/{hubId}")
-	public HubDeleteResponseDto deleteHub(@PathVariable UUID hubId) {
+	public ResponseEntity<ApiResponse<HubDeleteResponseDto>> deleteHub(@PathVariable UUID hubId) {
 		hubService.deleteHub(new DeleteHubCommand(hubId));
-		return new HubDeleteResponseDto(hubId, true);
+		HubDeleteResponseDto response = new HubDeleteResponseDto(hubId, true);
+		return ApiResponseEntity.success(response);
 	}
 
 	@GetMapping("/{hubId}")
-	public HubResponseDto getHub(@PathVariable UUID hubId) {
+	public ResponseEntity<ApiResponse<HubResponseDto>> getHub(@PathVariable UUID hubId) {
 		HubResult result = hubService.getHub(hubId);
-		return HubResponseDto.from(result);
+		HubResponseDto response = HubResponseDto.from(result);
+		return ApiResponseEntity.success(response);
 	}
 
 	@GetMapping
-	public HubListResponseDto getHubs() {
+	public ResponseEntity<ApiResponse<HubListResponseDto>> getHubs() {
 		HubListResult result = hubService.getHubs();
 		List<HubResponseDto> responses = HubResponseDto.fromList(result.hubs());
-		return new HubListResponseDto(responses);
+		HubListResponseDto response = new HubListResponseDto(responses);
+		return ApiResponseEntity.success(response);
 	}
 }
