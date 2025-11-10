@@ -1,7 +1,6 @@
 package com.hubEleven.deliveryRoute.domain;
 
 import com.hubEleven.delivery.domain.Delivery;
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;

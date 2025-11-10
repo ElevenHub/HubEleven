@@ -5,11 +5,10 @@ import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.domain.DeliveryRoute;
 import com.hubEleven.deliveryRoute.domain.DeliveryRouteRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,8 +50,8 @@ public class DeliveryRouteService {
 	@Transactional
 	public void deleteRoute(Delivery delivery, Long userId) {
 		List<DeliveryRoute> deliveryRoute = deliveryRouteRepository.findByDelivery(delivery);
-        for(DeliveryRoute route : deliveryRoute) {
-            route.delete(userId);
-        }
+		for (DeliveryRoute route : deliveryRoute) {
+			route.delete(userId);
+		}
 	}
 }
