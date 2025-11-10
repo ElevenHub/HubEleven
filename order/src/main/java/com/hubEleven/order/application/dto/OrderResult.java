@@ -8,18 +8,16 @@ public record OrderResult(
         UUID requestorCompanyId,
         UUID recipientCompanyId,
         UUID productId,
-        String productName,
         UUID deliveryId,
         Long quantity,
         String note) {
 
-    public static OrderResult from(Order order, String productName) {
+    public static OrderResult from(Order order) {
         return new OrderResult(
                 order.getOrderId(),
                 order.getRequestorCompanyId(),
                 order.getRecipientCompanyId(),
                 order.getProductId(),
-                productName,
                 order.getDeliveryId(),
                 order.getQuantity(),
                 order.getNote());

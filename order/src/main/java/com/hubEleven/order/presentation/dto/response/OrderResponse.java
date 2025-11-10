@@ -8,7 +8,6 @@ public record OrderResponse(
         UUID requestorCompanyId,
         UUID recipientCompanyId,
         UUID productId,
-        String productName,
         UUID deliveryId,
         Long quantity,
         String note) {
@@ -19,7 +18,6 @@ public record OrderResponse(
                 orderResult.requestorCompanyId(),
                 orderResult.recipientCompanyId(),
                 orderResult.productId(),
-                orderResult.productName(),
                 orderResult.deliveryId(),
                 orderResult.quantity(),
                 orderResult.note());

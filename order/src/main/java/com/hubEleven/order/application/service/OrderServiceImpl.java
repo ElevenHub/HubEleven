@@ -15,6 +15,8 @@ import com.hubEleven.order.infrastructure.client.ProductFeignClient.ProductRespo
 import com.hubEleven.order.presentation.dto.request.OrderRequests;
 import feign.FeignException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,9 +53,8 @@ public class OrderServiceImpl implements OrderService {
         }
 
         // 상품 존재 여부 확인
-        ProductResponse product;
         try {
-            product = productFeignClient.getProduct(request.productId());
+            ProductResponse product = productFeignClient.getProduct(request.productId());
             if (product == null) {
                 throw new GlobalException(PRODUCT_NOT_FOUND);
             }
@@ -72,7 +73,16 @@ public class OrderServiceImpl implements OrderService {
 
         Order savedOrder = orderRepository.save(order);
 
-        return OrderResult.from(savedOrder, product.name());
+        return OrderResult.from(savedOrder);
 
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<OrderResult> searchOrders(String keyword, Pageable pageable) {
+
+        Page<Order> orders = orderRepository.searchOrders(keyword, pageable);
+
+        return orders.map(OrderResult::from);
     }
 }

@@ -1,6 +1,7 @@
 package com.hubEleven.order.domain.model;
 
 import com.hubEleven.common.annotation.SoftDeletable;
+import com.hubEleven.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +20,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "p_order")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SoftDeletable // soft delete 커스텀 어노테이션
-public class Order {
+public class Order extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
