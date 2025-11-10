@@ -76,7 +76,8 @@ public class ProductController {
 	}
 
 	@DeleteMapping("/{productId}")
-	public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable UUID productId, Long userId) {
+	public ResponseEntity<ApiResponse<Void>> deleteProduct(
+			@PathVariable UUID productId, Long userId) {
 
 		productService.deleteProduct(productId, userId);
 

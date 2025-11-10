@@ -30,11 +30,12 @@ public class ProductServiceImpl implements ProductService {
 	private final CompanyFeignClient companyFeignClient;
 	private final HubFeignClient hubFeignClient;
 
-    // 상품 존재 여부 확인 메서드
-    private Product validateProductExists(UUID productId) {
-        return productRepository.findById(productId)
-                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
-    }
+	// 상품 존재 여부 확인 메서드
+	private Product validateProductExists(UUID productId) {
+		return productRepository
+				.findById(productId)
+				.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+	}
 
 	// 회사 존재 여부 확인 메서드
 	private void validateCompanyExists(UUID companyId) {
@@ -78,7 +79,7 @@ public class ProductServiceImpl implements ProductService {
 		validateCompanyExists(request.companyId());
 
 		// 허브 존재 여부 확인
-        validateHubExists(request.hubId());
+		validateHubExists(request.hubId());
 
 		// 중복 제품명 확인
 		validateDuplicateProductName(request.hubId(), request.name(), request.companyId());
@@ -127,6 +128,6 @@ public class ProductServiceImpl implements ProductService {
 		Product product = validateProductExists(productId);
 
 		// 논리 삭제 처리
-        product.delete(userId);
+		product.delete(userId);
 	}
 }
