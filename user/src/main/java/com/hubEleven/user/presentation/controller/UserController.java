@@ -80,8 +80,7 @@ public class UserController {
 						userInfo.phoneNumber(),
 						userInfo.role(),
 						userInfo.status(),
-						userInfo.companyId()
-				);
+						userInfo.companyId());
 
 		return ApiResponseEntity.success(response);
 	}
