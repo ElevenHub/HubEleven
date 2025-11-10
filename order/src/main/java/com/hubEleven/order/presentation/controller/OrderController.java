@@ -81,4 +81,17 @@ public class OrderController {
 
         return ApiResponseEntity.success(null);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<CommonPageResponse<OrderResponse>>> searchOrders(
+            CommonPageRequest request) {
+
+        Page<OrderResult> orders =
+                orderService.searchOrders(request.keyword(), request.toPageable());
+
+        CommonPageResponse<OrderResponse> response =
+                PagingUtils.convert(orders, OrderResponse::from);
+
+        return ApiResponseEntity.success(response);
+    }
 }
