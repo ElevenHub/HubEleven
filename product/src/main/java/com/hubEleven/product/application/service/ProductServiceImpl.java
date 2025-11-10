@@ -30,6 +30,12 @@ public class ProductServiceImpl implements ProductService {
 	private final CompanyFeignClient companyFeignClient;
 	private final HubFeignClient hubFeignClient;
 
+    // 상품 존재 여부 확인 메서드
+    private Product validateProductExists(UUID productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+    }
+
 	// 회사 존재 여부 확인 메서드
 	private void validateCompanyExists(UUID companyId) {
 		try {
@@ -43,7 +49,7 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	// 허브 존재 여부 확인 메서드
-	private void validateProductExists(UUID hubId) {
+	private void validateHubExists(UUID hubId) {
 		try {
 			HubResponse hub = hubFeignClient.getHub(hubId);
 			if (hub == null) {
@@ -72,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 		validateCompanyExists(request.companyId());
 
 		// 허브 존재 여부 확인
-		validateProductExists(request.hubId());
+        validateHubExists(request.hubId());
 
 		// 중복 제품명 확인
 		validateDuplicateProductName(request.hubId(), request.name(), request.companyId());
@@ -98,10 +104,7 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional(readOnly = true)
 	public ProductResult getProduct(UUID productId) {
 
-		Product product =
-				productRepository
-						.findById(productId)
-						.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+		Product product = validateProductExists(productId);
 
 		return ProductResult.from(product);
 	}
@@ -110,10 +113,7 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	public ProductResult updateProduct(UUID productId, ProductRequests.Update request) {
 
-		Product product =
-				productRepository
-						.findById(productId)
-						.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+		Product product = validateProductExists(productId);
 
 		product.update(request.name());
 
@@ -124,10 +124,7 @@ public class ProductServiceImpl implements ProductService {
 	@Transactional
 	public void deleteProduct(UUID productId) {
 
-		Product product =
-				productRepository
-						.findById(productId)
-						.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+		Product product = validateProductExists(productId);
 
 		// 논리 삭제 처리
 		productRepository.delete(product);
