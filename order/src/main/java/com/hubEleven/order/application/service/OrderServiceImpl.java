@@ -107,12 +107,22 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     @Transactional
-    public OrderResult updateOrder(UUID productId, OrderRequests.Update request) {
+    public OrderResult updateOrder(UUID orderId, OrderRequests.Update request) {
 
-        Order order = validateOrderExists(productId);
+        Order order = validateOrderExists(orderId);
 
         order.update(request.quantity(), request.note());
 
         return OrderResult.from(orderRepository.save(order));
+    }
+
+    @Override
+    @Transactional
+    public void deleteOrder(UUID orderId, Long userId) {
+
+        Order order = validateOrderExists(orderId);
+
+        // 논리 삭제 처리
+        order.delete(userId);
     }
 }

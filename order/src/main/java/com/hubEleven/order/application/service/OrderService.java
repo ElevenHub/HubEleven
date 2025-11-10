@@ -15,4 +15,6 @@ public interface OrderService {
     OrderResult getOrderDetail(UUID orderId);
 
     OrderResult updateOrder(UUID orderId, OrderRequests.Update request);
+
+    void deleteOrder(UUID orderId, Long userId);
 }
