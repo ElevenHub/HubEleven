@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class DeliveryRouteService {
@@ -48,7 +50,9 @@ public class DeliveryRouteService {
 	// 배달 경로 삭제
 	@Transactional
 	public void deleteRoute(Delivery delivery, Long userId) {
-		DeliveryRoute deliveryRoute = deliveryRouteRepository.findByDelivery(delivery);
-		deliveryRoute.delete(userId);
+		List<DeliveryRoute> deliveryRoute = deliveryRouteRepository.findByDelivery(delivery);
+        for(DeliveryRoute route : deliveryRoute) {
+            route.delete(userId);
+        }
 	}
 }

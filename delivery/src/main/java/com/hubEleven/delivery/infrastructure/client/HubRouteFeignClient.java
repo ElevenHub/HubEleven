@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "hub-service")
+@FeignClient(name = "hub-service", contextId = "delivery-hub-client")
 public interface HubRouteFeignClient {
 	@GetMapping("/v1/hubRoute")
 	List<HubRouteFeignResponseDto> getRoute(@RequestParam UUID fromHubId, @RequestParam UUID toHubId);

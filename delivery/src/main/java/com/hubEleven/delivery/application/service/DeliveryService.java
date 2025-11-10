@@ -1,5 +1,7 @@
 package com.hubEleven.delivery.application.service;
 
+import com.hubEleven.delivery.domain.DeliveryErrorCode;
+import com.hubEleven.common.exception.GlobalException;
 import com.hubEleven.delivery.application.dto.DeliveryDetailResponseDto;
 import com.hubEleven.delivery.application.dto.DeliveryRequestDto;
 import com.hubEleven.delivery.application.dto.DeliveryResponseDto;
@@ -44,8 +46,8 @@ public class DeliveryService {
 	private Delivery delivery(UUID deliveryId) {
 		return deliveryRepository
 				.findById(deliveryId)
-				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 배달 ID입니다."));
-	}
+				.orElseThrow(() -> new GlobalException(DeliveryErrorCode.DELIVERY_NOT_FOUND));
+    }
 
 	// 배송 검색
 	public Page<DeliveryResponseDto> searchDelivery(

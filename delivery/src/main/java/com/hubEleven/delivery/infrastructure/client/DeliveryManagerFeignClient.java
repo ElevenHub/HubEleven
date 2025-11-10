@@ -7,7 +7,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "delivery-service")
+@FeignClient(name = "delivery-service", contextId = "delivery-client")
 public interface DeliveryManagerFeignClient {
 	@GetMapping("/v1/deliveryManager")
 	DeliveryManagerFeignResponseDto getDeliveryManager(
