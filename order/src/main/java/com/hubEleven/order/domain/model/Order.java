@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -39,7 +40,7 @@ public class Order extends BaseEntity {
     @Column(name = "delivery_id", nullable = false)
     private UUID deliveryId;
 
-    @Min(0)
+    @Min(1)
     @Column(name = "quantity", nullable = false)
     private Long quantity;
 
@@ -67,5 +68,14 @@ public class Order extends BaseEntity {
                 .quantity(quantity)
                 .note(note)
                 .build();
+    }
+
+    public void update(Long quantity, String note) {
+        if (quantity != null && quantity >= 1) {
+            this.quantity = quantity;
+        }
+        if (note != null && !note.isBlank()) {
+            this.note = note;
+        }
     }
 }

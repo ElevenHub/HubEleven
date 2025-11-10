@@ -30,6 +30,14 @@ public class OrderServiceImpl implements OrderService {
     private final ProductFeignClient productFeignClient;
     private final CompanyFeignClient companyFeignClient;
 
+
+    // 주문 존재 여부 확인 메서드
+    private Order validateOrderExists(UUID orderId) {
+        return orderRepository
+                .findById(orderId)
+                .orElseThrow(() -> new GlobalException(ORDER_NOT_FOUND));
+    }
+
     @Override
     @Transactional
     public OrderResult create(OrderRequests.Create request) {
@@ -92,11 +100,19 @@ public class OrderServiceImpl implements OrderService {
     @Transactional(readOnly = true)
     public OrderResult getOrderDetail(UUID orderId) {
 
-        Order order = orderRepository
-                .findById(orderId)
-                .orElseThrow(() -> new GlobalException(ORDER_NOT_FOUND));
+        Order order = validateOrderExists(orderId);
 
         return OrderResult.from(order);
     }
 
+    @Override
+    @Transactional
+    public OrderResult updateOrder(UUID productId, OrderRequests.Update request) {
+
+        Order order = validateOrderExists(productId);
+
+        order.update(request.quantity(), request.note());
+
+        return OrderResult.from(orderRepository.save(order));
+    }
 }

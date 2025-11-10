@@ -7,6 +7,7 @@ import com.hubEleven.common.response.CommonPageResponse;
 import com.hubEleven.common.utils.PagingUtils;
 import com.hubEleven.order.application.dto.OrderResult;
 import com.hubEleven.order.application.service.OrderService;
+import com.hubEleven.order.infrastructure.client.ProductFeignClient.ProductResponse;
 import com.hubEleven.order.presentation.dto.request.OrderRequests;
 import com.hubEleven.order.presentation.dto.response.OrderResponse;
 import jakarta.validation.Valid;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -60,4 +62,14 @@ public class OrderController {
 
         return ApiResponseEntity.success(OrderResponse.from(result));
     }
+
+    @PatchMapping("/{orderId}")
+    public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(
+            @PathVariable UUID orderId, @Valid @RequestBody OrderRequests.Update request) {
+
+        OrderResult result = orderService.updateOrder(orderId, request);
+
+        return ApiResponseEntity.success(OrderResponse.from(result));
+    }
+
 }
