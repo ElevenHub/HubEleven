@@ -1,16 +1,23 @@
+server:
+  port: 0
+
 spring:
   application:
     name: notification-service
   config:
-    import: "configserver:"
+    import: "optional:configserver:"
   cloud:
     config:
       discovery:
         enabled: true
         service-id: config
 
-server:
-  port: 0
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  default-server-url: http://localhost:8080
 
 eureka:
   client:

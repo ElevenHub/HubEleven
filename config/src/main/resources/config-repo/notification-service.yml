@@ -25,9 +25,6 @@ spring:
       retry:
         enabled: true
 
-server:
-  port: 0
-
 gemini:
   api:
     key: ${GEMINI_KEY}

@@ -1,4 +1,4 @@
-package com.hubEleven.user.config;
+package com.hubEleven.user.infrastructure.config;
 
 import com.hubEleven.user.domain.model.User;
 import com.hubEleven.user.domain.repository.UserRepository;

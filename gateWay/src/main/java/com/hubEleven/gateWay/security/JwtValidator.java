@@ -41,8 +41,4 @@ public class JwtValidator {
 	public Long extractUserId(String token) {
 		return validateToken(token).get("userId", Long.class);
 	}
-
-	public String extractCompanyId(String token) {
-		return validateToken(token).get("companyId", String.class);
-	}
 }

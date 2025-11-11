@@ -91,6 +91,19 @@ spring:
                 - Path=/springdoc/openapi3-order-service.json
               filters:
                 - RewritePath=/springdoc/openapi3-order-service.json, /v3/api-docs
+
+            - id: notification-service
+              uri: lb://notification-service
+              predicates:
+                - Path=/v1/ai/dispatch/**
+
+            - id: notification-service-openapi
+              uri: lb://notification-service
+              predicates:
+                - Path=/springdoc/openapi3-notification-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-notification-service.json, /v3/api-docs
+
           discovery:
             locator:
               enabled: true
@@ -118,5 +131,7 @@ springdoc:
         url: /springdoc/openapi3-hub-service.json
       - name: order-service
         url: /springdoc/openapi3-order-service.json
+      - name: notification-service
+        url: /springdoc/openapi3-notification-service.json
     path: /swagger-ui.html
     config-url: /v3/api-docs/swagger-config

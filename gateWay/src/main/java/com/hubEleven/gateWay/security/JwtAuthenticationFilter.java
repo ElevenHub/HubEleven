@@ -61,7 +61,6 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 			String username = jwtValidator.extractUsername(token);
 			String role = jwtValidator.extractRole(token);
 			Long userId = jwtValidator.extractUserId(token);
-			String companyId = jwtValidator.extractCompanyId(token);
 
 			// 다운스트림 서비스에서 사용할 수 있도록 헤더에 사용자 정보 추가
 			ServerHttpRequest modifiedRequest =
@@ -70,7 +69,6 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 							.header("X-User-Id", String.valueOf(userId))
 							.header("X-Username", username)
 							.header("X-User-Role", role)
-							.header("X-Company-Id", companyId)
 							.build();
 
 			return chain.filter(exchange.mutate().request(modifiedRequest).build());
