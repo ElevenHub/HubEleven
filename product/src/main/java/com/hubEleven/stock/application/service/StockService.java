@@ -8,9 +8,11 @@ import java.util.UUID;
 
 public interface StockService {
 
-	StockResult create(@Valid Create request);
+	StockResult create(StockRequests.Create request);
 
 	StockResult getStockByProductId(UUID productId);
+
+    StockResult decreaseStock(StockRequests.Decrease request);
 
     StockResult restoreStock(StockRequests.Restore request);
 }

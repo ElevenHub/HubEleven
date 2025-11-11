@@ -43,6 +43,16 @@ public class StockController {
 		return ApiResponseEntity.success(StockResponse.from(result));
 	}
 
+    @PutMapping
+    public ResponseEntity<ApiResponse<StockResponse>> decreaseStock(
+            @Valid @RequestBody StockRequests.Decrease request) {
+
+        // 재고 감소 로직 호출
+        StockResult result = stockService.decreaseStock(request);
+
+        return ApiResponseEntity.success(StockResponse.from(result));
+    }
+
     @PutMapping("/restore")
     public ResponseEntity<ApiResponse<StockResponse>> restoreStock(
             @Valid @RequestBody StockRequests.Restore request) {

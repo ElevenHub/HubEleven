@@ -53,6 +53,12 @@ public class Stock extends BaseEntity {
 				.build();
 	}
 
+    public void decreaseQuantity(Long decreaseQuantity) {
+        if (decreaseQuantity != null && decreaseQuantity > 0 && this.quantity >= decreaseQuantity) {
+            this.quantity -= decreaseQuantity;
+        }
+    }
+
     public void restoreQuantity(Long restoreQuantity) {
         if (restoreQuantity != null && restoreQuantity > 0) {
             this.quantity += restoreQuantity;

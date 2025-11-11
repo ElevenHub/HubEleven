@@ -8,6 +8,7 @@ import static com.hubEleven.order.domain.exception.OrderErrorCode.STOCK_RESTORE_
 
 import com.hubEleven.common.exception.GlobalException;
 import com.hubEleven.order.application.dto.OrderResult;
+import com.hubEleven.order.domain.exception.OrderErrorCode;
 import com.hubEleven.order.domain.model.Order;
 import com.hubEleven.order.domain.repository.OrderRepository;
 import com.hubEleven.order.infrastructure.client.CompanyFeignClient;
@@ -73,6 +74,20 @@ public class OrderServiceImpl implements OrderService {
             }
         } catch (FeignException.NotFound e) {
             throw new GlobalException(PRODUCT_NOT_FOUND);
+        }
+
+        // 재고 차감
+        try {
+            StockFeignClient.StockDecreaseRequest stockRequest =
+                    new StockFeignClient.StockDecreaseRequest(
+                            request.productId(),
+                            request.quantity()
+                    );
+            stockFeignClient.decreaseStock(stockRequest);
+
+        } catch (FeignException e) {
+            // 재고 부족 or Stock 서비스 오류
+            throw new GlobalException(OrderErrorCode.STOCK_INSUFFICIENT);
         }
 
         // 주문 생성 및 저장

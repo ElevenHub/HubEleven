@@ -30,6 +30,13 @@ public class StockServiceImpl implements StockService {
                 .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
     }
 
+    // 재고 존재 여부 확인 메서드
+    private Stock validateStockExists(UUID productId) {
+        return stockRepository
+                .findByProductId(productId)
+                .orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
+    }
+
 	@Override
 	@Transactional
 	public StockResult create(StockRequests.Create request) {
@@ -57,13 +64,27 @@ public class StockServiceImpl implements StockService {
 		}
 
 		// 재고 조회
-		Stock stock =
-				stockRepository
-						.findByProductId(productId)
-						.orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
+		Stock stock = validateStockExists(productId);
 
 		return StockResult.from(stock, product.getName());
 	}
+
+    @Override
+    @Transactional
+    public StockResult decreaseStock(StockRequests.Decrease request) {
+
+        // 상품 존재 여부 확인
+        Product product = validateProductExists(request.productId());
+
+        // 재고 조회
+        Stock stock = validateStockExists(request.productId());
+
+        // 재고 차감
+        stock.decreaseQuantity(request.quantity()); // ToDo : 재고 부족 예외 처리
+
+        return StockResult.from(stock, product.getName());
+    }
+
 
     @Override
     @Transactional
@@ -72,13 +93,10 @@ public class StockServiceImpl implements StockService {
         Product product = validateProductExists(request.productId());
 
         // 재고 조회
-        Stock stock =
-                stockRepository
-                        .findByProductId(request.productId())
-                        .orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
+        Stock stock = validateStockExists(request.productId());
 
         // 재고 복원 로직
-        stock.restoreQuantity(request.quantity());
+        stock.restoreQuantity(request.quantity()); // ToDo : 재고 복원 예외 처리
 
         Stock updatedStock = stockRepository.save(stock);
 
