@@ -1,6 +1,6 @@
 package com.hubEleven.order.domain.exception;
 
-import com.hubEleven.common.code.StatusCode;
+import com.commonLib.common.code.StatusCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

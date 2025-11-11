@@ -1,12 +1,6 @@
 package com.hubEleven.order.application.service;
 
-import static com.hubEleven.order.domain.exception.OrderErrorCode.ORDER_NOT_FOUND;
-import static com.hubEleven.order.domain.exception.OrderErrorCode.PRODUCT_NOT_FOUND;
-import static com.hubEleven.order.domain.exception.OrderErrorCode.RECIPIENT_COMPANY_NOT_FOUND;
-import static com.hubEleven.order.domain.exception.OrderErrorCode.REQUESTOR_COMPANY_NOT_FOUND;
-import static com.hubEleven.order.domain.exception.OrderErrorCode.STOCK_RESTORE_FAILED;
-
-import com.hubEleven.common.exception.GlobalException;
+import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.order.application.dto.OrderResult;
 import com.hubEleven.order.domain.exception.OrderErrorCode;
 import com.hubEleven.order.domain.model.Order;
