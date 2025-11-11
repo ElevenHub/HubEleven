@@ -3,7 +3,6 @@ package com.hubEleven.user.infrastructure.security;
 import com.hubEleven.user.domain.model.User;
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
@@ -34,5 +33,4 @@ public class CustomUserDetails implements UserDetails {
 	public Long getUserId() {
 		return user.getId();
 	}
-
 }
