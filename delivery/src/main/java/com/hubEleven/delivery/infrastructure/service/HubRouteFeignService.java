@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class HubFeignService {
+public class HubRouteFeignService {
 	private HubRouteFeignClient hubRouteFeignClient;
 
 	public List<HubRouteFeignResponseDto> getRoute(UUID fromHubId, UUID toHubId) {

@@ -1,6 +1,7 @@
 package com.hubEleven.delivery.infrastructure.service;
 
 import com.commonLib.common.exception.GlobalException;
+import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.domain.DeliveryErrorCode;
 import com.hubEleven.delivery.infrastructure.client.DeliveryManagerFeignClient;
 import com.hubEleven.delivery.infrastructure.dto.DeliveryManagerFeignResponseDto;
@@ -15,7 +16,7 @@ import org.springframework.stereotype.Service;
 public class DeliveryManagerFeignService {
 	private final DeliveryManagerFeignClient deliveryManagerFeignClient;
 
-	public DeliveryManagerFeignResponseDto getDeliveryManagerInfo(
+	public ApiResponse<DeliveryManagerFeignResponseDto> getDeliveryManagerInfo(
 			UUID orderId, UUID toHubId, DeliveryType deliveryType) {
 		try {
 			return deliveryManagerFeignClient.getDeliveryManager(orderId, toHubId, deliveryType);

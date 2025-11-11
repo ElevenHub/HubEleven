@@ -1,6 +1,7 @@
 package com.hubEleven.delivery.application.service;
 
 import com.commonLib.common.exception.GlobalException;
+import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.application.dto.DeliveryDetailResponseDto;
 import com.hubEleven.delivery.application.dto.DeliveryRequestDto;
 import com.hubEleven.delivery.application.dto.DeliveryResponseDto;
@@ -40,7 +41,7 @@ public class DeliveryService {
 	private final UserFeignService userFeignService;
 	private final DeliveryManagerFeignService deliveryManagerFeignService;
 	private final CompanyFeignService companyFeignService;
-	private final HubFeignService hubFeignService;
+	private final HubRouteFeignService hubRouteFeignService;
 
 	// Delivery 조회
 	private Delivery delivery(UUID deliveryId) {
@@ -127,14 +128,14 @@ public class DeliveryService {
 		// 요청업체의 관리 허브 ID는 업체 테이블에 있음
 		// 주문 정보에 있는 요청 업체 소속 허브를 출발 허브로 수령 업체 소속 허브를 도착 허브로 생각하고
 		// 허브 경로에서 출발 허브 부터 도착 허브의 경로를 받아와서 그 갯수 만큼 배송 경로 생성
-		UUID fromHubId = companyFeignService.getCompanyInfo(fromCompanyId).HubId();
-		UUID toHubId = companyFeignService.getCompanyInfo(fromCompanyId).HubId();
+		UUID fromHubId = companyFeignService.getCompanyInfo(fromCompanyId).result().hubId();
+		UUID toHubId = companyFeignService.getCompanyInfo(fromCompanyId).result().hubId();
 
 		// 유저정보에서 수령인, 수령인 슬랙ID 받아오기
 		UserFeignResponseDto toUser = userFeignService.getUserInfo(toCompanyId);
 
 		// 배송담당자에서 배송담당자 ID 받아오기
-		DeliveryManagerFeignResponseDto deliveryManager =
+        ApiResponse<DeliveryManagerFeignResponseDto> deliveryManager =
 				deliveryManagerFeignService.getDeliveryManagerInfo(orderId, toHubId, DeliveryType.COMPANY);
 
 		// 배송 생성
@@ -146,17 +147,17 @@ public class DeliveryService {
 						toCompanyId,
 						toUser.name(),
 						toUser.slackId(),
-						deliveryManager.deliveryManagerId());
+						deliveryManager.result().deliveryManagerId());
 
 		// 허브 경로에 출발허브ID 와 도착허브ID를 넘기고 경로를 받는다.
-		List<HubRouteFeignResponseDto> hubRoute = hubFeignService.getRoute(fromHubId, toHubId);
+		List<HubRouteFeignResponseDto> hubRoute = hubRouteFeignService.getRoute(fromHubId, toHubId);
 		for (int seq = 0; seq < hubRoute.size(); seq++) {
 			HubRouteFeignResponseDto deliveryRoute = hubRoute.get(seq);
 			// 배송 담당자 ID
-			DeliveryManagerFeignResponseDto hubDeliveryManager =
+            ApiResponse<DeliveryManagerFeignResponseDto> hubDeliveryManager =
 					deliveryManagerFeignService.getDeliveryManagerInfo(
 							orderId, deliveryRoute.toHubId(), DeliveryType.HUB);
-			Long deliveryManagerId = hubDeliveryManager.deliveryManagerId();
+			Long deliveryManagerId = hubDeliveryManager.result().deliveryManagerId();
 
 			// 배송 경로 생성 요청
 			DeliveryRoute route = deliveryRouteService.creatRoute(deliveryRoute, seq, deliveryManagerId);
