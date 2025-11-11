@@ -4,7 +4,7 @@ import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_DE
 import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 import static com.hubEleven.stock.domain.exception.StockErrorCode.STOCK_NOT_FOUND;
 
-import com.hubEleven.common.exception.GlobalException;
+import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.product.domain.model.Product;
 import com.hubEleven.product.domain.repository.ProductRepository;
 import com.hubEleven.stock.application.dto.StockResult;

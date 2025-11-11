@@ -1,7 +1,7 @@
 package com.hubEleven.product.domain.model;
 
-import com.hubEleven.common.annotation.SoftDeletable;
-import com.hubEleven.common.model.BaseEntity;
+import com.commonLib.common.annotation.SoftDeletable;
+import com.commonLib.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

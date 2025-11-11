@@ -5,7 +5,7 @@ import static com.hubEleven.product.domain.exception.ProductErrorCode.HUB_NOT_FO
 import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_DUPLICATED;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 
-import com.hubEleven.common.exception.GlobalException;
+import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.product.application.dto.ProductResult;
 import com.hubEleven.product.domain.model.Product;
 import com.hubEleven.product.domain.repository.ProductRepository;

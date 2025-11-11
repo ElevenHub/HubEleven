@@ -1,10 +1,10 @@
 package com.hubEleven.product.presentation.controller;
 
-import com.hubEleven.common.request.CommonPageRequest;
-import com.hubEleven.common.response.ApiResponse;
-import com.hubEleven.common.response.ApiResponseEntity;
-import com.hubEleven.common.response.CommonPageResponse;
-import com.hubEleven.common.utils.PagingUtils;
+import com.commonLib.common.request.CommonPageRequest;
+import com.commonLib.common.response.ApiResponse;
+import com.commonLib.common.response.ApiResponseEntity;
+import com.commonLib.common.response.CommonPageResponse;
+import com.commonLib.common.utils.PagingUtils;
 import com.hubEleven.product.application.dto.ProductResult;
 import com.hubEleven.product.application.service.ProductService;
 import com.hubEleven.product.presentation.dto.request.ProductRequests;
