@@ -94,4 +94,13 @@ public class OrderController {
 
         return ApiResponseEntity.success(response);
     }
+
+    @PostMapping("/{orderId}/cancel")
+    public ResponseEntity<ApiResponse<Void>> cancelOrder(
+            @PathVariable UUID orderId, Long userId) {
+
+        orderService.cancelOrder(orderId, userId);
+
+        return ApiResponseEntity.success(null);
+    }
 }

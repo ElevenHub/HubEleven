@@ -9,7 +9,7 @@ public record StockResponse(
 		String productName,
 		UUID hubId,
 		UUID companyId,
-		Integer quantity) {
+		Long quantity) {
 
 	public static StockResponse from(StockResult stockResult) {
 		return new StockResponse(

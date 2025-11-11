@@ -17,4 +17,6 @@ public interface OrderService {
     OrderResult updateOrder(UUID orderId, OrderRequests.Update request);
 
     void deleteOrder(UUID orderId, Long userId);
+
+    void cancelOrder(UUID orderId, Long userId);
 }

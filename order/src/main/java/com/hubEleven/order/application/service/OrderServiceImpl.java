@@ -4,6 +4,7 @@ import static com.hubEleven.order.domain.exception.OrderErrorCode.ORDER_NOT_FOUN
 import static com.hubEleven.order.domain.exception.OrderErrorCode.PRODUCT_NOT_FOUND;
 import static com.hubEleven.order.domain.exception.OrderErrorCode.RECIPIENT_COMPANY_NOT_FOUND;
 import static com.hubEleven.order.domain.exception.OrderErrorCode.REQUESTOR_COMPANY_NOT_FOUND;
+import static com.hubEleven.order.domain.exception.OrderErrorCode.STOCK_RESTORE_FAILED;
 
 import com.hubEleven.common.exception.GlobalException;
 import com.hubEleven.order.application.dto.OrderResult;
@@ -13,6 +14,7 @@ import com.hubEleven.order.infrastructure.client.CompanyFeignClient;
 import com.hubEleven.order.infrastructure.client.CompanyFeignClient.CompanyResponse;
 import com.hubEleven.order.infrastructure.client.ProductFeignClient;
 import com.hubEleven.order.infrastructure.client.ProductFeignClient.ProductResponse;
+import com.hubEleven.order.infrastructure.client.StockFeignClient;
 import com.hubEleven.order.presentation.dto.request.OrderRequests;
 import feign.FeignException;
 import java.util.UUID;
@@ -29,6 +31,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductFeignClient productFeignClient;
     private final CompanyFeignClient companyFeignClient;
+    private final StockFeignClient stockFeignClient;
 
 
     // 주문 존재 여부 확인 메서드
@@ -123,6 +126,29 @@ public class OrderServiceImpl implements OrderService {
         Order order = validateOrderExists(orderId);
 
         // 논리 삭제 처리
+        order.delete(userId);
+    }
+
+    @Override
+    @Transactional
+    public void cancelOrder(UUID orderId, Long userId) {
+
+        Order order = validateOrderExists(orderId);
+
+        // 재고 복원 처리
+        try {
+            StockFeignClient.StockRestoreRequest request =
+                    new StockFeignClient.StockRestoreRequest(
+                            order.getProductId(),
+                            order.getQuantity()
+                    );
+            stockFeignClient.restoreStock(request);
+
+        } catch (FeignException e) {
+            throw new GlobalException(STOCK_RESTORE_FAILED);
+        }
+
+        // 취소건도 delete_at 필드에 기록
         order.delete(userId);
     }
 }

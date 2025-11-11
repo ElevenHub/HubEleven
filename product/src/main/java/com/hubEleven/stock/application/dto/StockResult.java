@@ -10,7 +10,7 @@ public record StockResult(
 		String productName,
 		UUID hubId,
 		UUID companyId,
-		Integer quantity) {
+		Long quantity) {
 	public static StockResult from(Stock stock, String productName) {
 		return new StockResult(
 				stock.getStockId(),
