@@ -9,7 +9,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.Size;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -23,59 +22,69 @@ import lombok.NoArgsConstructor;
 @SoftDeletable // soft delete 커스텀 어노테이션
 public class Order extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "order_id", nullable = false)
-    private UUID orderId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "order_id", nullable = false)
+	private UUID orderId;
 
-    @Column(name = "requestor_company_id", nullable = false)
-    private UUID requestorCompanyId;
+	@Column(name = "requestor_company_id", nullable = false)
+	private UUID requestorCompanyId;
 
-    @Column(name = "recipient_company_id", nullable = false)
-    private UUID recipientCompanyId;
+	@Column(name = "recipient_company_id", nullable = false)
+	private UUID recipientCompanyId;
 
-    @Column(name = "product_id", nullable = false)
-    private UUID productId;
+	@Column(name = "product_id", nullable = false)
+	private UUID productId;
 
-    @Column(name = "delivery_id", nullable = false)
-    private UUID deliveryId;
+	@Column(name = "delivery_id", nullable = false)
+	private UUID deliveryId;
 
-    @Min(1)
-    @Column(name = "quantity", nullable = false)
-    private Long quantity;
+	@Min(1)
+	@Column(name = "quantity", nullable = false)
+	private Long quantity;
 
-    @Column(name = "note", length = 500)
-    private String note;
+	@Column(name = "note", length = 500)
+	private String note;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Order(UUID requestorCompanyId, UUID recipientCompanyId, UUID productId,
-                  UUID deliveryId, Long quantity, String note) {
-        this.requestorCompanyId = requestorCompanyId;
-        this.recipientCompanyId = recipientCompanyId;
-        this.productId = productId;
-        this.deliveryId = deliveryId;
-        this.quantity = quantity;
-        this.note = note;
-    }
+	@Builder(access = AccessLevel.PRIVATE)
+	private Order(
+			UUID requestorCompanyId,
+			UUID recipientCompanyId,
+			UUID productId,
+			UUID deliveryId,
+			Long quantity,
+			String note) {
+		this.requestorCompanyId = requestorCompanyId;
+		this.recipientCompanyId = recipientCompanyId;
+		this.productId = productId;
+		this.deliveryId = deliveryId;
+		this.quantity = quantity;
+		this.note = note;
+	}
 
-    public static Order create(UUID requestorCompanyId, UUID recipientCompanyId, UUID productId,
-                               UUID deliveryId, Long quantity, String note) {
-        return Order.builder()
-                .requestorCompanyId(requestorCompanyId)
-                .recipientCompanyId(recipientCompanyId)
-                .productId(productId)
-                .deliveryId(deliveryId)
-                .quantity(quantity)
-                .note(note)
-                .build();
-    }
+	public static Order create(
+			UUID requestorCompanyId,
+			UUID recipientCompanyId,
+			UUID productId,
+			UUID deliveryId,
+			Long quantity,
+			String note) {
+		return Order.builder()
+				.requestorCompanyId(requestorCompanyId)
+				.recipientCompanyId(recipientCompanyId)
+				.productId(productId)
+				.deliveryId(deliveryId)
+				.quantity(quantity)
+				.note(note)
+				.build();
+	}
 
-    public void update(Long quantity, String note) {
-        if (quantity != null && quantity >= 1) {
-            this.quantity = quantity;
-        }
-        if (note != null && !note.isBlank()) {
-            this.note = note;
-        }
-    }
+	public void update(Long quantity, String note) {
+		if (quantity != null && quantity >= 1) {
+			this.quantity = quantity;
+		}
+		if (note != null && !note.isBlank()) {
+			this.note = note;
+		}
+	}
 }

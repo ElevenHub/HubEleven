@@ -23,19 +23,19 @@ public class StockServiceImpl implements StockService {
 	private final StockRepository stockRepository;
 	private final ProductRepository productRepository;
 
-    // 상품 존재 여부 확인 메서드
-    private Product validateProductExists(UUID productId) {
-        return productRepository
-                .findById(productId)
-                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
-    }
+	// 상품 존재 여부 확인 메서드
+	private Product validateProductExists(UUID productId) {
+		return productRepository
+				.findById(productId)
+				.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+	}
 
-    // 재고 존재 여부 확인 메서드
-    private Stock validateStockExists(UUID productId) {
-        return stockRepository
-                .findByProductId(productId)
-                .orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
-    }
+	// 재고 존재 여부 확인 메서드
+	private Stock validateStockExists(UUID productId) {
+		return stockRepository
+				.findByProductId(productId)
+				.orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
+	}
 
 	@Override
 	@Transactional
@@ -56,9 +56,9 @@ public class StockServiceImpl implements StockService {
 	public StockResult getStockByProductId(UUID productId) {
 
 		// 상품 존재 여부 확인
-        Product product = validateProductExists(productId);
+		Product product = validateProductExists(productId);
 
-        // 삭제된 상품인지 확인
+		// 삭제된 상품인지 확인
 		if (product.isDeleted()) {
 			throw new GlobalException(PRODUCT_DELETED);
 		}
@@ -69,37 +69,36 @@ public class StockServiceImpl implements StockService {
 		return StockResult.from(stock, product.getName());
 	}
 
-    @Override
-    @Transactional
-    public StockResult decreaseStock(StockRequests.Decrease request) {
+	@Override
+	@Transactional
+	public StockResult decreaseStock(StockRequests.Decrease request) {
 
-        // 상품 존재 여부 확인
-        Product product = validateProductExists(request.productId());
+		// 상품 존재 여부 확인
+		Product product = validateProductExists(request.productId());
 
-        // 재고 조회
-        Stock stock = validateStockExists(request.productId());
+		// 재고 조회
+		Stock stock = validateStockExists(request.productId());
 
-        // 재고 차감
-        stock.decreaseQuantity(request.quantity()); // ToDo : 재고 부족 예외 처리
+		// 재고 차감
+		stock.decreaseQuantity(request.quantity()); // ToDo : 재고 부족 예외 처리
 
-        return StockResult.from(stock, product.getName());
-    }
+		return StockResult.from(stock, product.getName());
+	}
 
+	@Override
+	@Transactional
+	public StockResult restoreStock(StockRequests.Restore request) {
+		// 상품 존재 여부 확인
+		Product product = validateProductExists(request.productId());
 
-    @Override
-    @Transactional
-    public StockResult restoreStock(StockRequests.Restore request) {
-        // 상품 존재 여부 확인
-        Product product = validateProductExists(request.productId());
+		// 재고 조회
+		Stock stock = validateStockExists(request.productId());
 
-        // 재고 조회
-        Stock stock = validateStockExists(request.productId());
+		// 재고 복원 로직
+		stock.restoreQuantity(request.quantity()); // ToDo : 재고 복원 예외 처리
 
-        // 재고 복원 로직
-        stock.restoreQuantity(request.quantity()); // ToDo : 재고 복원 예외 처리
+		Stock updatedStock = stockRepository.save(stock);
 
-        Stock updatedStock = stockRepository.save(stock);
-
-        return StockResult.from(updatedStock, product.getName());
-    }
+		return StockResult.from(updatedStock, product.getName());
+	}
 }

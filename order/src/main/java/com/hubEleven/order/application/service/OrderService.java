@@ -8,15 +8,15 @@ import org.springframework.data.domain.Pageable;
 
 public interface OrderService {
 
-    OrderResult create(OrderRequests.Create request);
+	OrderResult create(OrderRequests.Create request);
 
-    Page<OrderResult> searchOrders(String keyword, Pageable pageable);
+	Page<OrderResult> searchOrders(String keyword, Pageable pageable);
 
-    OrderResult getOrderDetail(UUID orderId);
+	OrderResult getOrderDetail(UUID orderId);
 
-    OrderResult updateOrder(UUID orderId, OrderRequests.Update request);
+	OrderResult updateOrder(UUID orderId, OrderRequests.Update request);
 
-    void deleteOrder(UUID orderId, Long userId);
+	void deleteOrder(UUID orderId, Long userId);
 
-    void cancelOrder(UUID orderId, Long userId);
+	void cancelOrder(UUID orderId, Long userId);
 }

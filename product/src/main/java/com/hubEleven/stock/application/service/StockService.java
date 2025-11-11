@@ -2,8 +2,6 @@ package com.hubEleven.stock.application.service;
 
 import com.hubEleven.stock.application.dto.StockResult;
 import com.hubEleven.stock.presentation.dto.request.StockRequests;
-import com.hubEleven.stock.presentation.dto.request.StockRequests.Create;
-import jakarta.validation.Valid;
 import java.util.UUID;
 
 public interface StockService {
@@ -12,7 +10,7 @@ public interface StockService {
 
 	StockResult getStockByProductId(UUID productId);
 
-    StockResult decreaseStock(StockRequests.Decrease request);
+	StockResult decreaseStock(StockRequests.Decrease request);
 
-    StockResult restoreStock(StockRequests.Restore request);
+	StockResult restoreStock(StockRequests.Restore request);
 }

@@ -9,9 +9,9 @@ import org.springframework.data.jpa.repository.Query;
 
 public interface JpaOrderRepository extends JpaRepository<Order, UUID> {
 
-    @Query(
-            "SELECT o FROM Order o WHERE "
-                    + "o.deletedAt IS NULL AND "
-                    + "(:keyword IS NULL OR :keyword = '' OR o.note LIKE %:keyword%)")
-    Page<Order> searchOrders(String keyword, Pageable pageable);
+	@Query(
+			"SELECT o FROM Order o WHERE "
+					+ "o.deletedAt IS NULL AND "
+					+ "(:keyword IS NULL OR :keyword = '' OR o.note LIKE %:keyword%)")
+	Page<Order> searchOrders(String keyword, Pageable pageable);
 }

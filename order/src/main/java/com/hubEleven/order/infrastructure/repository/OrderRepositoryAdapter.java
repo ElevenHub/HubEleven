@@ -13,19 +13,20 @@ import org.springframework.stereotype.Repository;
 @RequiredArgsConstructor
 public class OrderRepositoryAdapter implements OrderRepository {
 
-    private final JpaOrderRepository jpaOrderRepository;
+	private final JpaOrderRepository jpaOrderRepository;
 
-    @Override
-    public Order save(Order order) {return jpaOrderRepository.save(order);}
+	@Override
+	public Order save(Order order) {
+		return jpaOrderRepository.save(order);
+	}
 
-    @Override
-    public Page<Order> searchOrders(String keyword, Pageable pageable) {
-        return jpaOrderRepository.searchOrders(keyword, pageable);
-    }
+	@Override
+	public Page<Order> searchOrders(String keyword, Pageable pageable) {
+		return jpaOrderRepository.searchOrders(keyword, pageable);
+	}
 
-    @Override
-    public Optional<Order> findById(UUID orderId) {
-        return jpaOrderRepository.findById(orderId);
-    }
-
+	@Override
+	public Optional<Order> findById(UUID orderId) {
+		return jpaOrderRepository.findById(orderId);
+	}
 }

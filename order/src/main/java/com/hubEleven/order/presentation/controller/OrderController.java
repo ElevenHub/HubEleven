@@ -7,7 +7,6 @@ import com.hubEleven.common.response.CommonPageResponse;
 import com.hubEleven.common.utils.PagingUtils;
 import com.hubEleven.order.application.dto.OrderResult;
 import com.hubEleven.order.application.service.OrderService;
-import com.hubEleven.order.infrastructure.client.ProductFeignClient.ProductResponse;
 import com.hubEleven.order.presentation.dto.request.OrderRequests;
 import com.hubEleven.order.presentation.dto.response.OrderResponse;
 import jakarta.validation.Valid;
@@ -29,78 +28,71 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class OrderController {
 
-    private final OrderService orderService;
+	private final OrderService orderService;
 
-    @PostMapping
-    public ResponseEntity<ApiResponse<OrderResponse>> create(
-            @Valid @RequestBody OrderRequests.Create request) {
+	@PostMapping
+	public ResponseEntity<ApiResponse<OrderResponse>> create(
+			@Valid @RequestBody OrderRequests.Create request) {
 
-        OrderResult result = orderService.create(request);
+		OrderResult result = orderService.create(request);
 
-        return ApiResponseEntity.success(OrderResponse.from(result));
-    }
+		return ApiResponseEntity.success(OrderResponse.from(result));
+	}
 
-    @GetMapping
-    public ResponseEntity<ApiResponse<CommonPageResponse<OrderResponse>>> getOrders(CommonPageRequest request) {
+	@GetMapping
+	public ResponseEntity<ApiResponse<CommonPageResponse<OrderResponse>>> getOrders(
+			CommonPageRequest request) {
 
-        // Service 계층에서 Order 도메인 엔티티를 OrderResult DTO로 변환하여 조회
-        Page<OrderResult> orders =
-                orderService.searchOrders(
-                        request.keyword(),
-                        request.toPageable());
+		// Service 계층에서 Order 도메인 엔티티를 OrderResult DTO로 변환하여 조회
+		Page<OrderResult> orders = orderService.searchOrders(request.keyword(), request.toPageable());
 
-        // Application 계층의 OrderResult를 Presentation 계층의 OrderResponse로 변환
-        CommonPageResponse<OrderResponse> response =
-                PagingUtils.convert(orders, OrderResponse::from);
+		// Application 계층의 OrderResult를 Presentation 계층의 OrderResponse로 변환
+		CommonPageResponse<OrderResponse> response = PagingUtils.convert(orders, OrderResponse::from);
 
-        return ApiResponseEntity.success(response);
-    }
+		return ApiResponseEntity.success(response);
+	}
 
-    @GetMapping("/{orderId}")
-    public ResponseEntity<ApiResponse<OrderResponse>> getOrderDetail(@PathVariable UUID orderId) {
+	@GetMapping("/{orderId}")
+	public ResponseEntity<ApiResponse<OrderResponse>> getOrderDetail(@PathVariable UUID orderId) {
 
-        OrderResult result = orderService.getOrderDetail(orderId);
+		OrderResult result = orderService.getOrderDetail(orderId);
 
-        return ApiResponseEntity.success(OrderResponse.from(result));
-    }
+		return ApiResponseEntity.success(OrderResponse.from(result));
+	}
 
-    @PatchMapping("/{orderId}")
-    public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(
-            @PathVariable UUID orderId, @Valid @RequestBody OrderRequests.Update request) {
+	@PatchMapping("/{orderId}")
+	public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(
+			@PathVariable UUID orderId, @Valid @RequestBody OrderRequests.Update request) {
 
-        OrderResult result = orderService.updateOrder(orderId, request);
+		OrderResult result = orderService.updateOrder(orderId, request);
 
-        return ApiResponseEntity.success(OrderResponse.from(result));
-    }
+		return ApiResponseEntity.success(OrderResponse.from(result));
+	}
 
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<ApiResponse<Void>> deleteOrder(
-            @PathVariable UUID orderId, Long userId) {
+	@DeleteMapping("/{orderId}")
+	public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable UUID orderId, Long userId) {
 
-        orderService.deleteOrder(orderId, userId);
+		orderService.deleteOrder(orderId, userId);
 
-        return ApiResponseEntity.success(null);
-    }
+		return ApiResponseEntity.success(null);
+	}
 
-    @GetMapping("/search")
-    public ResponseEntity<ApiResponse<CommonPageResponse<OrderResponse>>> searchOrders(
-            CommonPageRequest request) {
+	@GetMapping("/search")
+	public ResponseEntity<ApiResponse<CommonPageResponse<OrderResponse>>> searchOrders(
+			CommonPageRequest request) {
 
-        Page<OrderResult> orders =
-                orderService.searchOrders(request.keyword(), request.toPageable());
+		Page<OrderResult> orders = orderService.searchOrders(request.keyword(), request.toPageable());
 
-        CommonPageResponse<OrderResponse> response =
-                PagingUtils.convert(orders, OrderResponse::from);
+		CommonPageResponse<OrderResponse> response = PagingUtils.convert(orders, OrderResponse::from);
 
-        return ApiResponseEntity.success(response);
-    }
+		return ApiResponseEntity.success(response);
+	}
 
-    @PostMapping("/{orderId}/cancel")
-    public ResponseEntity<ApiResponse<Void>> cancelOrder(
-            @PathVariable UUID orderId, Long userId) {
+	@PostMapping("/{orderId}/cancel")
+	public ResponseEntity<ApiResponse<Void>> cancelOrder(@PathVariable UUID orderId, Long userId) {
 
-        orderService.cancelOrder(orderId, userId);
+		orderService.cancelOrder(orderId, userId);
 
-        return ApiResponseEntity.success(null);
-    }
+		return ApiResponseEntity.success(null);
+	}
 }

@@ -29,141 +29,134 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
 
-    private final OrderRepository orderRepository;
-    private final ProductFeignClient productFeignClient;
-    private final CompanyFeignClient companyFeignClient;
-    private final StockFeignClient stockFeignClient;
+	private final OrderRepository orderRepository;
+	private final ProductFeignClient productFeignClient;
+	private final CompanyFeignClient companyFeignClient;
+	private final StockFeignClient stockFeignClient;
 
+	// 주문 존재 여부 확인 메서드
+	private Order validateOrderExists(UUID orderId) {
+		return orderRepository
+				.findById(orderId)
+				.orElseThrow(() -> new GlobalException(ORDER_NOT_FOUND));
+	}
 
-    // 주문 존재 여부 확인 메서드
-    private Order validateOrderExists(UUID orderId) {
-        return orderRepository
-                .findById(orderId)
-                .orElseThrow(() -> new GlobalException(ORDER_NOT_FOUND));
-    }
+	@Override
+	@Transactional
+	public OrderResult create(OrderRequests.Create request) {
 
-    @Override
-    @Transactional
-    public OrderResult create(OrderRequests.Create request) {
+		// 요청 업체 존재 여부 확인
+		try {
+			CompanyResponse company = companyFeignClient.getCompany(request.requestorCompanyId());
+			if (company == null) {
+				throw new GlobalException(REQUESTOR_COMPANY_NOT_FOUND);
+			}
+		} catch (FeignException.NotFound e) {
+			throw new GlobalException(REQUESTOR_COMPANY_NOT_FOUND);
+		}
 
-        // 요청 업체 존재 여부 확인
-        try {
-            CompanyResponse company = companyFeignClient.getCompany(request.requestorCompanyId());
-            if (company == null) {
-                throw new GlobalException(REQUESTOR_COMPANY_NOT_FOUND);
-            }
-        } catch (FeignException.NotFound e) {
-            throw new GlobalException(REQUESTOR_COMPANY_NOT_FOUND);
-        }
+		// 수령 업체 존재 여부 확인
+		try {
+			CompanyResponse company = companyFeignClient.getCompany(request.recipientCompanyId());
+			if (company == null) {
+				throw new GlobalException(RECIPIENT_COMPANY_NOT_FOUND);
+			}
+		} catch (FeignException.NotFound e) {
+			throw new GlobalException(RECIPIENT_COMPANY_NOT_FOUND);
+		}
 
-        // 수령 업체 존재 여부 확인
-        try {
-            CompanyResponse company = companyFeignClient.getCompany(request.recipientCompanyId());
-            if (company == null) {
-                throw new GlobalException(RECIPIENT_COMPANY_NOT_FOUND);
-            }
-        } catch (FeignException.NotFound e) {
-            throw new GlobalException(RECIPIENT_COMPANY_NOT_FOUND);
-        }
+		// 상품 존재 여부 확인
+		try {
+			ProductResponse product = productFeignClient.getProduct(request.productId());
+			if (product == null) {
+				throw new GlobalException(PRODUCT_NOT_FOUND);
+			}
+		} catch (FeignException.NotFound e) {
+			throw new GlobalException(PRODUCT_NOT_FOUND);
+		}
 
-        // 상품 존재 여부 확인
-        try {
-            ProductResponse product = productFeignClient.getProduct(request.productId());
-            if (product == null) {
-                throw new GlobalException(PRODUCT_NOT_FOUND);
-            }
-        } catch (FeignException.NotFound e) {
-            throw new GlobalException(PRODUCT_NOT_FOUND);
-        }
+		// 재고 차감
+		try {
+			StockFeignClient.StockDecreaseRequest stockRequest =
+					new StockFeignClient.StockDecreaseRequest(request.productId(), request.quantity());
+			stockFeignClient.decreaseStock(stockRequest);
 
-        // 재고 차감
-        try {
-            StockFeignClient.StockDecreaseRequest stockRequest =
-                    new StockFeignClient.StockDecreaseRequest(
-                            request.productId(),
-                            request.quantity()
-                    );
-            stockFeignClient.decreaseStock(stockRequest);
+		} catch (FeignException e) {
+			// 재고 부족 or Stock 서비스 오류
+			throw new GlobalException(OrderErrorCode.STOCK_INSUFFICIENT);
+		}
 
-        } catch (FeignException e) {
-            // 재고 부족 or Stock 서비스 오류
-            throw new GlobalException(OrderErrorCode.STOCK_INSUFFICIENT);
-        }
+		// 주문 생성 및 저장
+		Order order =
+				Order.create(
+						request.requestorCompanyId(),
+						request.recipientCompanyId(),
+						request.productId(),
+						request.deliveryId(),
+						request.quantity(),
+						request.note());
 
-        // 주문 생성 및 저장
-        Order order = Order.create(
-                request.requestorCompanyId(),
-                request.recipientCompanyId(),
-                request.productId(),
-                request.deliveryId(),
-                request.quantity(),
-                request.note());
+		Order savedOrder = orderRepository.save(order);
 
-        Order savedOrder = orderRepository.save(order);
+		return OrderResult.from(savedOrder);
+	}
 
-        return OrderResult.from(savedOrder);
+	@Override
+	@Transactional(readOnly = true)
+	public Page<OrderResult> searchOrders(String keyword, Pageable pageable) {
 
-    }
+		Page<Order> orders = orderRepository.searchOrders(keyword, pageable);
 
-    @Override
-    @Transactional(readOnly = true)
-    public Page<OrderResult> searchOrders(String keyword, Pageable pageable) {
+		return orders.map(OrderResult::from);
+	}
 
-        Page<Order> orders = orderRepository.searchOrders(keyword, pageable);
+	@Override
+	@Transactional(readOnly = true)
+	public OrderResult getOrderDetail(UUID orderId) {
 
-        return orders.map(OrderResult::from);
-    }
+		Order order = validateOrderExists(orderId);
 
-    @Override
-    @Transactional(readOnly = true)
-    public OrderResult getOrderDetail(UUID orderId) {
+		return OrderResult.from(order);
+	}
 
-        Order order = validateOrderExists(orderId);
+	@Override
+	@Transactional
+	public OrderResult updateOrder(UUID orderId, OrderRequests.Update request) {
 
-        return OrderResult.from(order);
-    }
+		Order order = validateOrderExists(orderId);
 
-    @Override
-    @Transactional
-    public OrderResult updateOrder(UUID orderId, OrderRequests.Update request) {
+		order.update(request.quantity(), request.note());
 
-        Order order = validateOrderExists(orderId);
+		return OrderResult.from(orderRepository.save(order));
+	}
 
-        order.update(request.quantity(), request.note());
+	@Override
+	@Transactional
+	public void deleteOrder(UUID orderId, Long userId) {
 
-        return OrderResult.from(orderRepository.save(order));
-    }
+		Order order = validateOrderExists(orderId);
 
-    @Override
-    @Transactional
-    public void deleteOrder(UUID orderId, Long userId) {
+		// 논리 삭제 처리
+		order.delete(userId);
+	}
 
-        Order order = validateOrderExists(orderId);
+	@Override
+	@Transactional
+	public void cancelOrder(UUID orderId, Long userId) {
 
-        // 논리 삭제 처리
-        order.delete(userId);
-    }
+		Order order = validateOrderExists(orderId);
 
-    @Override
-    @Transactional
-    public void cancelOrder(UUID orderId, Long userId) {
+		// 재고 복원 처리
+		try {
+			StockFeignClient.StockRestoreRequest request =
+					new StockFeignClient.StockRestoreRequest(order.getProductId(), order.getQuantity());
+			stockFeignClient.restoreStock(request);
 
-        Order order = validateOrderExists(orderId);
+		} catch (FeignException e) {
+			throw new GlobalException(STOCK_RESTORE_FAILED);
+		}
 
-        // 재고 복원 처리
-        try {
-            StockFeignClient.StockRestoreRequest request =
-                    new StockFeignClient.StockRestoreRequest(
-                            order.getProductId(),
-                            order.getQuantity()
-                    );
-            stockFeignClient.restoreStock(request);
-
-        } catch (FeignException e) {
-            throw new GlobalException(STOCK_RESTORE_FAILED);
-        }
-
-        // 취소건도 delete_at 필드에 기록
-        order.delete(userId);
-    }
+		// 취소건도 delete_at 필드에 기록
+		order.delete(userId);
+	}
 }

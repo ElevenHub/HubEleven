@@ -43,23 +43,23 @@ public class StockController {
 		return ApiResponseEntity.success(StockResponse.from(result));
 	}
 
-    @PutMapping
-    public ResponseEntity<ApiResponse<StockResponse>> decreaseStock(
-            @Valid @RequestBody StockRequests.Decrease request) {
+	@PutMapping
+	public ResponseEntity<ApiResponse<StockResponse>> decreaseStock(
+			@Valid @RequestBody StockRequests.Decrease request) {
 
-        // 재고 감소 로직 호출
-        StockResult result = stockService.decreaseStock(request);
+		// 재고 감소 로직 호출
+		StockResult result = stockService.decreaseStock(request);
 
-        return ApiResponseEntity.success(StockResponse.from(result));
-    }
+		return ApiResponseEntity.success(StockResponse.from(result));
+	}
 
-    @PutMapping("/restore")
-    public ResponseEntity<ApiResponse<StockResponse>> restoreStock(
-            @Valid @RequestBody StockRequests.Restore request) {
+	@PutMapping("/restore")
+	public ResponseEntity<ApiResponse<StockResponse>> restoreStock(
+			@Valid @RequestBody StockRequests.Restore request) {
 
-        // 재고 복원 로직 호출
-        StockResult result = stockService.restoreStock(request);
+		// 재고 복원 로직 호출
+		StockResult result = stockService.restoreStock(request);
 
-        return ApiResponseEntity.success(StockResponse.from(result));
-    }
+		return ApiResponseEntity.success(StockResponse.from(result));
+	}
 }
