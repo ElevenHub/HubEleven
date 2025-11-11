@@ -76,8 +76,7 @@ public class UserService {
 		return PagingUtils.convert(users, UserInfo::from);
 	}
 
-	public CommonPageResponse<UserInfo> searchUsers(
-			CommonPageRequest pageRequest) {
+	public CommonPageResponse<UserInfo> searchUsers(CommonPageRequest pageRequest) {
 		Page<User> users = userRepository.searchUsers(pageRequest.keyword(), pageRequest.toPageable());
 		return PagingUtils.convert(users, UserInfo::from);
 	}

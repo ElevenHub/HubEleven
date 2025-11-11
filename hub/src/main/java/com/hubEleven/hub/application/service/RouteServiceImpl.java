@@ -1,6 +1,6 @@
 package com.hubEleven.hub.application.service;
 
-import com.hubEleven.common.exception.GlobalException;
+import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.hub.application.dto.RouteResult;
 import com.hubEleven.hub.application.util.RouteCalculationResult;
 import com.hubEleven.hub.application.util.RouteCalculator;

@@ -1,7 +1,7 @@
 package com.hubEleven.hub.presentation;
 
-import com.hubEleven.common.response.ApiResponse;
-import com.hubEleven.common.response.ApiResponseEntity;
+import com.commonLib.common.response.ApiResponse;
+import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.hub.application.dto.RouteResult;
 import com.hubEleven.hub.application.service.RouteService;
 import com.hubEleven.hub.presentation.dto.response.HubRouteResponseDto;

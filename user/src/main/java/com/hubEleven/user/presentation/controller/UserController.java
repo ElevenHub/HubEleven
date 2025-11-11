@@ -97,7 +97,6 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
-
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
 			@PathVariable("id") Long id,
 			@RequestHeader("X-User-Id") Long requestUserId,
@@ -131,10 +130,8 @@ public class UserController {
 	@GetMapping("/search")
 	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> searchUsers(
-			@Valid CommonPageRequest pageRequest
-	) {
-		CommonPageResponse<UserInfo> result =
-				userService.searchUsers(pageRequest);
+			@Valid CommonPageRequest pageRequest) {
+		CommonPageResponse<UserInfo> result = userService.searchUsers(pageRequest);
 
 		CommonPageResponse<UserInfoResponse> response =
 				new CommonPageResponse<>(
