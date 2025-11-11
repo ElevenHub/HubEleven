@@ -9,4 +9,14 @@ spring:
         enabled: true
         service-id: config
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  default-server-url: http://localhost:8080
 
+kakao:
+  api:
+    key: ${KAKAO_REST_API_KEY}
+    base-url: https://dapi.kakao.com

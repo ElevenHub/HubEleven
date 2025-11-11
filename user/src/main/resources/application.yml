@@ -5,18 +5,38 @@ spring:
   application:
     name: user-service
   config:
-    import: "configserver:"
+    import: "optional:configserver:"
   cloud:
     config:
       discovery:
         enabled: true
         service-id: config
+  datasource:
+    url: jdbc:mysql://localhost:3306/hubEleven?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Asia/Seoul
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 
 management:
   endpoints:
     web:
       exposure:
         include: refresh
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  default-server-url: http://localhost:8080
 
 eureka:
   client:

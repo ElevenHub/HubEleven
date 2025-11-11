@@ -4,38 +4,106 @@ spring:
       server:
         webflux:
           routes:
+            # User Service Routes
             - id: user-service
               uri: lb://user-service
               predicates:
                 - Path=/v1/user/**
 
+            - id: user-service-openapi
+              uri: lb://user-service
+              predicates:
+                - Path=/springdoc/openapi3-user-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-user-service.json, /v3/api-docs
+
+            # Delivery Service Routes
             - id: delivery-service
               uri: lb://delivery-service
               predicates:
-                - Path=/v1/delivery/**
-                - Path=/v1/delivery-managers/**
+                - Path=/v1/delivery/**, /v1/delivery-managers/**
 
+            - id: delivery-service-openapi
+              uri: lb://delivery-service
+              predicates:
+                - Path=/springdoc/openapi3-delivery-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-delivery-service.json, /v3/api-docs
+
+            # Company Service Routes
             - id: company-service
               uri: lb://company-service
               predicates:
                 - Path=/v1/companies/**
 
+            - id: company-service-openapi
+              uri: lb://company-service
+              predicates:
+                - Path=/springdoc/openapi3-company-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-company-service.json, /v3/api-docs
+
+            # Product Service Routes
             - id: product-service
               uri: lb://product-service
               predicates:
                 - Path=/v1/products/**
 
-            - id: hub-service
+            - id: product-service-openapi
+              uri: lb://product-service
+              predicates:
+                - Path=/springdoc/openapi3-product-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-product-service.json, /v3/api-docs
+
+            # Hub Service Routes
+            - id: hub-service-hubs
               uri: lb://hub-service
               predicates:
                 - Path=/v1/hubs/**
+
+            - id: hub-service-hub-routes
+              uri: lb://hub-service
+              predicates:
                 - Path=/v1/hub-routes/**
 
+            - id: hub-service-hub-routes-internal
+              uri: lb://hub-service
+              predicates:
+                - Path=/v1/internal/hub-routes/**
+
+            - id: hub-service-openapi
+              uri: lb://hub-service
+              predicates:
+                - Path=/springdoc/openapi3-hub-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-hub-service.json, /v3/api-docs
+
+            # Order Service Routes
             - id: order-service
               uri: lb://order-service
               predicates:
-                - Path=/v1/order/**
-                - Path=/v1/orders/**
+                - Path=/v1/order/**, /v1/orders/**
+
+            - id: order-service-openapi
+              uri: lb://order-service
+              predicates:
+                - Path=/springdoc/openapi3-order-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-order-service.json, /v3/api-docs
+
+            - id: notification-service
+              uri: lb://notification-service
+              predicates:
+                - Path=/v1/ai/dispatch/**
+
+            - id: notification-service-openapi
+              uri: lb://notification-service
+              predicates:
+                - Path=/springdoc/openapi3-notification-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-notification-service.json, /v3/api-docs
+
           discovery:
             locator:
               enabled: true
@@ -47,3 +115,23 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: user-service
+        url: /springdoc/openapi3-user-service.json
+      - name: delivery-service
+        url: /springdoc/openapi3-delivery-service.json
+      - name: company-service
+        url: /springdoc/openapi3-company-service.json
+      - name: product-service
+        url: /springdoc/openapi3-product-service.json
+      - name: hub-service
+        url: /springdoc/openapi3-hub-service.json
+      - name: order-service
+        url: /springdoc/openapi3-order-service.json
+      - name: notification-service
+        url: /springdoc/openapi3-notification-service.json
+    path: /swagger-ui.html
+    config-url: /v3/api-docs/swagger-config

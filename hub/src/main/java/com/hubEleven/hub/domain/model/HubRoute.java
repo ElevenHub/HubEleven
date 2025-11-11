@@ -1,13 +1,17 @@
 package com.hubEleven.hub.domain.model;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,16 +32,21 @@ public class HubRoute {
 	private UUID hubRouteId;
 
 	@Column(name = "from_hub_id", nullable = false)
-	private UUID fromHub;
+	private UUID fromHubId;
 
 	@Column(name = "to_hub_id", nullable = false)
-	private UUID toHub;
+	private UUID toHubId;
 
-	@Column(name = "distance", precision = 10, scale = 2, nullable = false)
-	private BigDecimal distance;
+	@Column(name = "total_distance", nullable = false)
+	private Double totalDistance;
 
-	@Column(name = "duration", nullable = false)
-	private Long duration;
+	@Column(name = "total_duration", nullable = false)
+	private Integer totalDuration;
+
+	@OneToMany(mappedBy = "hubRoute", cascade = CascadeType.ALL, orphanRemoval = true)
+	@OrderBy("sequence ASC")
+	@Builder.Default
+	private List<HubRouteSegment> segments = new ArrayList<>();
 
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
@@ -56,4 +65,43 @@ public class HubRoute {
 
 	@Column(name = "deleted_by")
 	private Long deletedBy;
+
+	public static HubRoute create(
+			UUID fromHubId,
+			UUID toHubId,
+			Double totalDistance,
+			Integer totalDuration,
+			List<HubRouteSegment> segments,
+			Long createdBy) {
+
+		HubRoute hubRoute =
+				HubRoute.builder()
+						.fromHubId(fromHubId)
+						.toHubId(toHubId)
+						.totalDistance(totalDistance)
+						.totalDuration(totalDuration)
+						.createdAt(LocalDateTime.now())
+						.createdBy(createdBy)
+						.build();
+
+		for (HubRouteSegment segment : segments) {
+			hubRoute.addSegment(segment);
+		}
+
+		return hubRoute;
+	}
+
+	public void addSegment(HubRouteSegment segment) {
+		this.segments.add(segment);
+		segment.setHubRoute(this);
+	}
+
+	public void softDelete(Long deletedBy) {
+		this.deletedAt = LocalDateTime.now();
+		this.deletedBy = deletedBy;
+	}
+
+	public boolean isDeleted() {
+		return deletedAt != null;
+	}
 }

@@ -17,6 +17,13 @@ spring:
 server:
   port: 0
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  default-server-url: http://localhost:8080
+
 eureka:
   client:
     service-url:
