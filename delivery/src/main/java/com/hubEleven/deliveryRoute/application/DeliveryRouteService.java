@@ -3,14 +3,15 @@ package com.hubEleven.deliveryRoute.application;
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.delivery.domain.Delivery;
 import com.hubEleven.delivery.domain.DeliveryErrorCode;
-import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
+import com.hubEleven.delivery.infrastructure.dto.HubRouteSegmentResponseDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.domain.DeliveryRoute;
 import com.hubEleven.deliveryRoute.domain.DeliveryRouteRepository;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -20,7 +21,7 @@ public class DeliveryRouteService {
 	// 배달 경로 생성
 	@Transactional
 	public DeliveryRoute creatRoute(
-			HubRouteFeignResponseDto hubRoute, int seq, Long deliveryManagerId) {
+            HubRouteSegmentResponseDto hubRoute, int seq, Long deliveryManagerId) {
 
 		return DeliveryRoute.create(hubRoute, seq, deliveryManagerId);
 	}

@@ -1,7 +1,9 @@
 package com.hubEleven.delivery.infrastructure.service;
 
 import com.commonLib.common.exception.GlobalException;
+import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.domain.DeliveryErrorCode;
+import com.hubEleven.delivery.domain.Role;
 import com.hubEleven.delivery.infrastructure.client.UserFeignClient;
 import com.hubEleven.delivery.infrastructure.dto.UserFeignResponseDto;
 import feign.FeignException;
@@ -14,9 +16,9 @@ import org.springframework.stereotype.Service;
 public class UserFeignService {
 	private final UserFeignClient userFeignClient;
 
-	public UserFeignResponseDto getUserInfo(UUID companyId) {
+	public ApiResponse<UserFeignResponseDto> getUserInfo(UUID companyId, Role role) {
 		try {
-			return userFeignClient.getUser(companyId, "companyManager");
+			return userFeignClient.getUser(companyId, role);
 		} catch (FeignException.NotFound e) {
 			// 유저 정보 없음
 			throw new GlobalException(DeliveryErrorCode.USER_NOT_FOUND);

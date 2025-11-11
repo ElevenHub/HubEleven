@@ -24,7 +24,7 @@ public class Delivery extends BaseEntity {
 	@Column(name = "order_id", nullable = false, columnDefinition = "BINARY(16)")
 	private UUID orderId;
 
-    @Enumerated(EnumType.STRING)
+	@Enumerated(EnumType.STRING)
 	@Column(name = "status", nullable = false)
 	private DeliveryStatus status;
 

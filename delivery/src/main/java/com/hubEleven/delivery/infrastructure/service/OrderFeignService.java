@@ -1,6 +1,7 @@
 package com.hubEleven.delivery.infrastructure.service;
 
 import com.commonLib.common.exception.GlobalException;
+import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.domain.DeliveryErrorCode;
 import com.hubEleven.delivery.infrastructure.client.OrderFeignClient;
 import com.hubEleven.delivery.infrastructure.dto.OrderFeignResponseDto;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class OrderFeignService {
 	private final OrderFeignClient orderFeignClient;
 
-	public OrderFeignResponseDto getOrderInfo(UUID orderId) {
+	public ApiResponse<OrderFeignResponseDto> getOrderInfo(UUID orderId) {
 		try {
 			return orderFeignClient.getOrder(orderId);
 		} catch (FeignException.NotFound e) {

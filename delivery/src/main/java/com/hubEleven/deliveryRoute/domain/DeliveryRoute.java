@@ -4,10 +4,11 @@ import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
 import com.hubEleven.delivery.domain.Delivery;
 import com.hubEleven.delivery.domain.DeliveryStatus;
-import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
+import com.hubEleven.delivery.infrastructure.dto.HubRouteSegmentResponseDto;
 import jakarta.persistence.*;
-import java.util.UUID;
 import lombok.*;
+
+import java.util.UUID;
 
 @Entity
 @Setter
@@ -56,16 +57,16 @@ public class DeliveryRoute extends BaseEntity {
 
 	// 배송 경로 생성
 	public static DeliveryRoute create(
-			HubRouteFeignResponseDto hubRouteFeignResponseDto, int seq, Long deliveryManagerId) {
+            HubRouteSegmentResponseDto hubRouteSegmentResponseDto, int seq, Long deliveryManagerId) {
 		DeliveryRoute deliveryRoute = new DeliveryRoute();
 		deliveryRoute.id = UUID.randomUUID();
 		deliveryRoute.seq = seq;
-		deliveryRoute.fromHubId = hubRouteFeignResponseDto.fromHubId();
-		deliveryRoute.toHubId = hubRouteFeignResponseDto.toHubId();
+		deliveryRoute.fromHubId = hubRouteSegmentResponseDto.fromHubId();
+		deliveryRoute.toHubId = hubRouteSegmentResponseDto.toHubId();
 		deliveryRoute.deliveryManagerId = deliveryManagerId;
 		deliveryRoute.status = DeliveryStatus.HUB_WAITHING;
-		deliveryRoute.expectedDistance = hubRouteFeignResponseDto.distance();
-		deliveryRoute.expectedDuration = hubRouteFeignResponseDto.duration();
+		deliveryRoute.expectedDistance = hubRouteSegmentResponseDto.distance();
+		deliveryRoute.expectedDuration = hubRouteSegmentResponseDto.duration();
 		return deliveryRoute;
 	}
 

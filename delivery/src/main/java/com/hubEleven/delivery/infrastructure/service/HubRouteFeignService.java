@@ -1,6 +1,8 @@
 package com.hubEleven.delivery.infrastructure.service;
 
+
 import com.commonLib.common.exception.GlobalException;
+import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.domain.DeliveryErrorCode;
 import com.hubEleven.delivery.infrastructure.client.HubRouteFeignClient;
 import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
@@ -15,7 +17,7 @@ import org.springframework.stereotype.Service;
 public class HubRouteFeignService {
 	private HubRouteFeignClient hubRouteFeignClient;
 
-	public List<HubRouteFeignResponseDto> getRoute(UUID fromHubId, UUID toHubId) {
+	public ApiResponse<HubRouteFeignResponseDto> getRoute(UUID fromHubId, UUID toHubId) {
 		try {
 			return hubRouteFeignClient.getRoute(fromHubId, toHubId);
 		} catch (FeignException.NotFound e) {
