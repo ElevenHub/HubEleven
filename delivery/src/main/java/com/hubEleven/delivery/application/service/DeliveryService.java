@@ -188,12 +188,10 @@ public class DeliveryService {
 
 	// 배송 삭제
 	@Transactional
-	public void deleteDelivery(UUID deliveryId) {
+	public void deleteDelivery(UUID deliveryId, Long userId) {
 		Delivery delivery = delivery(deliveryId);
 
-		// todo userId JWT에서 받아오는 방식으로 변경 예정
 		// 1. 배송 정보 삭제 (논리삭제)
-		Long userId = 1234567890L;
 		delivery.delete(userId);
 
 		// 2. 배송 경로 삭제 (논리삭제)
