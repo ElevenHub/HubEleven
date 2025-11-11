@@ -34,7 +34,7 @@ public class ProductController {
 
 	private final ProductService productService;
 
-    @Operation(summary = "상품 생성 API", description = "새로운 상품을 생성한다.")
+	@Operation(summary = "상품 생성 API", description = "새로운 상품을 생성한다.")
 	@PostMapping
 	public ResponseEntity<ApiResponse<ProductResponse>> create(
 			@Valid @RequestBody ProductRequests.Create request) {
@@ -44,7 +44,7 @@ public class ProductController {
 		return ApiResponseEntity.success(ProductResponse.from(result));
 	}
 
-    @Operation(summary = "상품 전체  조회 API", description = "상품 전체 목록을 조회한다.")
+	@Operation(summary = "상품 전체  조회 API", description = "상품 전체 목록을 조회한다.")
 	@GetMapping
 	public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> getProducts(
 			CommonPageRequest request) {
@@ -62,7 +62,7 @@ public class ProductController {
 		return ApiResponseEntity.success(response);
 	}
 
-    @Operation(summary = "상품 단건 조회 API", description = "상품 ID로 상품을 조회한다.")
+	@Operation(summary = "상품 단건 조회 API", description = "상품 ID로 상품을 조회한다.")
 	@GetMapping("/{productId}")
 	public ResponseEntity<ApiResponse<ProductResponse>> getProductDetail(
 			@PathVariable UUID productId) {
@@ -72,7 +72,7 @@ public class ProductController {
 		return ApiResponseEntity.success(ProductResponse.from(result));
 	}
 
-    @Operation(summary = "상품 수정 API", description = "상품 정보를 수정한다.")
+	@Operation(summary = "상품 수정 API", description = "상품 정보를 수정한다.")
 	@PatchMapping("/{productId}")
 	public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
 			@PathVariable UUID productId, @Valid @RequestBody ProductRequests.Update request) {
@@ -82,7 +82,7 @@ public class ProductController {
 		return ApiResponseEntity.success(ProductResponse.from(result));
 	}
 
-    @Operation(summary = "상품 삭제 API", description = "상품을 삭제한다.")
+	@Operation(summary = "상품 삭제 API", description = "상품을 삭제한다.")
 	@DeleteMapping("/{productId}")
 	public ResponseEntity<ApiResponse<Void>> deleteProduct(
 			@PathVariable UUID productId, Long userId) {
@@ -92,7 +92,7 @@ public class ProductController {
 		return ApiResponseEntity.success(null);
 	}
 
-    @Operation(summary = "상품 검색 API", description = "키워드 기반으로 상품을 검색한다.")
+	@Operation(summary = "상품 검색 API", description = "키워드 기반으로 상품을 검색한다.")
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> searchProducts(
 			CommonPageRequest request) {

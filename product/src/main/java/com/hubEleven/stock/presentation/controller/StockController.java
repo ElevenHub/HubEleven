@@ -29,7 +29,7 @@ public class StockController {
 
 	private final StockService stockService;
 
-    @Operation(summary = "재고 생성 API", description = "새로운 재고를 생성한다.")
+	@Operation(summary = "재고 생성 API", description = "새로운 재고를 생성한다.")
 	@PostMapping
 	public ResponseEntity<ApiResponse<StockResponse>> create(
 			@Valid @RequestBody StockRequests.Create request) {
@@ -39,7 +39,7 @@ public class StockController {
 		return ApiResponseEntity.success(StockResponse.from(result));
 	}
 
-    @Operation(summary = "재고 단건 조회 API", description = "상품 ID로 재고 상세 정보를 조회한다.")
+	@Operation(summary = "재고 단건 조회 API", description = "상품 ID로 재고 상세 정보를 조회한다.")
 	@GetMapping("/{productId}")
 	public ResponseEntity<ApiResponse<StockResponse>> getStock(@PathVariable UUID productId) {
 
@@ -48,7 +48,7 @@ public class StockController {
 		return ApiResponseEntity.success(StockResponse.from(result));
 	}
 
-    @Operation(summary = "재고 감소 API", description = "상품 주문시 재고가 감소한다.")
+	@Operation(summary = "재고 감소 API", description = "상품 주문시 재고가 감소한다.")
 	@PutMapping
 	public ResponseEntity<ApiResponse<StockResponse>> decreaseStock(
 			@Valid @RequestBody StockRequests.Decrease request) {
@@ -59,7 +59,7 @@ public class StockController {
 		return ApiResponseEntity.success(StockResponse.from(result));
 	}
 
-    @Operation(summary = "재고 복원 API", description = "상품 취소시 재고가 복원된다.")
+	@Operation(summary = "재고 복원 API", description = "상품 취소시 재고가 복원된다.")
 	@PutMapping("/restore")
 	public ResponseEntity<ApiResponse<StockResponse>> restoreStock(
 			@Valid @RequestBody StockRequests.Restore request) {

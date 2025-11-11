@@ -14,5 +14,4 @@ public interface ProductRepository {
 	Page<Product> searchProducts(String keyword, Pageable pageable);
 
 	Optional<Product> findById(UUID productId);
-
 }

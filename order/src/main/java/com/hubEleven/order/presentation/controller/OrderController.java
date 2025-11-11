@@ -34,7 +34,7 @@ public class OrderController {
 
 	private final OrderService orderService;
 
-    @Operation(summary = "주문 생성 API", description = "새로운 주문을 생성한다.")
+	@Operation(summary = "주문 생성 API", description = "새로운 주문을 생성한다.")
 	@PostMapping
 	public ResponseEntity<ApiResponse<OrderResponse>> create(
 			@Valid @RequestBody OrderRequests.Create request) {
@@ -44,7 +44,7 @@ public class OrderController {
 		return ApiResponseEntity.success(OrderResponse.from(result));
 	}
 
-    @Operation(summary = "주문 전체  조회 API", description = "주문 전체 목록을 조회한다.")
+	@Operation(summary = "주문 전체  조회 API", description = "주문 전체 목록을 조회한다.")
 	@GetMapping
 	public ResponseEntity<ApiResponse<CommonPageResponse<OrderResponse>>> getOrders(
 			CommonPageRequest request) {
@@ -58,7 +58,7 @@ public class OrderController {
 		return ApiResponseEntity.success(response);
 	}
 
-    @Operation(summary = "주문 단건 조회 API", description = "주문 ID로 상품을 조회한다.")
+	@Operation(summary = "주문 단건 조회 API", description = "주문 ID로 상품을 조회한다.")
 	@GetMapping("/{orderId}")
 	public ResponseEntity<ApiResponse<OrderResponse>> getOrderDetail(@PathVariable UUID orderId) {
 
@@ -67,7 +67,7 @@ public class OrderController {
 		return ApiResponseEntity.success(OrderResponse.from(result));
 	}
 
-    @Operation(summary = "주문 수정 API", description = "주문 정보를 수정한다.")
+	@Operation(summary = "주문 수정 API", description = "주문 정보를 수정한다.")
 	@PatchMapping("/{orderId}")
 	public ResponseEntity<ApiResponse<OrderResponse>> updateOrder(
 			@PathVariable UUID orderId, @Valid @RequestBody OrderRequests.Update request) {
@@ -77,7 +77,7 @@ public class OrderController {
 		return ApiResponseEntity.success(OrderResponse.from(result));
 	}
 
-    @Operation(summary = "주문 삭제 API", description = "주문을 삭제한다.")
+	@Operation(summary = "주문 삭제 API", description = "주문을 삭제한다.")
 	@DeleteMapping("/{orderId}")
 	public ResponseEntity<ApiResponse<Void>> deleteOrder(@PathVariable UUID orderId, Long userId) {
 
@@ -86,7 +86,7 @@ public class OrderController {
 		return ApiResponseEntity.success(null);
 	}
 
-    @Operation(summary = "주문 검색 API", description = "키워드 기반으로 주문을 검색한다.")
+	@Operation(summary = "주문 검색 API", description = "키워드 기반으로 주문을 검색한다.")
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<CommonPageResponse<OrderResponse>>> searchOrders(
 			CommonPageRequest request) {
@@ -98,7 +98,7 @@ public class OrderController {
 		return ApiResponseEntity.success(response);
 	}
 
-    @Operation(summary = "주문 취소 API", description = "주문을 취소한다.")
+	@Operation(summary = "주문 취소 API", description = "주문을 취소한다.")
 	@PostMapping("/{orderId}/cancel")
 	public ResponseEntity<ApiResponse<Void>> cancelOrder(@PathVariable UUID orderId, Long userId) {
 
