@@ -1,5 +1,7 @@
 package com.hubEleven.user.infrastructure.security;
 
+import static com.hubEleven.user.domain.exception.ErrorCode.FORBIDDEN_USER;
+
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.user.domain.model.User;
 import com.hubEleven.user.domain.repository.UserRepository;
@@ -8,8 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-
-import static com.hubEleven.user.domain.exception.ErrorCode.FORBIDDEN_USER;
 
 @Service
 @RequiredArgsConstructor

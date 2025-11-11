@@ -1,6 +1,5 @@
 package com.hubEleven.user.domain.model;
 
-import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
 import com.hubEleven.user.domain.vo.Role;
 import com.hubEleven.user.domain.vo.SignStatus;
@@ -12,7 +11,6 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@SoftDeletable
 @Table(name = "p_user")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class User extends BaseEntity {
@@ -65,5 +63,18 @@ public class User extends BaseEntity {
 		user.companyId = companyId;
 
 		return user;
+	}
+
+	public void updateStatus(SignStatus newStatus) {
+		this.status = newStatus;
+	}
+
+	public void updateInfo(
+			String name, String slackId, String phoneNumber, Role role, UUID companyId) {
+		this.name = name;
+		this.slackId = slackId;
+		this.phoneNumber = phoneNumber;
+		this.role = role;
+		this.companyId = companyId;
 	}
 }

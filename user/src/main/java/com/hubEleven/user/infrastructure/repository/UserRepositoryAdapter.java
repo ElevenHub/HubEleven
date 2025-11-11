@@ -2,9 +2,10 @@ package com.hubEleven.user.infrastructure.repository;
 
 import com.hubEleven.user.domain.model.User;
 import com.hubEleven.user.domain.repository.UserRepository;
-import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -19,11 +20,6 @@ public class UserRepositoryAdapter implements UserRepository {
 	}
 
 	@Override
-	public List<User> findAllByUsername(String username) {
-		return jpaUserRepository.findAllByUsername(username);
-	}
-
-	@Override
 	public Optional<User> findByUsername(String username) {
 		return jpaUserRepository.findByUsername(username);
 	}
@@ -34,12 +30,12 @@ public class UserRepositoryAdapter implements UserRepository {
 	}
 
 	@Override
-	public Optional<User> findById(Long id) {
-		return jpaUserRepository.findById(id);
+	public Optional<User> findByIdAndNotDeleted(Long id) {
+		return jpaUserRepository.findByIdAndDeletedAtIsNull(id);
 	}
 
 	@Override
-	public void delete(User user) {
-		jpaUserRepository.delete(user);
+	public Page<User> searchUsers(String keyword, Pageable pageable) {
+		return jpaUserRepository.searchByKeyword(keyword, pageable);
 	}
 }

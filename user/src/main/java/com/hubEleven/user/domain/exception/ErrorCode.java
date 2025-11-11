@@ -13,7 +13,9 @@ public enum ErrorCode implements StatusCode {
 	DUPLICATED_USERNAME(HttpStatus.BAD_REQUEST, "이미 사용하고 있는 아이디입니다."),
 	FORBIDDEN_USER(HttpStatus.BAD_REQUEST, "해당 유저를 찾을 수 없습니다."),
 	FAILED_LOGIN(HttpStatus.BAD_REQUEST, "로그인에 실패했습니다."),
-	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "해당 유저가 존재하지 않습니다.");
+	NOT_FOUND_USER(HttpStatus.NOT_FOUND, "해당 유저가 존재하지 않습니다."),
+	NOT_APPROVED_USER(HttpStatus.FORBIDDEN, "승인되지 않은 사용자입니다."),
+	UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "본인의 정보만 조회할 수 있습니다.");
 
 	private final HttpStatus code;
 	private final String description;
