@@ -20,3 +20,6 @@ spring:
   sql:
     init:
       mode: always
+
+server:
+  port: 0
