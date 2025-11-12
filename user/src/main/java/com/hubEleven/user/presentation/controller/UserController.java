@@ -77,7 +77,7 @@ public class UserController {
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
+	@PreAuthorize("hasAnyAuthority('ROLE_MASTER', 'ROLE_HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> getAllUsers(
 			@Valid CommonPageRequest pageRequest) {
 
@@ -118,7 +118,7 @@ public class UserController {
 	}
 
 	@PatchMapping("/{id}/status")
-	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
+	@PreAuthorize("hasAnyAuthority('ROLE_MASTER', 'ROLE_HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<Void>> updateUserStatus(
 			@PathVariable("id") Long id, @Valid @RequestBody UserStatusUpdateRequest request) {
 		UserStatusUpdateCommand command = new UserStatusUpdateCommand(id, request.status());
@@ -128,7 +128,7 @@ public class UserController {
 	}
 
 	@GetMapping("/search")
-	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
+	@PreAuthorize("hasAnyAuthority('ROLE_MASTER', 'ROLE_HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> searchUsers(
 			@Valid CommonPageRequest pageRequest) {
 		CommonPageResponse<UserInfo> result = userService.searchUsers(pageRequest);
@@ -147,7 +147,7 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('MASTER')")
+	@PreAuthorize("hasAuthority('ROLE_MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> updateUser(
 			@PathVariable("id") Long id, @Valid @RequestBody UserUpdateRequest request) {
 		UserUpdateCommand command =
@@ -165,7 +165,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAuthority('MASTER')")
+	@PreAuthorize("hasAuthority('ROLE_MASTER')")
 	public ResponseEntity<ApiResponse<Void>> deleteUser(
 			@PathVariable("id") Long id, @RequestHeader("X-User-Id") Long requestUserId) {
 		userService.deleteUser(id, requestUserId);
