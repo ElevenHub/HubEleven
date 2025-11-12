@@ -1,6 +1,5 @@
 package com.hubEleven.product.domain.model;
 
-import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,7 +17,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "p_product")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SoftDeletable // soft delete 커스텀 어노테이션
 public class Product extends BaseEntity {
 
 	@Id

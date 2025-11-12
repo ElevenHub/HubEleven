@@ -26,7 +26,7 @@ public class OrderRepositoryAdapter implements OrderRepository {
 	}
 
 	@Override
-	public Optional<Order> findById(UUID orderId) {
-		return jpaOrderRepository.findById(orderId);
+	public Optional<Order> findByIdNotDeleted(UUID orderId) {
+		return jpaOrderRepository.findByIdNotDeleted(orderId);
 	}
 }

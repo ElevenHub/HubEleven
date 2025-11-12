@@ -37,7 +37,7 @@ public class OrderServiceImpl implements OrderService {
 	// 주문 존재 여부 확인 메서드
 	private Order validateOrderExists(UUID orderId) {
 		return orderRepository
-				.findById(orderId)
+				.findByIdNotDeleted(orderId)
 				.orElseThrow(() -> new GlobalException(ORDER_NOT_FOUND));
 	}
 
