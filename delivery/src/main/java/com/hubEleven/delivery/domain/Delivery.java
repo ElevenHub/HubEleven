@@ -1,6 +1,5 @@
 package com.hubEleven.delivery.domain;
 
-import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
 import com.hubEleven.deliveryRoute.domain.DeliveryRoute;
 import jakarta.persistence.*;

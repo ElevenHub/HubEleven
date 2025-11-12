@@ -4,11 +4,10 @@ import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.infrastructure.config.FeignClientConfig;
 import com.hubEleven.delivery.infrastructure.dto.DeliveryManagerFeignResponseDto;
 import com.hubEleven.deliveryManager.domain.DeliveryType;
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-
-import java.util.UUID;
 
 @FeignClient(
 		name = "delivery-service",

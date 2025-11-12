@@ -6,9 +6,8 @@ import com.hubEleven.delivery.domain.Delivery;
 import com.hubEleven.delivery.domain.DeliveryStatus;
 import com.hubEleven.delivery.infrastructure.dto.HubRouteSegmentResponseDto;
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.util.UUID;
+import lombok.*;
 
 @Entity
 @Setter
@@ -57,7 +56,7 @@ public class DeliveryRoute extends BaseEntity {
 
 	// 배송 경로 생성
 	public static DeliveryRoute create(
-            HubRouteSegmentResponseDto hubRouteSegmentResponseDto, int seq, Long deliveryManagerId) {
+			HubRouteSegmentResponseDto hubRouteSegmentResponseDto, int seq, Long deliveryManagerId) {
 		DeliveryRoute deliveryRoute = new DeliveryRoute();
 		deliveryRoute.id = UUID.randomUUID();
 		deliveryRoute.seq = seq;

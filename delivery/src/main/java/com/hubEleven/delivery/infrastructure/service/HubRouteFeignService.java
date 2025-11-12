@@ -1,13 +1,11 @@
 package com.hubEleven.delivery.infrastructure.service;
 
-
 import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.domain.DeliveryErrorCode;
 import com.hubEleven.delivery.infrastructure.client.HubRouteFeignClient;
 import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
 import feign.FeignException;
-import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;

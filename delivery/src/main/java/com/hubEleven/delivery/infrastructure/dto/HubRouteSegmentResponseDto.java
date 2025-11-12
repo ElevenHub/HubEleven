@@ -8,6 +8,4 @@ public record HubRouteSegmentResponseDto(
 		UUID toHubId,
 		Integer sequence,
 		Double distance,
-		Integer duration) {
-
-}
+		Integer duration) {}

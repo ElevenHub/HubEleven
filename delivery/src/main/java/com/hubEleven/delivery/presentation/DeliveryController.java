@@ -13,13 +13,12 @@ import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @Tag(name = "배송", description = "배송 API")
 @RestController
@@ -87,7 +86,7 @@ public class DeliveryController {
 
 	// 배송 생성
 	@Operation(summary = "배송 생성", description = "배송 내역과 경로를 생성합니다.")
-    @PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
+	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
 	@PostMapping
 	public ResponseEntity<ApiResponse<DeliveryResponseDto>> createDelivery(
 			@RequestBody DeliveryRequestDto deliveryRequestDto) {
@@ -98,7 +97,7 @@ public class DeliveryController {
 
 	// 배송 수정
 	@Operation(summary = "배송 수정", description = "배송 내역을 수정합니다.")
-    @PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER', 'DELIVERY_MANAGER')")
+	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER', 'DELIVERY_MANAGER')")
 	@PatchMapping("/{deliveryId}")
 	public ResponseEntity<ApiResponse<DeliveryResponseDto>> updateDelivery(
 			@PathVariable UUID deliveryId, @RequestBody DeliveryRequestDto deliveryRequestDto) {
@@ -109,21 +108,19 @@ public class DeliveryController {
 	// 배송 삭제
 	@DeleteMapping("/{deliveryId}")
 	@Operation(summary = "배송 삭제", description = "배송 내역을 삭제합니다.")
-    @PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
-	public ResponseEntity<ApiResponse<Object>> deleteDelivery(@PathVariable UUID deliveryId,
-                                                              @RequestHeader Long userId
-    ) {
-        deliveryService.deleteDelivery(deliveryId, userId);
+	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
+	public ResponseEntity<ApiResponse<Object>> deleteDelivery(
+			@PathVariable UUID deliveryId, @RequestHeader Long userId) {
+		deliveryService.deleteDelivery(deliveryId, userId);
 		return ApiResponseEntity.create(SuccessCode.DELETED, "/delivery/" + deliveryId, null);
 	}
 
 	// 배송 경로 수정
 	@PatchMapping("/{deliveryId}/route")
 	@Operation(summary = "배송 경로 수정", description = "배송 경로를 수정합니다.")
-    @PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER', 'DELIVERY_MANAGER')")
+	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER', 'DELIVERY_MANAGER')")
 	public ResponseEntity<ApiResponse<DeliveryRouteResponseDto>> updateDelivery(
-            @PathVariable UUID deliveryId, @RequestBody DeliveryRouteRequestDto deliveryRouteRequestDto
-    ) {
+			@PathVariable UUID deliveryId, @RequestBody DeliveryRouteRequestDto deliveryRouteRequestDto) {
 		DeliveryRouteResponseDto result =
 				deliveryService.updateDeliveryRoute(deliveryId, deliveryRouteRequestDto);
 		return ApiResponseEntity.create(SuccessCode.UPDATED, "/delivery/{deliveryId}/route", result);
