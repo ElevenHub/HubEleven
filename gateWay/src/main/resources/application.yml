@@ -49,6 +49,11 @@ spring:
               predicates:
                 - Path=/v1/products/**
 
+            - id: stock-service
+              uri: lb://stock-service
+              predicates:
+                - Path=/v1/stocks/**
+
             - id: product-service-openapi
               uri: lb://product-service
               predicates:
