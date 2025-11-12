@@ -100,7 +100,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
 			@PathVariable("id") Long id,
 			@RequestHeader("X-User-Id") Long requestUserId,
-			@RequestHeader("X-Role") Role requestUserRole) {
+			@RequestHeader("X-User-Role") Role requestUserRole) {
 		var userInfo = userService.findUserById(id, requestUserId, requestUserRole);
 
 		UserInfoResponse response =

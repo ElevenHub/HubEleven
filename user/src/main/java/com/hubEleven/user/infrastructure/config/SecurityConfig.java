@@ -1,5 +1,6 @@
 package com.hubEleven.user.infrastructure.config;
 
+import com.hubEleven.user.infrastructure.security.jwt.CustomJwtAuthenticationConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -14,7 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -73,7 +73,7 @@ public class SecurityConfig {
 	@Bean
 	@Order(2)
 	SecurityFilterChain protectedSecurityFilterChain(
-			HttpSecurity http, JwtAuthenticationConverter jwtAuthConverter, JwtDecoder jwtDecoder)
+			HttpSecurity http, CustomJwtAuthenticationConverter jwtAuthConverter, JwtDecoder jwtDecoder)
 			throws Exception {
 		return http.headers(h -> h.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 				.cors(cors -> cors.configure(http))
