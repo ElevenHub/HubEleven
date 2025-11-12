@@ -9,11 +9,12 @@ import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Setter
 @Getter
-@SoftDeletable
+@Where(clause = "deleted_at is null")
 @Table(name = "p_delivery")
 public class Delivery extends BaseEntity {
 	@Id

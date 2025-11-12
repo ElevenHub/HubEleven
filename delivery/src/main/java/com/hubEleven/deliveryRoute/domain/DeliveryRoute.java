@@ -47,13 +47,13 @@ public class DeliveryRoute extends BaseEntity {
 	private Double expectedDistance;
 
 	@Column(name = "expected_duration", nullable = false)
-	private Long expectedDuration;
+	private Integer expectedDuration;
 
 	@Column(name = "actual_distance")
 	private Double actualDistance;
 
 	@Column(name = "actual_duration")
-	private Long actualDuration;
+	private Integer actualDuration;
 
 	// 배송 경로 생성
 	public static DeliveryRoute create(
@@ -77,9 +77,9 @@ public class DeliveryRoute extends BaseEntity {
 			Long deliveryManagerId,
 			DeliveryStatus status,
 			Double expectedDistance,
-			Long expectedDuration,
+			Integer expectedDuration,
 			Double actualDistance,
-			Long actualDuration) {
+			Integer actualDuration) {
 		if (seq != null) this.seq = seq;
 		if (toHubId != null) this.toHubId = toHubId;
 		if (deliveryManagerId != null) this.deliveryManagerId = deliveryManagerId;

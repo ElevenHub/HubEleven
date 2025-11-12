@@ -9,6 +9,6 @@ public record DeliveryRouteRequestDto(
 		Long deliveryManagerId,
 		DeliveryStatus status,
 		Double expectedDistance,
-		Long expectedDuration,
+		Integer expectedDuration,
 		Double actualDistance,
-		Long actualDuration) {}
+		Integer actualDuration) {}

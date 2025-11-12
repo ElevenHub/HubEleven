@@ -13,9 +13,9 @@ public record DeliveryRouteResponseDto(
 		Long deliveryManagerId,
 		DeliveryStatus status,
 		Double expectedDistance,
-		Long expectedDuration,
+		Integer expectedDuration,
 		Double actualDistance,
-		Long actualDuration) {
+		Integer actualDuration) {
 	public static DeliveryRouteResponseDto from(DeliveryRoute deliveryRoute) {
 		return new DeliveryRouteResponseDto(
 				deliveryRoute.getId(),

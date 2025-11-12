@@ -11,16 +11,15 @@ import com.hubEleven.delivery.application.service.DeliveryService;
 import com.hubEleven.delivery.domain.DeliveryStatus;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteResponseDto;
-import com.hubEleven.user.infrastructure.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @Tag(name = "배송", description = "배송 API")
 @RestController
@@ -112,8 +111,8 @@ public class DeliveryController {
 	@Operation(summary = "배송 삭제", description = "배송 내역을 삭제합니다.")
     @PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<Object>> deleteDelivery(@PathVariable UUID deliveryId,
-                                                              @AuthenticationPrincipal CustomUserDetails userDetails) {
-		Long userId = userDetails.getUserId();
+                                                              @RequestHeader Long userId
+    ) {
         deliveryService.deleteDelivery(deliveryId, userId);
 		return ApiResponseEntity.create(SuccessCode.DELETED, "/delivery/" + deliveryId, null);
 	}
