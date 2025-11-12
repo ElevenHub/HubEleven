@@ -45,7 +45,16 @@ dependencies {
     //OpenFeign
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
-    implementation project(':common')
+
+    // zipkin
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'io.micrometer:micrometer-tracing-bridge-brave'
+    implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
+    implementation 'io.github.openfeign:feign-micrometer'
+    implementation 'com.github.Doritosch:commonLib:1.0.5'
+
+    //스웨거
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
 }
 
 dependencyManagement {

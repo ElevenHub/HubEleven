@@ -5,6 +5,9 @@ import com.hubEleven.deliveryManager.domain.DeliveryManagerRepository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -32,6 +35,27 @@ public class DeliveryManagerRepositoryImpl implements DeliveryManagerRepository 
 	}
 
 	@Override
+	public Page<DeliveryManager> findAll(Pageable pageable) {
+		return deliveryManagerJpaRepository.findAll(pageable);
+	}
+
+	// ✅ Specification 기반 조회 위임
+	@Override
+	public Page<DeliveryManager> findAll(Specification<DeliveryManager> spec, Pageable pageable) {
+		return deliveryManagerJpaRepository.findAll(spec, pageable);
+	}
+
+	@Override
+	public Page<DeliveryManager> findAllByHubId(UUID hubId, Pageable pageable) {
+		return deliveryManagerJpaRepository.findAllByHubId(hubId, pageable);
+	}
+
+	@Override
+	public Optional<DeliveryManager> findByDeliveryManagerIdAndDeletedAtIsNotNull(Long id) {
+		return deliveryManagerJpaRepository.findByDeliveryManagerIdAndDeletedAtIsNotNull(id);
+	}
+
+	@Override
 	public Integer findMaxDeliveryOrderByHubId(UUID hubId) {
 		return deliveryManagerJpaRepository.findMaxDeliveryOrderByHubId(hubId);
 	}
@@ -48,5 +72,20 @@ public class DeliveryManagerRepositoryImpl implements DeliveryManagerRepository 
 			UUID hubId) {
 		return deliveryManagerJpaRepository.findFirstByHubIdOrderByLastDeliveryTimeAscDeliveryOrderAsc(
 				hubId);
+	}
+
+	@Override
+	public boolean existsByHubIdAndDeliveryManagerId(UUID hubId, Long managerId) {
+		return deliveryManagerJpaRepository.existsByHubIdAndDeliveryManagerId(hubId, managerId);
+	}
+
+	@Override
+	public Integer findLastDeliveryOrderByHubIdForUpdate(UUID hubId) {
+		return deliveryManagerJpaRepository.findLastDeliveryOrderByHubIdForUpdate(hubId);
+	}
+
+	@Override
+	public Integer findLastDeliveryOrderForNullHubForUpdate() {
+		return deliveryManagerJpaRepository.findLastDeliveryOrderByHubIdForUpdate(null);
 	}
 }

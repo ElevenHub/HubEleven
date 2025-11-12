@@ -1,3 +1,6 @@
+server:
+  port: 0
+
 spring:
   application:
     name: user-service
@@ -20,3 +23,11 @@ spring:
   sql:
     init:
       mode: always
+
+management:
+  zipkin:
+    tracing:
+      endpoint: "http://localhost:9411/api/v2/spans"
+  tracing:
+    sampling:
+      probability: 1.0

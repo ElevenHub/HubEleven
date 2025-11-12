@@ -9,9 +9,6 @@ spring:
         enabled: true
         service-id: config
 
-server:
-  port: 0
-
 springdoc:
   api-docs:
     path: /v3/api-docs
