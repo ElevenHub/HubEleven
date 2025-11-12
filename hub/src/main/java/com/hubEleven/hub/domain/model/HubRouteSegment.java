@@ -54,6 +54,18 @@ public class HubRouteSegment {
 	@Column(name = "created_by", nullable = false)
 	private Long createdBy;
 
+	@Column(name = "updated_at")
+	private LocalDateTime updatedAt;
+
+	@Column(name = "updated_by")
+	private Long updatedBy;
+
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
+
+	@Column(name = "deleted_by")
+	private Long deletedBy;
+
 	public static HubRouteSegment create(
 			UUID fromHubId,
 			UUID toHubId,
@@ -71,6 +83,11 @@ public class HubRouteSegment {
 				.createdAt(LocalDateTime.now())
 				.createdBy(createdBy)
 				.build();
+	}
+
+	public void softDelete(Long deletedBy) {
+		this.deletedAt = LocalDateTime.now();
+		this.deletedBy = deletedBy;
 	}
 
 	void setHubRoute(HubRoute hubRoute) {

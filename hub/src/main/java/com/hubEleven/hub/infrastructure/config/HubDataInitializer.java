@@ -1,6 +1,6 @@
 package com.hubEleven.hub.infrastructure.config;
 
-import com.hubEleven.hub.application.service.RouteService;
+import com.hubEleven.hub.application.service.HubRouteService;
 import com.hubEleven.hub.domain.model.Hub;
 import com.hubEleven.hub.domain.repository.HubRepository;
 import java.util.List;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 public class HubDataInitializer implements CommandLineRunner {
 
 	private final HubRepository hubRepository;
-	private final RouteService routeService;
+	private final HubRouteService hubRouteService;
 
 	@Override
 	public void run(String... args) {
@@ -33,7 +33,7 @@ public class HubDataInitializer implements CommandLineRunner {
 			log.info("초기 허브 데이터 생성 완료");
 
 			log.info("허브 경로 생성을 시작합니다.");
-			routeService.generateAllRoutes();
+			hubRouteService.generateAllRoutes();
 			log.info("허브 경로 생성 완료");
 
 		} catch (Exception e) {
@@ -90,7 +90,7 @@ public class HubDataInitializer implements CommandLineRunner {
 		for (HubData data : hubDataList) {
 			try {
 				Hub hub =
-						Hub.create(
+						Hub.createNoEvent(
 								data.name, data.address, data.latitude, data.longitude, data.regionCode, createdBy);
 
 				hubRepository.save(hub);

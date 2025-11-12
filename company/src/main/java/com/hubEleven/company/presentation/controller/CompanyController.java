@@ -1,9 +1,9 @@
 package com.hubEleven.company.presentation.controller;
 
-import com.hubEleven.common.request.CommonPageRequest;
-import com.hubEleven.common.response.ApiResponse;
-import com.hubEleven.common.response.ApiResponseEntity;
-import com.hubEleven.common.response.CommonPageResponse;
+import com.commonLib.common.request.CommonPageRequest;
+import com.commonLib.common.response.ApiResponse;
+import com.commonLib.common.response.ApiResponseEntity;
+import com.commonLib.common.response.CommonPageResponse;
 import com.hubEleven.company.application.dto.CompanyDTO;
 import com.hubEleven.company.application.service.CompanyAppService;
 import com.hubEleven.company.domain.model.CompanyStatus;
@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-// TODO @AuthenticationPrincipal 권한로직
 @Tag(name = "Company", description = "업체 API")
 @RestController
 @RequiredArgsConstructor
@@ -76,6 +75,7 @@ public class CompanyController {
 			@RequestParam(required = false) String name,
 			@RequestParam(required = false) CompanyType type,
 			@RequestParam(required = false) CompanyStatus status) {
+
 		var page =
 				companyAppService.searchCompany(
 						Optional.ofNullable(hubId),
@@ -106,10 +106,8 @@ public class CompanyController {
 
 	@Operation(summary = "업체 삭제 API", description = "업체를 삭제한다.")
 	@DeleteMapping("{companyId}")
-	public ResponseEntity<ApiResponse<Object>> deleteCompany(
-			@PathVariable("companyId") UUID companyId) {
-		companyAppService.deleteCompany(companyId, null);
-
+	public ResponseEntity<ApiResponse<Object>> deleteCompany(@PathVariable UUID companyId) {
+		companyAppService.deleteCompany(companyId);
 		return ApiResponseEntity.success(null);
 	}
 }

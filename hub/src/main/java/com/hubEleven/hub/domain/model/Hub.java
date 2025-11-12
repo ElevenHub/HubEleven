@@ -1,5 +1,8 @@
 package com.hubEleven.hub.domain.model;
 
+import com.hubEleven.hub.domain.event.HubCreatedEvent;
+import com.hubEleven.hub.domain.event.HubDeletedEvent;
+import com.hubEleven.hub.domain.event.HubLocationChangedEvent;
 import com.hubEleven.hub.domain.vo.Location;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -8,12 +11,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.domain.AfterDomainEventPublication;
+import org.springframework.data.domain.DomainEvents;
 
 @Getter
 @NoArgsConstructor
@@ -53,6 +62,9 @@ public class Hub {
 	@Column(name = "deleted_by")
 	private Long deletedBy;
 
+	@Transient @Builder.Default
+	private final List<Object> domainEvents = new ArrayList<>(); // 트랜잭션에서 발생하는 이벤트 추가할 리스트
+
 	public static Hub create(
 			String name,
 			String address,
@@ -60,13 +72,38 @@ public class Hub {
 			Double longitude,
 			String regionCode,
 			Long createdBy) {
-		return Hub.builder()
-				.name(name)
-				.location(Location.of(address, latitude, longitude))
-				.regionCode(regionCode)
-				.createdAt(LocalDateTime.now())
-				.createdBy(createdBy)
-				.build();
+
+		Hub hub =
+				Hub.builder()
+						.name(name)
+						.location(Location.of(address, latitude, longitude))
+						.regionCode(regionCode)
+						.createdAt(LocalDateTime.now())
+						.createdBy(createdBy)
+						.build();
+		hub.registerEvent(new HubCreatedEvent(hub.hubId));
+
+		return hub;
+	}
+
+	public static Hub createNoEvent(
+			String name,
+			String address,
+			Double latitude,
+			Double longitude,
+			String regionCode,
+			Long createdBy) {
+
+		Hub hub =
+				Hub.builder()
+						.name(name)
+						.location(Location.of(address, latitude, longitude))
+						.regionCode(regionCode)
+						.createdAt(LocalDateTime.now())
+						.createdBy(createdBy)
+						.build();
+
+		return hub;
 	}
 
 	public void update(
@@ -77,6 +114,8 @@ public class Hub {
 			String regionCode,
 			Long updatedBy) {
 
+		boolean locationChanged = false;
+
 		if (name != null) {
 			this.name = name;
 		}
@@ -86,7 +125,12 @@ public class Hub {
 			Double newLatitude = latitude != null ? latitude : this.location.getLatitude();
 			Double newLongitude = longitude != null ? longitude : this.location.getLongitude();
 
-			this.location = Location.of(newAddress, newLatitude, newLongitude);
+			Location newLocation = Location.of(newAddress, newLatitude, newLongitude);
+
+			if (!this.location.equals(newLocation)) {
+				this.location = newLocation;
+				locationChanged = true;
+			}
 		}
 
 		if (regionCode != null) {
@@ -95,14 +139,34 @@ public class Hub {
 
 		this.updatedAt = LocalDateTime.now();
 		this.updatedBy = updatedBy;
+
+		if (locationChanged) {
+			registerEvent(new HubLocationChangedEvent(this.hubId, this.location));
+		}
 	}
 
 	public void softDelete(Long deletedBy) {
 		this.deletedAt = LocalDateTime.now();
 		this.deletedBy = deletedBy;
+
+		registerEvent(new HubDeletedEvent(this.hubId));
 	}
 
 	public boolean isDeleted() {
 		return deletedAt != null;
+	}
+
+	protected void registerEvent(Object event) {
+		this.domainEvents.add(event);
+	}
+
+	@DomainEvents
+	public List<Object> getDomainEvents() {
+		return Collections.unmodifiableList(domainEvents);
+	}
+
+	@AfterDomainEventPublication
+	public void clearDomainEvents() {
+		this.domainEvents.clear();
 	}
 }

@@ -4,7 +4,7 @@ import com.hubEleven.hub.application.dto.RouteResult;
 import java.util.List;
 import java.util.UUID;
 
-public interface RouteService {
+public interface HubRouteService {
 
 	void generateAllRoutes();
 

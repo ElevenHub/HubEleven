@@ -17,13 +17,11 @@ public class CompanyJpaConfig {
 		return () -> {
 			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 			if (auth == null || !auth.isAuthenticated()) return Optional.empty();
-			// TODO: 프로젝트의 Principal/JWT에서 userId 추출
 			return Optional.ofNullable(extractUserId(auth));
 		};
 	}
 
 	private Long extractUserId(Authentication auth) {
-		// TODO: ((CustomPrincipal) auth.getPrincipal()).getUserId()
 		return null;
 	}
 }

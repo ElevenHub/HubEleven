@@ -16,4 +16,6 @@ public interface HubRouteRepository {
 	List<HubRoute> findAll();
 
 	List<HubRoute> findAllNotDeleted();
+
+	void softDeleteAll(Long deletedBy);
 }

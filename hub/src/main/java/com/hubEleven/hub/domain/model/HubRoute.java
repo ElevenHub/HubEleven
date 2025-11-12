@@ -99,6 +99,10 @@ public class HubRoute {
 	public void softDelete(Long deletedBy) {
 		this.deletedAt = LocalDateTime.now();
 		this.deletedBy = deletedBy;
+
+		for (HubRouteSegment segment : segments) {
+			segment.softDelete(deletedBy);
+		}
 	}
 
 	public boolean isDeleted() {

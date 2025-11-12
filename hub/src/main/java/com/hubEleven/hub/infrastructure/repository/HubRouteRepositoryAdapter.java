@@ -38,4 +38,11 @@ public class HubRouteRepositoryAdapter implements HubRouteRepository {
 	public List<HubRoute> findAllNotDeleted() {
 		return jpaHubRouteRepository.findAllNotDeleted();
 	}
+
+	@Override
+	public void softDeleteAll(Long deletedBy) {
+		List<HubRoute> routes = jpaHubRouteRepository.findAllNotDeleted();
+		routes.forEach(route -> route.softDelete(deletedBy));
+		jpaHubRouteRepository.saveAll(routes);
+	}
 }

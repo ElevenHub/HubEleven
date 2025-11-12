@@ -2,6 +2,7 @@ package com.hubEleven.hub.domain.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -54,5 +55,22 @@ public class Location {
 		if (longitude < -180.0 || longitude > 180.0) {
 			throw new IllegalArgumentException("경도는 -180 이상 180 이하이어야 합니다.");
 		}
+	}
+
+	// 객채의 값 비교를 위해 추가
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Location location = (Location) o;
+		return Objects.equals(address, location.address)
+				&& Objects.equals(latitude, location.latitude)
+				&& Objects.equals(longitude, location.longitude);
+	}
+
+	// equals 오버라이드 위해 필요한 hashCode() 오버라이드
+	@Override
+	public int hashCode() {
+		return Objects.hash(address, latitude, longitude);
 	}
 }

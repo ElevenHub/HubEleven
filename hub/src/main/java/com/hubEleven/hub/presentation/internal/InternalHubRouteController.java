@@ -3,7 +3,7 @@ package com.hubEleven.hub.presentation.internal;
 import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.hub.application.dto.RouteResult;
-import com.hubEleven.hub.application.service.RouteService;
+import com.hubEleven.hub.application.service.HubRouteService;
 import com.hubEleven.hub.presentation.dto.response.HubRouteResponseDto;
 import java.util.List;
 import java.util.UUID;
@@ -19,11 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class InternalHubRouteController {
 
-	private final RouteService routeService;
+	private final HubRouteService hubRouteService;
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<List<HubRouteResponseDto>>> getAllRoutes() {
-		List<RouteResult> results = routeService.getAllRoutes();
+		List<RouteResult> results = hubRouteService.getAllRoutes();
 		List<HubRouteResponseDto> response = HubRouteResponseDto.fromList(results);
 		return ApiResponseEntity.success(response);
 	}
@@ -31,7 +31,7 @@ public class InternalHubRouteController {
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<HubRouteResponseDto>> searchRoute(
 			@RequestParam UUID fromHubId, @RequestParam UUID toHubId) {
-		RouteResult result = routeService.findRoute(fromHubId, toHubId);
+		RouteResult result = hubRouteService.findRoute(fromHubId, toHubId);
 		HubRouteResponseDto response = HubRouteResponseDto.from(result);
 		return ApiResponseEntity.success(response);
 	}

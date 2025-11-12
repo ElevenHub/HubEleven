@@ -14,9 +14,6 @@ spring:
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
 
-server:
-  port: 0
-
 springdoc:
   api-docs:
     path: /v3/api-docs
