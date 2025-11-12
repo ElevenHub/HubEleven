@@ -12,7 +12,6 @@ import org.springframework.security.web.server.SecurityWebFilterChain;
 public class SecurityConfig {
 	@Bean
 	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		System.out.println("배송입니다");
 		HeaderAuthenticationFilter headerAuthFilter = new HeaderAuthenticationFilter();
 
 		return http.csrf(ServerHttpSecurity.CsrfSpec::disable)

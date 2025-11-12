@@ -18,7 +18,6 @@ public class HeaderAuthenticationFilter implements WebFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		System.out.println("filter시작");
 		String userId = exchange.getRequest().getHeaders().getFirst(USER_ID_HEADER);
 		String userRole = exchange.getRequest().getHeaders().getFirst(USER_ROLE_HEADER);
 

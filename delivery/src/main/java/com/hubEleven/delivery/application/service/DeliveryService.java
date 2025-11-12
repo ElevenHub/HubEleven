@@ -96,6 +96,7 @@ public class DeliveryService {
 	}
 
 	// 배송 상세 조회
+	@Transactional
 	public DeliveryDetailResponseDto getDelivery(UUID deliveryId) {
 		// 배송 정보 조회
 		Delivery deliveryInfo = delivery(deliveryId);
