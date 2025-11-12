@@ -1,8 +1,8 @@
 package com.hubEleven.delivery.presentation;
 
-import com.hubEleven.common.response.ApiResponse;
-import com.hubEleven.common.response.ApiResponseEntity;
-import com.hubEleven.common.response.CommonPageResponse;
+import com.commonLib.common.response.ApiResponse;
+import com.commonLib.common.response.ApiResponseEntity;
+import com.commonLib.common.response.CommonPageResponse;
 import com.hubEleven.delivery.application.dto.DeliveryRequestDto;
 import com.hubEleven.delivery.application.dto.DeliveryResponseDto;
 import com.hubEleven.delivery.application.service.DeliveryService;
