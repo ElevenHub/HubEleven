@@ -6,65 +6,53 @@
 
 ---
 
-## 👥 팀원 소개
+## 👥 팀 구성
 
 <table>
   <tr>
     <td align="center">
       <a href="https://github.com/Doritosch">
-        <img src="https://github.com/Doritosch.png" width="100px;" alt=""/>
-        <br />
-        <sub><b>김민수</b></sub>
+        <img src="https://github.com/Doritosch.png" width="90px" /><br/>
+        <b>김민수</b><br/>
+        <sub>팀장 · Gateway / Config / User / 공통 모듈</sub>
       </a>
-      <br />
-      <sub>팀장</sub>
     </td>
     <td align="center">
       <a href="https://github.com/hinoyat">
-        <img src="https://github.com/hinoyat.png" width="100px;" alt=""/>
-        <br />
-        <sub><b>강현호</b></sub>
+        <img src="https://github.com/hinoyat.png" width="90px" /><br/>
+        <b>강현호</b><br/>
+        <sub>허브 · 허브 간 경로</sub>
       </a>
-      <br />
-      <sub>팀원</sub>
     </td>
     <td align="center">
       <a href="https://github.com/hellonaeunkim">
-        <img src="https://github.com/hellonaeunkim.png" width="100px;" alt=""/>
-        <br />
-        <sub><b>김나은</b></sub>
+        <img src="https://github.com/hellonaeunkim.png" width="90px" /><br/>
+        <b>김나은</b><br/>
+        <sub>CI · 상품 · 재고 · 주문</sub>
       </a>
-      <br />
-      <sub>팀원</sub>
     </td>
   </tr>
   <tr>
     <td align="center">
       <a href="https://github.com/eddie412">
-        <img src="https://github.com/eddie412.png" width="100px;" alt=""/>
-        <br />
-        <sub><b>김주영</b></sub>
+        <img src="https://github.com/eddie412.png" width="90px" /><br/>
+        <b>김주영</b><br/>
+        <sub>배송 · Spring Security</sub>
       </a>
-      <br />
-      <sub>팀원</sub>
     </td>
     <td align="center">
       <a href="https://github.com/S2hyeyunS2">
-        <img src="https://github.com/S2hyeyunS2.png" width="100px;" alt=""/>
-        <br />
-        <sub><b>김혜윤</b></sub>
+        <img src="https://github.com/S2hyeyunS2.png" width="90px" /><br/>
+        <b>김혜윤</b><br/>
+        <sub>업체 · 슬랙 · AI</sub>
       </a>
-      <br />
-      <sub>팀원</sub>
     </td>
     <td align="center">
       <a href="https://github.com/6uiwj">
-        <img src="https://github.com/6uiwj.png" width="100px;" alt=""/>
-        <br />
-        <sub><b>정민지</b></sub>
+        <img src="https://github.com/6uiwj.png" width="90px" /><br/>
+        <b>정민지</b><br/>
+        <sub>배송 담당자 · 배송 MSA 구축</sub>
       </a>
-      <br />
-      <sub>팀원</sub>
     </td>
   </tr>
 </table>
