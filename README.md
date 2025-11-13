@@ -327,7 +327,7 @@ HubEleven
 </details>
 
 ### Architecture
-![img.png](images/Architecture.png)
+![img_1.png](img_1.png)
 ---
 
 ## 📡 API 명세
