@@ -25,7 +25,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -77,7 +76,6 @@ public class UserController {
 	}
 
 	@GetMapping
-	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> getAllUsers(
 			@Valid CommonPageRequest pageRequest) {
 
@@ -100,7 +98,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
 			@PathVariable("id") Long id,
 			@RequestHeader("X-User-Id") Long requestUserId,
-			@RequestHeader("X-Role") Role requestUserRole) {
+			@RequestHeader("X-User-Role") Role requestUserRole) {
 		var userInfo = userService.findUserById(id, requestUserId, requestUserRole);
 
 		UserInfoResponse response =
@@ -118,7 +116,6 @@ public class UserController {
 	}
 
 	@PatchMapping("/{id}/status")
-	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<Void>> updateUserStatus(
 			@PathVariable("id") Long id, @Valid @RequestBody UserStatusUpdateRequest request) {
 		UserStatusUpdateCommand command = new UserStatusUpdateCommand(id, request.status());
@@ -128,7 +125,6 @@ public class UserController {
 	}
 
 	@GetMapping("/search")
-	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> searchUsers(
 			@Valid CommonPageRequest pageRequest) {
 		CommonPageResponse<UserInfo> result = userService.searchUsers(pageRequest);
@@ -147,7 +143,6 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
-	@PreAuthorize("hasAuthority('MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> updateUser(
 			@PathVariable("id") Long id, @Valid @RequestBody UserUpdateRequest request) {
 		UserUpdateCommand command =
@@ -165,7 +160,6 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
-	@PreAuthorize("hasAuthority('MASTER')")
 	public ResponseEntity<ApiResponse<Void>> deleteUser(
 			@PathVariable("id") Long id, @RequestHeader("X-User-Id") Long requestUserId) {
 		userService.deleteUser(id, requestUserId);

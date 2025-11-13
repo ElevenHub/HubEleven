@@ -33,7 +33,7 @@ public class ProductServiceImpl implements ProductService {
 	// 상품 존재 여부 확인 메서드
 	private Product validateProductExists(UUID productId) {
 		return productRepository
-				.findById(productId)
+				.findByIdNotDeleted(productId)
 				.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 	}
 
@@ -82,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
 		validateHubExists(request.hubId());
 
 		// 중복 제품명 확인
-		validateDuplicateProductName(request.hubId(), request.name(), request.companyId());
+		validateDuplicateProductName(request.companyId(), request.name(), request.hubId());
 
 		// 제품 생성 및 저장
 		Product product = Product.create(request.name(), request.companyId(), request.hubId());

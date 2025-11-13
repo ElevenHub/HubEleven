@@ -26,7 +26,7 @@ public class StockServiceImpl implements StockService {
 	// 상품 존재 여부 확인 메서드
 	private Product validateProductExists(UUID productId) {
 		return productRepository
-				.findById(productId)
+				.findByIdNotDeleted(productId)
 				.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 	}
 

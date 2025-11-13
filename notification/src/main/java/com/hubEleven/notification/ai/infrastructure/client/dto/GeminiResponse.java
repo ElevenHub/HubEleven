@@ -1,7 +1,7 @@
 package com.hubEleven.notification.ai.infrastructure.client.dto;
 
+import com.commonLib.common.exception.GlobalException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.hubEleven.common.exception.GlobalException;
 import com.hubEleven.notification.ai.domain.exception.NotificationErrorCode;
 import java.util.List;
 

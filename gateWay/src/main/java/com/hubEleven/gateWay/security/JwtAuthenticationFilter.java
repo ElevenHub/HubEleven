@@ -22,6 +22,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 			Arrays.asList(
 					"/v1/user/login",
 					"/v1/user/signup",
+					"/v1/ai",
 					"/swagger-ui",
 					"/v3/api-docs",
 					"/springdoc",

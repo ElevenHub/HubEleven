@@ -48,7 +48,7 @@ public class UserService {
 	}
 
 	public UserInfo findUserById(Long id, Long requestUserId, Role requestUserRole) {
-		if (Role.isMaster(requestUserRole) && !id.equals(requestUserId)) {
+		if (!Role.isMaster(requestUserRole) && !id.equals(requestUserId)) {
 			throw new GlobalException(UNAUTHORIZED_ACCESS);
 		}
 

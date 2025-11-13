@@ -31,7 +31,7 @@ public class ProductRepositoryAdapter implements ProductRepository {
 	}
 
 	@Override
-	public Optional<Product> findById(UUID productId) {
-		return jpaProductRepository.findById(productId);
+	public Optional<Product> findByIdNotDeleted(UUID productId) {
+		return jpaProductRepository.findByIdNotDeleted(productId);
 	}
 }

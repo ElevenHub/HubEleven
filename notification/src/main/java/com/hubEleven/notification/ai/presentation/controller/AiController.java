@@ -1,7 +1,7 @@
 package com.hubEleven.notification.ai.presentation.controller;
 
-import com.hubEleven.common.response.ApiResponse;
-import com.hubEleven.common.response.ApiResponseEntity;
+import com.commonLib.common.response.ApiResponse;
+import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.notification.ai.application.dto.MessageGenerationResponse;
 import com.hubEleven.notification.ai.application.service.AiAppService;
 import com.hubEleven.notification.ai.presentation.request.MessageGenerateRequest;
