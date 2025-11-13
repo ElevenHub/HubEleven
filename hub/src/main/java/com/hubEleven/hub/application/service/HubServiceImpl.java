@@ -29,11 +29,6 @@ public class HubServiceImpl implements HubService {
 		this.kakaoApiClient = kakaoApiClient;
 	}
 
-	/*
-	 *  1. 감사 로그 전체적으로 수정
-	 *  2. Hub 위치 정보 수정 시 허브 경로 재배치
-	 *  3. createdBy/updatedBy/deletedBy를 Gateway 완성 후 받아오기
-	 * */
 	@Override
 	public HubResult createHub(CreateHubCommand command) {
 
@@ -49,9 +44,6 @@ public class HubServiceImpl implements HubService {
 			longitude = coordinates[1];
 		}
 
-		// 임시 값
-		Long createdBy = 1L;
-
 		Hub hub =
 				Hub.create(
 						command.name(),
@@ -59,7 +51,7 @@ public class HubServiceImpl implements HubService {
 						latitude,
 						longitude,
 						command.regionCode(),
-						createdBy);
+					command.userId());
 
 		Hub saved = hubRepository.save(hub);
 		return HubResult.from(saved);
@@ -74,9 +66,6 @@ public class HubServiceImpl implements HubService {
 			validateDuplicateName(command.name());
 		}
 
-		// 임시 값
-		Long updatedBy = 1L;
-
 		// 부분 수정
 		hub.update(
 				command.name(),
@@ -84,7 +73,7 @@ public class HubServiceImpl implements HubService {
 				command.latitude(),
 				command.longitude(),
 				command.regionCode(),
-				updatedBy);
+				command.userId());
 
 		// 더티체킹으로 반영
 		return HubResult.from(hub);
@@ -95,9 +84,7 @@ public class HubServiceImpl implements HubService {
 		UUID hubId = command.hubId();
 		Hub hub = findHubById(hubId);
 
-		// 임시 값
-		Long deletedBy = 1L;
-		hub.softDelete(deletedBy);
+		hub.softDelete(command.userId());
 		hubRepository.save(hub);
 	}
 

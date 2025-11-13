@@ -33,7 +33,7 @@ public class HubDataInitializer implements CommandLineRunner {
 			log.info("초기 허브 데이터 생성 완료");
 
 			log.info("허브 경로 생성을 시작합니다.");
-			hubRouteService.generateAllRoutes();
+			hubRouteService.generateAllRoutes(0L);
 			log.info("허브 경로 생성 완료");
 
 		} catch (Exception e) {
@@ -85,7 +85,7 @@ public class HubDataInitializer implements CommandLineRunner {
 						new HubData(
 								"경상남도 센터", "경남 창원시 의창구 중앙대로 300", 35.2378032514675, 128.691940442146, "GYEONGNAM"));
 
-		Long createdBy = 1L; // 시스템 생성
+		Long createdBy = 0L; // 시스템 생성
 
 		for (HubData data : hubDataList) {
 			try {

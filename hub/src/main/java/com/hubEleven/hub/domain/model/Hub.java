@@ -81,7 +81,7 @@ public class Hub {
 						.createdAt(LocalDateTime.now())
 						.createdBy(createdBy)
 						.build();
-		hub.registerEvent(new HubCreatedEvent(hub.hubId));
+		hub.registerEvent(new HubCreatedEvent(hub.hubId, createdBy));
 
 		return hub;
 	}
@@ -141,7 +141,7 @@ public class Hub {
 		this.updatedBy = updatedBy;
 
 		if (locationChanged) {
-			registerEvent(new HubLocationChangedEvent(this.hubId, this.location));
+			registerEvent(new HubLocationChangedEvent(this.hubId, this.location, updatedBy));
 		}
 	}
 
@@ -149,7 +149,7 @@ public class Hub {
 		this.deletedAt = LocalDateTime.now();
 		this.deletedBy = deletedBy;
 
-		registerEvent(new HubDeletedEvent(this.hubId));
+		registerEvent(new HubDeletedEvent(this.hubId, deletedBy));
 	}
 
 	public boolean isDeleted() {

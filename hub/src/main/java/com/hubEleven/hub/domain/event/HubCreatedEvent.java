@@ -8,9 +8,11 @@ import lombok.Getter;
 public class HubCreatedEvent {
 
 	private final UUID hubId;
+	private final Long userId;
 	private final LocalDateTime occurredAt;
 
-	public HubCreatedEvent(UUID hubId) {
+	public HubCreatedEvent(UUID hubId, Long userId) {
+		this.userId = userId;
 		this.hubId = hubId;
 		this.occurredAt = LocalDateTime.now();
 	}

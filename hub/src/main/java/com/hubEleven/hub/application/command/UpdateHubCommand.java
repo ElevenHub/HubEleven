@@ -8,4 +8,5 @@ public record UpdateHubCommand(
 		String address,
 		Double latitude,
 		Double longitude,
-		String regionCode) {}
+		String regionCode,
+		Long userId) {}

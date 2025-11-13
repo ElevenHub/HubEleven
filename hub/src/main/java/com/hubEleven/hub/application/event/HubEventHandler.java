@@ -31,10 +31,10 @@ public class HubEventHandler {
 
 		try {
 			// 기존 Route 전체 soft delete
-			hubRouteRepository.softDeleteAll(1L); // TODO: 실제 userId로 변경 필요
+			hubRouteRepository.softDeleteAll(event.getUserId());
 
 			// 전체 경로 재계산
-			hubRouteService.generateAllRoutes();
+			hubRouteService.generateAllRoutes(event.getUserId());
 
 		} catch (Exception e) {
 			log.error("Hub 생성 이벤트 처리 중 오류 발생: hubId={}", event.getHubId(), e);
@@ -50,10 +50,10 @@ public class HubEventHandler {
 
 		try {
 			// 기존 Route 전체 soft delete
-			hubRouteRepository.softDeleteAll(1L); // TODO: 실제 userId로 변경 필요
+			hubRouteRepository.softDeleteAll(event.getUserId());
 
 			// 전체 경로 재계산
-			hubRouteService.generateAllRoutes();
+			hubRouteService.generateAllRoutes(event.getUserId());
 
 		} catch (Exception e) {
 			log.error("Hub 위치 변경 이벤트 처리 중 오류 발생: hubId={}", event.getHubId(), e);
@@ -67,9 +67,9 @@ public class HubEventHandler {
 		log.info("Hub 삭제 이벤트 수신: hubId={}", event.getHubId());
 
 		try {
-			hubRouteRepository.softDeleteAll(1L); // TODO: 실제 userId로 변경 필요
+			hubRouteRepository.softDeleteAll(event.getUserId());
 
-			hubRouteService.generateAllRoutes();
+			hubRouteService.generateAllRoutes(event.getUserId());
 
 		} catch (Exception e) {
 			log.error("Hub 삭제 이벤트 처리 중 오류 발생: hubId={}", event.getHubId(), e);

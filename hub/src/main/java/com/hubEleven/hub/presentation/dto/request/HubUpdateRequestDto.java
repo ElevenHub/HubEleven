@@ -16,7 +16,7 @@ public record HubUpdateRequestDto(
 				Double longitude,
 		@Size(max = 50, message = "지역 코드는 50자 이하여야 합니다.") String regionCode) {
 
-	public UpdateHubCommand toCommand(UUID hubId) {
-		return new UpdateHubCommand(hubId, name, address, latitude, longitude, regionCode);
+	public UpdateHubCommand toCommand(UUID hubId, Long userId) {
+		return new UpdateHubCommand(hubId, name, address, latitude, longitude, regionCode, userId);
 	}
 }

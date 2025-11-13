@@ -19,7 +19,7 @@ public record HubCreateRequestDto(
 		@NotBlank(message = "지역 코드는 필수 입력 항목입니다.") @Size(max = 50, message = "지역 코드는 50자 이하여야 합니다.")
 				String regionCode) {
 
-	public CreateHubCommand toCommand() {
-		return new CreateHubCommand(name, address, latitude, longitude, regionCode);
+	public CreateHubCommand toCommand(Long userId) {
+		return new CreateHubCommand(name, address, latitude, longitude, regionCode, userId);
 	}
 }

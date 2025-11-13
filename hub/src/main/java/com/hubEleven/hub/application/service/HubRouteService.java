@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public interface HubRouteService {
 
-	void generateAllRoutes();
+	void generateAllRoutes(Long UserId);
 
 	List<RouteResult> getAllRoutes();
 

@@ -9,11 +9,13 @@ import lombok.Getter;
 public class HubLocationChangedEvent {
 
 	private final UUID hubId;
+	private final Long userId;
 	private final Location newLocation;
 	private final LocalDateTime occurredAt;
 
-	public HubLocationChangedEvent(UUID hubId, Location newLocation) {
+	public HubLocationChangedEvent(UUID hubId, Location newLocation, Long userId) {
 		this.hubId = hubId;
+		this.userId = userId;
 		this.newLocation = newLocation;
 		this.occurredAt = LocalDateTime.now();
 	}
