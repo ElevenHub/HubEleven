@@ -51,7 +51,7 @@ public class HubServiceImpl implements HubService {
 						latitude,
 						longitude,
 						command.regionCode(),
-					command.userId());
+						command.userId());
 
 		Hub saved = hubRepository.save(hub);
 		return HubResult.from(saved);

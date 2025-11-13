@@ -116,7 +116,8 @@ public class HubRouteServiceImpl implements HubRouteService {
 		return RouteResult.from(hubRoute);
 	}
 
-	private List<HubRouteSegment> createSegments(RouteCalculationResult calculationResult, Long userId) {
+	private List<HubRouteSegment> createSegments(
+			RouteCalculationResult calculationResult, Long userId) {
 		List<HubRouteSegment> segments = new ArrayList<>();
 		List<UUID> path = calculationResult.path();
 		List<Double> distances = calculationResult.segmentDistances();
