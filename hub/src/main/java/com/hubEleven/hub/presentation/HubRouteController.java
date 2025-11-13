@@ -1,9 +1,11 @@
 package com.hubEleven.hub.presentation;
 
+import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.hub.application.dto.RouteResult;
 import com.hubEleven.hub.application.service.HubRouteService;
+import com.hubEleven.hub.common.exception.HubErrorCode;
 import com.hubEleven.hub.presentation.dto.response.HubRouteResponseDto;
 import java.util.List;
 import java.util.UUID;
@@ -11,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,8 +26,14 @@ public class HubRouteController {
 	private final HubRouteService hubRouteService;
 
 	@PostMapping("/generate")
-	public ResponseEntity<ApiResponse<String>> generateAllRoutes() {
-		hubRouteService.generateAllRoutes();
+	public ResponseEntity<ApiResponse<String>> generateAllRoutes(
+			@RequestHeader("X-User-Id") Long userId,
+			@RequestHeader("X-User-Role") String userRole,
+			@RequestHeader("X-Username") String userName) {
+		if (!"MASTER".equalsIgnoreCase(userRole)) {
+			throw new GlobalException(HubErrorCode.MASTER_ONLY);
+		}
+		hubRouteService.generateAllRoutes(userId);
 		return ApiResponseEntity.success("모든 경로 생성이 완료되었습니다.");
 	}
 
