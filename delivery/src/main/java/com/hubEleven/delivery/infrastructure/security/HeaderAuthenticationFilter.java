@@ -28,7 +28,7 @@ public class HeaderAuthenticationFilter implements WebFilter {
 
 		// 2. 인증 객체 생성 (Authentication Principal)
 		// UserDetails 대신 userId를 주체(Principal)로 사용
-		SimpleGrantedAuthority authority = new SimpleGrantedAuthority("ROLE_" + userRole);
+		SimpleGrantedAuthority authority = new SimpleGrantedAuthority(userRole);
 		List<SimpleGrantedAuthority> authorities = Collections.singletonList(authority);
 
 		// 인증 성공 토큰 생성 (principal: userId, credentials: null, authorities: role)
