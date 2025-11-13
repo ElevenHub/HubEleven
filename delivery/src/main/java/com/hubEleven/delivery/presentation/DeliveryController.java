@@ -13,14 +13,13 @@ import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.security.Principal;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
-import java.util.UUID;
 
 @Tag(name = "배송", description = "배송 API")
 @RestController
@@ -113,7 +112,7 @@ public class DeliveryController {
 	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER')")
 	public ResponseEntity<ApiResponse<Object>> deleteDelivery(
 			@PathVariable UUID deliveryId, Principal principal) {
-        Long userId = Long.parseLong(principal.getName());      // getName으로 userId를 String 타입으로 받아온다
+		Long userId = Long.parseLong(principal.getName()); // getName으로 userId를 String 타입으로 받아온다
 		deliveryService.deleteDelivery(deliveryId, userId);
 		return ApiResponseEntity.create(SuccessCode.DELETED, "/delivery/" + deliveryId, null);
 	}
