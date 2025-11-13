@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +31,7 @@ public class HubRouteServiceImpl implements HubRouteService {
 
 	@Override
 	@Transactional
+	@CacheEvict(value = "hub-routes", allEntries = true)
 	public void generateAllRoutes(Long userId) {
 		log.info("모든 허브 경로 생성 시작");
 
@@ -99,6 +102,7 @@ public class HubRouteServiceImpl implements HubRouteService {
 	}
 
 	@Override
+	@Cacheable(value = "hub-routes-all")
 	@Transactional(readOnly = true)
 	public List<RouteResult> getAllRoutes() {
 		List<HubRoute> routes = hubRouteRepository.findAllNotDeleted();
@@ -106,6 +110,7 @@ public class HubRouteServiceImpl implements HubRouteService {
 	}
 
 	@Override
+	@Cacheable(value = "hub-routes", key = "#departureHubId + '-' + #arrivalHubId")
 	@Transactional(readOnly = true)
 	public RouteResult findRoute(UUID departureHubId, UUID arrivalHubId) {
 		HubRoute hubRoute =

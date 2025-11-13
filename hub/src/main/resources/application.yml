@@ -8,6 +8,17 @@ spring:
       discovery:
         enabled: true
         service-id: config
+  cache:
+    type: simple  # simple = ConcurrentMapCacheManager / redis = redis 사용
+    cache-names:
+      - hubs           # 단건 허브 조회
+      - hub-list       # 허브 목록 조회
+      - hub-routes     # 허브 간 경로 조회
+      - hub-routes-all # 허브 간 정체 경로 조회
+  data:
+    redis:
+      host: localhost
+      port: 6379
 
 springdoc:
   api-docs:
@@ -20,3 +31,12 @@ kakao:
   api:
     key: ${KAKAO_REST_API_KEY}
     base-url: https://dapi.kakao.com
+
+# 캐시 설정
+cache:
+  enabled: true  # 캐시 on/off
+
+
+logging:
+  level:
+    org.springframework.cache: DEBUG

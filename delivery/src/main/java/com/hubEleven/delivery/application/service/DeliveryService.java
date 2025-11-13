@@ -1,20 +1,18 @@
 package com.hubEleven.delivery.application.service;
 
+import com.commonLib.common.exception.GlobalException;
+import com.commonLib.common.response.ApiResponse;
+import com.hubEleven.delivery.application.dto.DeliveryDetailResponseDto;
 import com.hubEleven.delivery.application.dto.DeliveryRequestDto;
 import com.hubEleven.delivery.application.dto.DeliveryResponseDto;
-import com.hubEleven.delivery.domain.Delivery;
-import com.hubEleven.delivery.domain.DeliveryRepository;
-import com.hubEleven.delivery.domain.DeliveryStatus;
-import com.hubEleven.delivery.infrastructure.client.CompanyFeignClient;
-import com.hubEleven.delivery.infrastructure.client.HubRouteFeignClient;
-import com.hubEleven.delivery.infrastructure.dto.DeliveryMangerFeignResponseDto;
-import com.hubEleven.delivery.infrastructure.dto.HubRouteFeignResponseDto;
-import com.hubEleven.delivery.infrastructure.dto.OrderFeignResponseDto;
-import com.hubEleven.delivery.infrastructure.dto.UserFeignResponseDto;
-import com.hubEleven.delivery.infrastructure.service.DeliveryManagerFeignService;
-import com.hubEleven.delivery.infrastructure.service.OrderFeignService;
-import com.hubEleven.delivery.infrastructure.service.UserFeignService;
+import com.hubEleven.delivery.domain.*;
+import com.hubEleven.delivery.infrastructure.dto.*;
+import com.hubEleven.delivery.infrastructure.service.*;
+import com.hubEleven.deliveryManager.domain.DeliveryType;
 import com.hubEleven.deliveryRoute.application.DeliveryRouteService;
+import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
+import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteResponseDto;
+import com.hubEleven.deliveryRoute.domain.DeliveryRoute;
 import jakarta.persistence.criteria.Predicate;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,18 +30,18 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class DeliveryService {
 	private final DeliveryRepository deliveryRepository;
-	private final CompanyFeignClient companyFeignClient;
-	private final HubRouteFeignClient hubRouteFeignClient;
 	private final DeliveryRouteService deliveryRouteService;
 	private final OrderFeignService orderFeignService;
 	private final UserFeignService userFeignService;
 	private final DeliveryManagerFeignService deliveryManagerFeignService;
+	private final CompanyFeignService companyFeignService;
+	private final HubRouteFeignService hubRouteFeignService;
 
 	// Delivery 조회
 	private Delivery delivery(UUID deliveryId) {
 		return deliveryRepository
 				.findById(deliveryId)
-				.orElseThrow(() -> new IllegalArgumentException("유효하지 않은 배달 ID입니다."));
+				.orElseThrow(() -> new GlobalException(DeliveryErrorCode.DELIVERY_NOT_FOUND));
 	}
 
 	// 배송 검색
@@ -66,18 +64,17 @@ public class DeliveryService {
 		Specification<Delivery> spec =
 				(root, query, cb) -> {
 					List<Predicate> predicates = new ArrayList<>();
-					if (deliveryId != null) predicates.add(cb.like(root.get("id"), "%" + deliveryId + "%"));
-					if (orderId != null) predicates.add(cb.like(root.get("orderId"), "%" + orderId + "%"));
-					if (status != null) predicates.add(cb.like(root.get("status"), "%" + status + "%"));
-					if (fromHubId != null)
-						predicates.add(cb.like(root.get("fromHubId"), "%" + fromHubId + "%"));
-					if (toHubId != null) predicates.add(cb.like(root.get("toHubId"), "%" + toHubId + "%"));
+					if (deliveryId != null) predicates.add(cb.equal(root.get("id"), deliveryId));
+					if (orderId != null) predicates.add(cb.equal(root.get("orderId"), orderId));
+					if (status != null) predicates.add(cb.equal(root.get("status"), status));
+					if (fromHubId != null) predicates.add(cb.equal(root.get("fromHubId"), fromHubId));
+					if (toHubId != null) predicates.add(cb.equal(root.get("toHubId"), toHubId));
 					if (recipientName != null)
 						predicates.add(cb.like(root.get("recipientName"), "%" + recipientName + "%"));
 					if (recipientSlackId != null)
 						predicates.add(cb.like(root.get("recipientSlackId"), "%" + recipientSlackId + "%"));
 					if (deliveryManagerId != null)
-						predicates.add(cb.like(root.get("deliveryManagerId"), "%" + deliveryManagerId + "%"));
+						predicates.add(cb.equal(root.get("deliveryManagerId"), deliveryManagerId));
 					return cb.and(predicates.toArray(new Predicate[0]));
 				};
 
@@ -99,54 +96,75 @@ public class DeliveryService {
 	}
 
 	// 배송 상세 조회
-	// todo 배송경로 정보도 추가해서 DeliveryDetailResponse로 변경 예정
-	public DeliveryResponseDto getDelivery(UUID deliveryId) {
+	@Transactional
+	public DeliveryDetailResponseDto getDelivery(UUID deliveryId) {
+		// 배송 정보 조회
+		Delivery deliveryInfo = delivery(deliveryId);
+
+		// 배송 경로 조회
+		List<DeliveryRoute> deliveryRouteList = deliveryInfo.getDeliveryRoutes();
+		if (deliveryRouteList == null || deliveryRouteList.isEmpty()) {
+			throw new GlobalException(DeliveryErrorCode.DELIVERY_ROUTE_NOT_FOUND);
+		}
 
 		// 엔티티 -> DTO로 변환해서 반환
-		return DeliveryResponseDto.from(delivery(deliveryId));
+		return DeliveryDetailResponseDto.from(delivery(deliveryId), deliveryRouteList);
 	}
 
 	// 배송 생성
 	@Transactional
-	public DeliveryResponseDto createDelivery(UUID orderId, DeliveryRequestDto deliveryRequestDto) {
+	public DeliveryResponseDto createDelivery(UUID orderId) {
 		// 주문 ID를 기준으로 주문 정보 가져오기
-		OrderFeignResponseDto order = orderFeignService.getOrderInfo(orderId);
+		ApiResponse<OrderFeignResponseDto> order = orderFeignService.getOrderInfo(orderId);
 
-		UUID fromCompanyId = order.requestorCompanyId(); // 요청업체
-		UUID toCompanyId = order.recipientCompanyId(); // 수령 업체
-
-		// 유저정보에서 수령인, 수령인 슬랙ID 받아오기
-		UserFeignResponseDto toUser = userFeignService.getUserInfo(toCompanyId);
-
-		// 배송담당자에서 배송담당자 ID 받아오기
-		DeliveryMangerFeignResponseDto deliveryManger =
-				deliveryManagerFeignService.getDeliveryManagerInfo(fromCompanyId);
-
-		// 배송 생성
-		Delivery delivery = new Delivery();
-		delivery.setOrderId(orderId);
-		delivery.setStatus(DeliveryStatus.HUB_WAITHING);
-		delivery.setFromHubId(fromCompanyId);
-		delivery.setToHubId(toCompanyId);
-		delivery.setRecipientName(toUser.name());
-		delivery.setRecipientSlackId(toUser.slackId());
-		delivery.setDeliveryManagerId(deliveryManger.deliveryManagerId());
-
-		deliveryRepository.save(delivery);
+		UUID fromCompanyId = order.result().requestorCompanyId(); // 요청업체
+		UUID toCompanyId = order.result().recipientCompanyId(); // 수령 업체
 
 		// 요청업체의 관리 허브 ID는 업체 테이블에 있음
 		// 주문 정보에 있는 요청 업체 소속 허브를 출발 허브로 수령 업체 소속 허브를 도착 허브로 생각하고
 		// 허브 경로에서 출발 허브 부터 도착 허브의 경로를 받아와서 그 갯수 만큼 배송 경로 생성
-		UUID fromHubId = companyFeignClient.getHubId(fromCompanyId).HubId();
-		UUID toHubId = companyFeignClient.getHubId(toCompanyId).HubId();
+		UUID fromHubId = companyFeignService.getCompanyInfo(fromCompanyId).result().hubId();
+		UUID toHubId = companyFeignService.getCompanyInfo(fromCompanyId).result().hubId();
+
+		// 유저정보에서 수령인, 수령인 슬랙ID 받아오기
+		ApiResponse<UserFeignResponseDto> toUser =
+				userFeignService.getUserInfo(toCompanyId, Role.COMPANY_MANAGER);
+
+		// 배송담당자에서 배송담당자 ID 받아오기
+		ApiResponse<DeliveryManagerFeignResponseDto> deliveryManager =
+				deliveryManagerFeignService.getDeliveryManagerInfo(orderId, toHubId, DeliveryType.COMPANY);
+
+		// 배송 생성
+		Delivery delivery =
+				Delivery.create(
+						orderId,
+						DeliveryStatus.HUB_WAITHING,
+						fromCompanyId,
+						toCompanyId,
+						toUser.result().name(),
+						toUser.result().slackId(),
+						deliveryManager.result().deliveryManagerId());
 
 		// 허브 경로에 출발허브ID 와 도착허브ID를 넘기고 경로를 받는다.
-		List<HubRouteFeignResponseDto> hubRoute = hubRouteFeignClient.getRoute(fromHubId, toHubId);
+		ApiResponse<HubRouteFeignResponseDto> hubRouteFeign =
+				hubRouteFeignService.getRoute(fromHubId, toHubId);
+		List<HubRouteSegmentResponseDto> hubRoute = hubRouteFeign.result().segments().stream().toList();
 		for (int seq = 0; seq < hubRoute.size(); seq++) {
-			HubRouteFeignResponseDto deliveryRoute = hubRoute.get(seq);
+			HubRouteSegmentResponseDto deliveryRoute = hubRoute.get(seq);
+			// 배송 담당자 ID
+			ApiResponse<DeliveryManagerFeignResponseDto> hubDeliveryManager =
+					deliveryManagerFeignService.getDeliveryManagerInfo(
+							orderId, deliveryRoute.toHubId(), DeliveryType.HUB);
+			Long deliveryManagerId = hubDeliveryManager.result().deliveryManagerId();
+
 			// 배송 경로 생성 요청
-			deliveryRouteService.createDeliveryRoute(delivery, deliveryRoute, seq);
+			DeliveryRoute route = deliveryRouteService.creatRoute(deliveryRoute, seq, deliveryManagerId);
+
+			delivery.addRoute(route);
 		}
+
+		// 배송 저장 할댸 배송 경로까지 함께 저장
+		deliveryRepository.save(delivery);
 
 		// 엔티티 -> DTO로 변환해서 반환
 		return DeliveryResponseDto.from(delivery);
@@ -155,28 +173,43 @@ public class DeliveryService {
 	// 배송 수정
 	@Transactional
 	public DeliveryResponseDto updateDelivery(UUID deliveryId, DeliveryRequestDto requestDto) {
+		// 배송 정보 조회
 		Delivery delivery = delivery(deliveryId);
 
 		// 배송 수정
-		delivery.setStatus(requestDto.status()); // 상태 변경
-		delivery.setFromHubId(requestDto.fromHubId()); // 출발 허브
-		delivery.setToHubId(requestDto.toHubId()); // 도착 허브
-		delivery.setRecipientName(requestDto.recipientName()); // 수령인
-		delivery.setRecipientSlackId(requestDto.recipientSlackId()); // 수령인 SlackId
-		delivery.setDeliveryManagerId(requestDto.deliveryManagerId()); // 배달 담당자
+		delivery.update(
+				requestDto.status(),
+				requestDto.fromHubId(),
+				requestDto.toHubId(),
+				requestDto.recipientName(),
+				requestDto.recipientSlackId(),
+				requestDto.deliveryManagerId());
 
 		return DeliveryResponseDto.from(delivery);
 	}
 
 	// 배송 삭제
 	@Transactional
-	public void deleteDelivery(UUID deliveryId) {
+	public void deleteDelivery(UUID deliveryId, Long userId) {
 		Delivery delivery = delivery(deliveryId);
 
-		// todo userId JWT에서 받아오는 방식으로 변경 예정
 		// 1. 배송 정보 삭제 (논리삭제)
-		Long userId = 1234567890L;
 		delivery.delete(userId);
-		//        deliveryRepository.deleteById(deliveryId);
+
+		// 2. 배송 경로 삭제 (논리삭제)
+		deliveryRouteService.deleteRoute(delivery, userId);
+	}
+
+	// 배송 경로 수정
+	@Transactional
+	public DeliveryRouteResponseDto updateDeliveryRoute(
+			UUID deliveryId, DeliveryRouteRequestDto deliveryRouteRequestDto) {
+		// 배달 존재 여부 확인
+		Delivery delivery = delivery(deliveryId);
+
+		// 배달 경로 수정
+		DeliveryRoute deliveryRoute =
+				deliveryRouteService.updateRoute(delivery, deliveryRouteRequestDto);
+		return DeliveryRouteResponseDto.from(deliveryRoute);
 	}
 }

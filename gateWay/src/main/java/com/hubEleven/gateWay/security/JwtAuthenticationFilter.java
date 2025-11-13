@@ -22,6 +22,7 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 			Arrays.asList(
 					"/v1/user/login",
 					"/v1/user/signup",
+					"/v1/ai",
 					"/swagger-ui",
 					"/v3/api-docs",
 					"/springdoc",
@@ -34,6 +35,9 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
+		System.out.println(
+				">>> JwtAuthenticationFilter 실행됨. 경로: " + exchange.getRequest().getURI().getPath());
+
 		ServerHttpRequest request = exchange.getRequest();
 		String path = request.getURI().getPath();
 

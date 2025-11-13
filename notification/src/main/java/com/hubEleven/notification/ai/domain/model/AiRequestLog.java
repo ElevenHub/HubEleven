@@ -1,7 +1,7 @@
 package com.hubEleven.notification.ai.domain.model;
 
-import com.hubEleven.common.annotation.SoftDeletable;
-import com.hubEleven.common.model.BaseEntity;
+import com.commonLib.common.annotation.SoftDeletable;
+import com.commonLib.common.model.BaseEntity;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
