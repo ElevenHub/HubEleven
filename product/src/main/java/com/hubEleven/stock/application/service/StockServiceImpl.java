@@ -20,85 +20,76 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
 
-	private final StockRepository stockRepository;
-	private final ProductRepository productRepository;
+    private final StockRepository stockRepository;
+    private final ProductRepository productRepository;
 
-	// 상품 존재 여부 확인 메서드
-	private Product validateProductExists(UUID productId) {
-		return productRepository
-				.findByIdNotDeleted(productId)
-				.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
-	}
+    private Product validateProductExists(UUID productId) {
+        return productRepository
+                .findByIdNotDeleted(productId)
+                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+    }
 
-	// 재고 존재 여부 확인 메서드
-	private Stock validateStockExists(UUID productId) {
-		return stockRepository
-				.findByProductId(productId)
-				.orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
-	}
+    private Stock validateStockExists(UUID productId) {
+        return stockRepository
+                .findByProductId(productId)
+                .orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
+    }
 
-	@Override
-	@Transactional
-	public StockResult create(StockRequests.Create request) {
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(request.productId());
+    @Override
+    @Transactional
+    public StockResult create(StockRequests.Create request) {
 
-		Stock stock =
-				Stock.create(request.quantity(), request.productId(), request.companyId(), request.hubId());
+        Product product = validateProductExists(request.productId());
 
-		Stock savedStock = stockRepository.save(stock);
+        Stock stock =
+                Stock.create(request.quantity(), request.productId(), request.companyId(),
+                        request.hubId());
 
-		return StockResult.from(savedStock, product.getName());
-	}
+        Stock savedStock = stockRepository.save(stock);
 
-	@Override
-	@Transactional(readOnly = true)
-	public StockResult getStockByProductId(UUID productId) {
+        return StockResult.from(savedStock, product.getName());
+    }
 
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(productId);
+    @Override
+    @Transactional(readOnly = true)
+    public StockResult getStockByProductId(UUID productId) {
 
-		// 삭제된 상품인지 확인
-		if (product.isDeleted()) {
-			throw new GlobalException(PRODUCT_DELETED);
-		}
+        Product product = validateProductExists(productId);
 
-		// 재고 조회
-		Stock stock = validateStockExists(productId);
+        if (product.isDeleted()) {
+            throw new GlobalException(PRODUCT_DELETED);
+        }
 
-		return StockResult.from(stock, product.getName());
-	}
+        Stock stock = validateStockExists(productId);
 
-	@Override
-	@Transactional
-	public StockResult decreaseStock(StockRequests.Decrease request) {
+        return StockResult.from(stock, product.getName());
+    }
 
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(request.productId());
+    @Override
+    @Transactional
+    public StockResult decreaseStock(StockRequests.Decrease request) {
 
-		// 재고 조회
-		Stock stock = validateStockExists(request.productId());
+        Product product = validateProductExists(request.productId());
 
-		// 재고 차감
-		stock.decreaseQuantity(request.quantity()); // ToDo : 재고 부족 예외 처리
+        Stock stock = validateStockExists(request.productId());
 
-		return StockResult.from(stock, product.getName());
-	}
+        stock.decreaseQuantity(request.quantity()); // ToDo : 재고 부족 예외 처리
 
-	@Override
-	@Transactional
-	public StockResult restoreStock(StockRequests.Restore request) {
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(request.productId());
+        return StockResult.from(stock, product.getName());
+    }
 
-		// 재고 조회
-		Stock stock = validateStockExists(request.productId());
+    @Override
+    @Transactional
+    public StockResult restoreStock(StockRequests.Restore request) {
 
-		// 재고 복원 로직
-		stock.restoreQuantity(request.quantity()); // ToDo : 재고 복원 예외 처리
+        Product product = validateProductExists(request.productId());
 
-		Stock updatedStock = stockRepository.save(stock);
+        Stock stock = validateStockExists(request.productId());
 
-		return StockResult.from(updatedStock, product.getName());
-	}
+        stock.restoreQuantity(request.quantity()); // ToDo : 재고 복원 예외 처리
+
+        Stock updatedStock = stockRepository.save(stock);
+
+        return StockResult.from(updatedStock, product.getName());
+    }
 }
