@@ -1,5 +1,8 @@
 package com.hubEleven.stock.domain.model;
 
+import static com.hubEleven.product.domain.exception.ProductErrorCode.COMPANY_NOT_FOUND;
+import static com.hubEleven.product.domain.exception.ProductErrorCode.HUB_NOT_FOUND;
+import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 import static com.hubEleven.stock.domain.exception.StockErrorCode.INVALID_STOCK_QUANTITY;
 
 import com.commonLib.common.exception.GlobalException;
@@ -30,11 +33,11 @@ public class Stock extends BaseEntity {
     @Column(name = "product_id", nullable = false)
     private UUID productId;
 
-    @Column(name = "hub_id", nullable = false)
-    private UUID hubId;
-
     @Column(name = "company_id", nullable = false)
     private UUID companyId;
+
+    @Column(name = "hub_id", nullable = false)
+    private UUID hubId;
 
     @Column(name = "quantity", nullable = false)
     private int quantity;
@@ -47,13 +50,40 @@ public class Stock extends BaseEntity {
         this.quantity = quantity;
     }
 
-    public static Stock create(UUID productId, UUID companyId, UUID hubId, int quantity) {
+    public static Stock create(
+            UUID productId,
+            UUID companyId,
+            UUID hubId,
+            int quantity
+    ) {
+        validateProductId(productId);
+        validateCompanyId(companyId);
+        validateHubId(hubId);
+
         return Stock.builder()
                 .productId(productId)
                 .companyId(companyId)
                 .hubId(hubId)
                 .quantity(quantity)
                 .build();
+    }
+
+    private static void validateProductId(UUID productId) {
+        if (productId == null) {
+            throw new GlobalException(PRODUCT_NOT_FOUND);
+        }
+    }
+
+    private static void validateCompanyId(UUID companyId) {
+        if (companyId == null) {
+            throw new GlobalException(COMPANY_NOT_FOUND);
+        }
+    }
+
+    private static void validateHubId(UUID hubId) {
+        if (hubId == null) {
+            throw new GlobalException(HUB_NOT_FOUND);
+        }
     }
 
     public void decreaseQuantity(int decreaseQuantity) {
