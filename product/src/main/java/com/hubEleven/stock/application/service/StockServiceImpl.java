@@ -84,7 +84,7 @@ public class StockServiceImpl implements StockService {
 
         Stock stock = getStockOrThrow(request.productId());
 
-        stock.restoreQuantity(request.quantity()); // ToDo : 재고 복원 예외 처리
+        stock.restoreQuantity(request.quantity());
 
         Stock updatedStock = stockRepository.save(stock);
 

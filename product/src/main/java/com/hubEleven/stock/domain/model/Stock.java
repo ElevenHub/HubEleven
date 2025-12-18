@@ -87,7 +87,7 @@ public class Stock extends BaseEntity {
     }
 
     public void decreaseQuantity(int decreaseQuantity) {
-        validateQuantity(decreaseQuantity);
+        validateDecreaseQuantity(decreaseQuantity);
 
         if (decreaseQuantity > 0 && this.quantity >= decreaseQuantity) {
             this.quantity -= decreaseQuantity;
@@ -95,14 +95,23 @@ public class Stock extends BaseEntity {
     }
 
     public void restoreQuantity(int restoreQuantity) {
+        validateRestoreQuantity(restoreQuantity);
+
         if (restoreQuantity > 0) {
             this.quantity += restoreQuantity;
         }
     }
 
-    public void validateQuantity(int quantity) {
-        if (quantity < 0) {
+    public void validateDecreaseQuantity(int decreaseQuantity) {
+        if (decreaseQuantity < 0) {
             throw new GlobalException(INVALID_STOCK_QUANTITY);
         }
     }
+
+    private void validateRestoreQuantity(int restoreQuantity) {
+        if (restoreQuantity < 0) {
+            throw new GlobalException(INVALID_STOCK_QUANTITY);
+        }
+    }
+
 }
