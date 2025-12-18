@@ -41,8 +41,11 @@ public class StockServiceImpl implements StockService {
         Product product = getProductOrThrow(request.productId());
 
         Stock stock =
-                Stock.create(request.quantity(), request.productId(), request.companyId(),
-                        request.hubId());
+                Stock.create(
+                        request.productId(),
+                        request.companyId(),
+                        request.hubId(),
+                        request.quantity());
 
         Stock savedStock = stockRepository.save(stock);
 
@@ -68,7 +71,7 @@ public class StockServiceImpl implements StockService {
 
         Stock stock = getStockOrThrow(request.productId());
 
-        stock.decreaseQuantity(request.quantity()); // ToDo : 재고 부족 예외 처리
+        stock.decreaseQuantity(request.quantity());
 
         return StockResult.from(stock, product.getName());
     }
