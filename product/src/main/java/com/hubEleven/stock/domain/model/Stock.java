@@ -4,6 +4,7 @@ import static com.hubEleven.product.domain.exception.ProductErrorCode.COMPANY_NO
 import static com.hubEleven.product.domain.exception.ProductErrorCode.HUB_NOT_FOUND;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 import static com.hubEleven.stock.domain.exception.StockErrorCode.DECREASE_QUANTITY_INVALID;
+import static com.hubEleven.stock.domain.exception.StockErrorCode.INITIAL_QUANTITY_INVALID;
 import static com.hubEleven.stock.domain.exception.StockErrorCode.INSUFFICIENT_STOCK;
 import static com.hubEleven.stock.domain.exception.StockErrorCode.RESTORE_QUANTITY_INVALID;
 
@@ -56,17 +57,18 @@ public class Stock extends BaseEntity {
             UUID productId,
             UUID companyId,
             UUID hubId,
-            int quantity
+            int initialQuantity
     ) {
         validateProductId(productId);
         validateCompanyId(companyId);
         validateHubId(hubId);
+        validateInitialQuantity(initialQuantity);
 
         return Stock.builder()
                 .productId(productId)
                 .companyId(companyId)
                 .hubId(hubId)
-                .quantity(quantity)
+                .quantity(initialQuantity)
                 .build();
     }
 
@@ -85,6 +87,12 @@ public class Stock extends BaseEntity {
     private static void validateHubId(UUID hubId) {
         if (hubId == null) {
             throw new GlobalException(HUB_NOT_FOUND);
+        }
+    }
+
+    private static void validateInitialQuantity(int initialQuantity) {
+        if (initialQuantity < 0) {
+            throw new GlobalException(INITIAL_QUANTITY_INVALID);
         }
     }
 
