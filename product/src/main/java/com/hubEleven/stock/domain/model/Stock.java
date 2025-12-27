@@ -3,7 +3,9 @@ package com.hubEleven.stock.domain.model;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.COMPANY_NOT_FOUND;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.HUB_NOT_FOUND;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
-import static com.hubEleven.stock.domain.exception.StockErrorCode.INVALID_STOCK_QUANTITY;
+import static com.hubEleven.stock.domain.exception.StockErrorCode.DECREASE_QUANTITY_INVALID;
+import static com.hubEleven.stock.domain.exception.StockErrorCode.INSUFFICIENT_STOCK;
+import static com.hubEleven.stock.domain.exception.StockErrorCode.RESTORE_QUANTITY_INVALID;
 
 import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.model.BaseEntity;
@@ -89,28 +91,27 @@ public class Stock extends BaseEntity {
     public void decreaseQuantity(int decreaseQuantity) {
         validateDecreaseQuantity(decreaseQuantity);
 
-        if (decreaseQuantity > 0 && this.quantity >= decreaseQuantity) {
-            this.quantity -= decreaseQuantity;
+        if (this.quantity < decreaseQuantity) {
+            throw new GlobalException(INSUFFICIENT_STOCK);
         }
+
+        this.quantity -= decreaseQuantity;
     }
 
     public void restoreQuantity(int restoreQuantity) {
         validateRestoreQuantity(restoreQuantity);
-
-        if (restoreQuantity > 0) {
-            this.quantity += restoreQuantity;
-        }
+        this.quantity += restoreQuantity;
     }
 
-    public void validateDecreaseQuantity(int decreaseQuantity) {
-        if (decreaseQuantity < 0) {
-            throw new GlobalException(INVALID_STOCK_QUANTITY);
+    private void validateDecreaseQuantity(int decreaseQuantity) {
+        if (decreaseQuantity < 1) {
+            throw new GlobalException(DECREASE_QUANTITY_INVALID);
         }
     }
 
     private void validateRestoreQuantity(int restoreQuantity) {
-        if (restoreQuantity < 0) {
-            throw new GlobalException(INVALID_STOCK_QUANTITY);
+        if (restoreQuantity < 1) {
+            throw new GlobalException(RESTORE_QUANTITY_INVALID);
         }
     }
 
