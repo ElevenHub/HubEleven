@@ -8,6 +8,9 @@ spring:
       discovery:
         enabled: true
         service-id: config
+  profiles:
+    include:
+      - monitor
 
 eureka:
   client:
