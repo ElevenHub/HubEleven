@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <springProperty name="SERVICE_NAME" source="spring.application.name"/>
+    <springProperty name="HOSTNAME" source="HOSTNAME" defaultValue="localhost"/>
+    <springProperty name="LOKI_URL" source="loki.url" defaultValue="http://localhost:3100/loki/api/v1/push"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{traceId:-}] [%X{spanId:-}] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="LOKI" class="com.github.loki4j.logback.Loki4jAppender">
+        <http>
+            <url>${LOKI_URL}</url>
+        </http>
+
+        <labels>
+            app=${SERVICE_NAME}
+            host=${HOSTNAME}
+        </labels>
+
+        <structuredMetadata>
+            level=%level
+            logger=%logger
+            thread=%thread
+            traceId=%X{traceId:-}
+            spanId=%X{spanId:-}
+        </structuredMetadata>
+
+        <message>
+            <pattern>%msg%n</pattern>
+        </message>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="LOKI"/>
+    </root>
+
+    <logger name="com.hubEleven" level="DEBUG"/>
+</configuration>
