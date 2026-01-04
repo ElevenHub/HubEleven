@@ -54,6 +54,7 @@ public class SecurityConfig {
 		return http.securityMatcher(
 						"/v1/user/login",
 						"/v1/user/signup",
+						"/actuator/**",
 						"/api-docs/**",
 						"/v3/api-docs/**",
 						"/swagger-ui/**",
