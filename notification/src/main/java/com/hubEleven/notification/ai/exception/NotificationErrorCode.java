@@ -1,4 +1,4 @@
-package com.hubEleven.notification.ai.domain.exception;
+package com.hubEleven.notification.ai.exception;
 
 import com.commonLib.common.code.StatusCode;
 import lombok.Getter;

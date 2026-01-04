@@ -1,4 +1,4 @@
-package com.hubEleven.notification.ai.infrastructure.configuration;
+package com.hubEleven.notification.ai.infrastructure.config;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;

@@ -9,27 +9,27 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 @RequiredArgsConstructor
-public class AiRequestLogRepositoryImpl implements AiRequestLogRepository {
+public class AiRequestLogRepositoryAdapter implements AiRequestLogRepository {
 
-	private final JpaAiRequestLogRepository repository;
+	private final JpaAiRequestLogRepository jpa;
 
 	@Override
 	public AiRequestLog save(AiRequestLog aiRequestLog) {
-		return repository.save(aiRequestLog);
+		return jpa.save(aiRequestLog);
 	}
 
 	@Override
 	public Optional<AiRequestLog> findById(UUID id) {
-		return repository.findById(id);
+		return jpa.findById(id);
 	}
 
 	@Override
 	public boolean existsByOrderId(UUID orderId) {
-		return repository.existsByOrderId(orderId);
+		return jpa.existsByOrderId(orderId);
 	}
 
 	@Override
 	public Optional<AiRequestLog> findByOrderId(UUID orderId) {
-		return repository.findByOrderId(orderId);
+		return jpa.findByOrderId(orderId);
 	}
 }

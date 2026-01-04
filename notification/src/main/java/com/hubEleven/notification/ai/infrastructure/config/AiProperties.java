@@ -1,4 +1,4 @@
-package com.hubEleven.notification.ai.infrastructure.configuration;
+package com.hubEleven.notification.ai.infrastructure.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

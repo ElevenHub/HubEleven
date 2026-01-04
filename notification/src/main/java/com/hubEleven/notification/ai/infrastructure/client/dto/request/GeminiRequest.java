@@ -1,8 +1,9 @@
-package com.hubEleven.notification.ai.infrastructure.client.dto;
+package com.hubEleven.notification.ai.infrastructure.client.dto.request;
 
 import java.util.List;
 
 public record GeminiRequest(List<Content> contents) {
+
 	public static GeminiRequest fromPrompt(String prompt) {
 		return new GeminiRequest(List.of(new Content(List.of(new Part(prompt)))));
 	}

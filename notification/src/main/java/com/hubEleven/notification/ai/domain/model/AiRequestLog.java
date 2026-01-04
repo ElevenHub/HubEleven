@@ -2,6 +2,7 @@ package com.hubEleven.notification.ai.domain.model;
 
 import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
+import com.hubEleven.notification.ai.domain.vo.RequestStatus;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;
@@ -11,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Table(
 		name = "p_ai_request_log",
+		uniqueConstraints = {@UniqueConstraint(name = "uk_ai_req_order", columnNames = "order_id")},
 		indexes = {
 			@Index(name = "idx_ai_req_order", columnList = "order_id"),
 			@Index(name = "idx_ai_req_status", columnList = "request_status")
@@ -43,25 +45,38 @@ public class AiRequestLog extends BaseEntity {
 	@Column(name = "metadata_json", columnDefinition = "text")
 	private String metadataJson;
 
-	private AiRequestLog(UUID orderId, RequestStatus status, String prompt) {
+	@Column(name = "final_dispatch_deadline", length = 255)
+	private String finalDispatchDeadline;
+
+	@Lob
+	@Column(name = "message_body", columnDefinition = "text")
+	private String messageBody;
+
+	private AiRequestLog(UUID orderId, RequestStatus status, String prompt, String metadataJson) {
 		this.orderId = orderId;
 		this.status = status;
 		this.rawPrompt = prompt;
-	}
-
-	public static AiRequestLog requested(UUID orderId, String prompt) {
-		return new AiRequestLog(orderId, RequestStatus.REQUESTED, prompt);
-	}
-
-	public void success(String response, String metadataJson) {
-		this.status = RequestStatus.SUCCESS;
-		this.rawResponse = response;
 		this.metadataJson = metadataJson;
 	}
 
-	public void fail(String failurePayload, String metadataJson) {
+	public static AiRequestLog requested(UUID orderId, String prompt, String metadataJson) {
+		return new AiRequestLog(orderId, RequestStatus.REQUESTED, prompt, metadataJson);
+	}
+
+	public AiRequestLog success(
+			String finalDispatchDeadline, String messageBody, String rawResponse, String metadataJson) {
+		this.status = RequestStatus.SUCCESS;
+		this.finalDispatchDeadline = finalDispatchDeadline;
+		this.messageBody = messageBody;
+		this.rawResponse = rawResponse;
+		this.metadataJson = metadataJson;
+		return this;
+	}
+
+	public AiRequestLog fail(String failurePayload, String metadataJson) {
 		this.status = RequestStatus.FAIL;
 		this.rawResponse = failurePayload;
 		this.metadataJson = metadataJson;
+		return this;
 	}
 }
