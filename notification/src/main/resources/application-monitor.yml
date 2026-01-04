@@ -13,5 +13,3 @@ management:
   endpoint:
     health:
       show-details: always
-    prometheus:
-      enabled: true
