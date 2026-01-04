@@ -21,6 +21,7 @@ public class SecurityConfig {
 				.addFilterAt(headerAuthFilter, SecurityWebFiltersOrder.AUTHENTICATION)
 				.authorizeExchange(
 						exchange -> {
+							exchange.pathMatchers("/actuator/**").permitAll();
 							// PUBLIC_PATHS 설정은 Delivery Service에 필요하다면 추가
 							exchange.anyExchange().authenticated(); // 나머지 모든 요청은 인증 필요
 						})

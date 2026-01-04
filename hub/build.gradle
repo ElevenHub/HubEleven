@@ -43,11 +43,17 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
     implementation 'com.github.Doritosch:commonLib:1.0.5'
 
-    // zipkin
+    // actuator + metrics
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    runtimeOnly 'io.micrometer:micrometer-registry-prometheus'
+
+    // tracing (brave + zipkin)
     implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
     implementation 'io.github.openfeign:feign-micrometer'
+
+    // logging -> loki (push)
+    implementation 'com.github.loki4j:loki-logback-appender:2.0.1'
 }
 
 dependencyManagement {

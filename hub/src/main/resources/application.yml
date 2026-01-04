@@ -8,6 +8,9 @@ spring:
       discovery:
         enabled: true
         service-id: config
+  profiles:
+    include:
+      - monitor
   cache:
     type: simple  # simple = ConcurrentMapCacheManager / redis = redis 사용
     cache-names:

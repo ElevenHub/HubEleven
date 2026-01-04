@@ -1,0 +1,15 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - prometheus
+          - info
+  metrics:
+    tags:
+      application: ${spring.application.name}
+      instance: ${spring.cloud.client.hostname}:${server.port}
+  endpoint:
+    health:
+      show-details: always

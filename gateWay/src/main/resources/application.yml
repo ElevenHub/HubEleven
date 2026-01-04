@@ -5,6 +5,9 @@ eureka:
     service-url:
       defaultZone: http://localhost:8761/eureka
 spring:
+  profiles:
+    include:
+      - monitor
   cloud:
     gateway:
       routes:
