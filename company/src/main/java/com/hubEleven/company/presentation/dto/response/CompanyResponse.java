@@ -1,4 +1,4 @@
-package com.hubEleven.company.presentation.response;
+package com.hubEleven.company.presentation.dto.response;
 
 import com.hubEleven.company.application.dto.CompanyDTO;
 import com.hubEleven.company.domain.model.Company;

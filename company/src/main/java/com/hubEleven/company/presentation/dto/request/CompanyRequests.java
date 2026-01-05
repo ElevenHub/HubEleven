@@ -1,4 +1,4 @@
-package com.hubEleven.company.presentation.request;
+package com.hubEleven.company.presentation.dto.request;
 
 import com.hubEleven.company.domain.model.CompanyType;
 import jakarta.validation.constraints.NotBlank;

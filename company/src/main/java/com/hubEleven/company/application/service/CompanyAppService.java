@@ -1,14 +1,12 @@
 package com.hubEleven.company.application.service;
 
-import static com.hubEleven.company.domain.exception.CompanyErrorCode.*;
-
 import com.commonLib.common.code.ErrorCode;
 import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
 import com.hubEleven.company.application.dto.CompanyDTO;
-import com.hubEleven.company.domain.exception.CompanyErrorCode;
+import com.hubEleven.company.exception.CompanyErrorCode;
 import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.model.CompanyStatus;
 import com.hubEleven.company.domain.model.CompanyType;
@@ -18,7 +16,7 @@ import com.hubEleven.company.infrastructure.client.HubClient;
 import com.hubEleven.company.infrastructure.security.AuthUser;
 import com.hubEleven.company.infrastructure.security.AuthUserContext;
 import com.hubEleven.company.infrastructure.security.Role;
-import com.hubEleven.company.presentation.request.CompanyRequests;
+import com.hubEleven.company.presentation.dto.request.CompanyRequests;
 import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +38,7 @@ public class CompanyAppService {
 		try {
 			hubClient.getHub(hubId);
 		} catch (feign.FeignException.NotFound e) {
-			throw new GlobalException(HUB_NOT_FOUND);
+			throw new GlobalException(CompanyErrorCode.HUB_NOT_FOUND);
 		} catch (feign.FeignException e) {
 			throw new GlobalException(ErrorCode.SERVER_ERROR);
 		}
@@ -85,7 +83,7 @@ public class CompanyAppService {
 		assertHubExists(req.hubId());
 
 		if (companyRepository.existsByHubIdAndName(req.hubId(), req.name())) {
-			throw new GlobalException(COMPANY_DUPLICATED);
+			throw new GlobalException(CompanyErrorCode.COMPANY_DUPLICATED);
 		}
 
 		Company company =
@@ -98,7 +96,7 @@ public class CompanyAppService {
 		var company =
 				companyRepository
 						.findById(companyId)
-						.orElseThrow(() -> new GlobalException(COMPANY_NOT_FOUND));
+						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
 		assertUpdateAccess(company.getHubId(), company.getCompanyId());
 		assertHubExists(company.getHubId());
@@ -106,7 +104,7 @@ public class CompanyAppService {
 		if (req.name() != null && !req.name().isBlank()) {
 			boolean changed = !req.name().equalsIgnoreCase(company.getName());
 			if (changed && companyRepository.existsByHubIdAndName(company.getHubId(), req.name())) {
-				throw new GlobalException(COMPANY_DUPLICATED);
+				throw new GlobalException(CompanyErrorCode.COMPANY_DUPLICATED);
 			}
 		}
 
@@ -120,7 +118,7 @@ public class CompanyAppService {
 		var company =
 				companyRepository
 						.findById(companyId)
-						.orElseThrow(() -> new GlobalException(COMPANY_NOT_FOUND));
+						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 		return CompanyDTO.from(company);
 	}
 
@@ -152,7 +150,7 @@ public class CompanyAppService {
 		var company =
 				companyRepository
 						.findById(companyId)
-						.orElseThrow(() -> new GlobalException(COMPANY_NOT_FOUND));
+						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
 		assertUpdateAccess(company.getHubId(), company.getCompanyId());
 
@@ -172,7 +170,7 @@ public class CompanyAppService {
 		var company =
 				companyRepository
 						.findById(companyId)
-						.orElseThrow(() -> new GlobalException(COMPANY_NOT_FOUND));
+						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
 		assertDeleteAccess(company.getHubId());
 

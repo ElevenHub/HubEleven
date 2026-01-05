@@ -1,4 +1,4 @@
-package com.hubEleven.company.domain.exception;
+package com.hubEleven.company.exception;
 
 import com.commonLib.common.code.StatusCode;
 import lombok.Getter;
