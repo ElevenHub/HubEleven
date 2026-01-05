@@ -28,99 +28,93 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Stock extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "stock_id", nullable = false)
-    private UUID stockId;
+	@Id
+	@GeneratedValue(strategy = GenerationType.UUID)
+	@Column(name = "stock_id", nullable = false)
+	private UUID stockId;
 
-    @Column(name = "product_id", nullable = false)
-    private UUID productId;
+	@Column(name = "product_id", nullable = false)
+	private UUID productId;
 
-    @Column(name = "company_id", nullable = false)
-    private UUID companyId;
+	@Column(name = "company_id", nullable = false)
+	private UUID companyId;
 
-    @Column(name = "hub_id", nullable = false)
-    private UUID hubId;
+	@Column(name = "hub_id", nullable = false)
+	private UUID hubId;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+	@Column(name = "quantity", nullable = false)
+	private int quantity;
 
-    @Builder(access = AccessLevel.PRIVATE)
-    private Stock(UUID productId, UUID companyId, UUID hubId, int quantity) {
-        this.productId = productId;
-        this.companyId = companyId;
-        this.hubId = hubId;
-        this.quantity = quantity;
-    }
+	@Builder(access = AccessLevel.PRIVATE)
+	private Stock(UUID productId, UUID companyId, UUID hubId, int quantity) {
+		this.productId = productId;
+		this.companyId = companyId;
+		this.hubId = hubId;
+		this.quantity = quantity;
+	}
 
-    public static Stock create(
-            UUID productId,
-            UUID companyId,
-            UUID hubId,
-            int initialQuantity
-    ) {
-        validateProductId(productId);
-        validateCompanyId(companyId);
-        validateHubId(hubId);
-        validateInitialQuantity(initialQuantity);
+	public static Stock create(UUID productId, UUID companyId, UUID hubId, int initialQuantity) {
+		validateProductId(productId);
+		validateCompanyId(companyId);
+		validateHubId(hubId);
+		validateInitialQuantity(initialQuantity);
 
-        return Stock.builder()
-                .productId(productId)
-                .companyId(companyId)
-                .hubId(hubId)
-                .quantity(initialQuantity)
-                .build();
-    }
+		return Stock.builder()
+				.productId(productId)
+				.companyId(companyId)
+				.hubId(hubId)
+				.quantity(initialQuantity)
+				.build();
+	}
 
-    private static void validateProductId(UUID productId) {
-        if (productId == null) {
-            throw new GlobalException(PRODUCT_NOT_FOUND);
-        }
-    }
+	private static void validateProductId(UUID productId) {
+		if (productId == null) {
+			throw new GlobalException(PRODUCT_NOT_FOUND);
+		}
+	}
 
-    private static void validateCompanyId(UUID companyId) {
-        if (companyId == null) {
-            throw new GlobalException(COMPANY_NOT_FOUND);
-        }
-    }
+	private static void validateCompanyId(UUID companyId) {
+		if (companyId == null) {
+			throw new GlobalException(COMPANY_NOT_FOUND);
+		}
+	}
 
-    private static void validateHubId(UUID hubId) {
-        if (hubId == null) {
-            throw new GlobalException(HUB_NOT_FOUND);
-        }
-    }
+	private static void validateHubId(UUID hubId) {
+		if (hubId == null) {
+			throw new GlobalException(HUB_NOT_FOUND);
+		}
+	}
 
-    private static void validateInitialQuantity(int initialQuantity) {
-        if (initialQuantity < 0) {
-            throw new GlobalException(INITIAL_QUANTITY_INVALID);
-        }
-    }
+	private static void validateInitialQuantity(int initialQuantity) {
+		if (initialQuantity < 0) {
+			throw new GlobalException(INITIAL_QUANTITY_INVALID);
+		}
+	}
 
-    public void decreaseQuantity(int decreaseQuantity) {
-        validateDecreaseQuantity(decreaseQuantity);
+	public void decreaseQuantity(int decreaseQuantity) {
+		validateDecreaseQuantity(decreaseQuantity);
 
-        if (this.quantity < decreaseQuantity) {
-            throw new GlobalException(INSUFFICIENT_STOCK);
-        }
+		if (this.quantity < decreaseQuantity) {
+			throw new GlobalException(INSUFFICIENT_STOCK);
+		}
 
-        this.quantity -= decreaseQuantity;
-    }
+		this.quantity -= decreaseQuantity;
+	}
 
-    public void restoreQuantity(int restoreQuantity) {
-        validateRestoreQuantity(restoreQuantity);
-        this.quantity += restoreQuantity;
-    }
+	public void restoreQuantity(int restoreQuantity) {
+		validateRestoreQuantity(restoreQuantity);
+		this.quantity += restoreQuantity;
+	}
 
-    private void validateDecreaseQuantity(int decreaseQuantity) {
-        if (decreaseQuantity < 1) {
-            throw new GlobalException(DECREASE_QUANTITY_INVALID);
-        }
-    }
+	private void validateDecreaseQuantity(int decreaseQuantity) {
+		if (decreaseQuantity < 1) {
+			throw new GlobalException(DECREASE_QUANTITY_INVALID);
+		}
+	}
 
-    private void validateRestoreQuantity(int restoreQuantity) {
-        if (restoreQuantity < 1) {
-            throw new GlobalException(RESTORE_QUANTITY_INVALID);
-        }
-    }
-
+	private void validateRestoreQuantity(int restoreQuantity) {
+		if (restoreQuantity < 1) {
+			throw new GlobalException(RESTORE_QUANTITY_INVALID);
+		}
+	}
 }

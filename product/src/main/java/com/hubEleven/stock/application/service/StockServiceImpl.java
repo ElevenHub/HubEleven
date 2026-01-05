@@ -19,75 +19,71 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class StockServiceImpl implements StockService {
 
-    private final StockRepository stockRepository;
-    private final ProductRepository productRepository;
+	private final StockRepository stockRepository;
+	private final ProductRepository productRepository;
 
-    private Product getProductOrThrow(UUID productId) {
-        return productRepository
-                .findByIdNotDeleted(productId)
-                .orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
-    }
+	private Product getProductOrThrow(UUID productId) {
+		return productRepository
+				.findByIdNotDeleted(productId)
+				.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
+	}
 
-    private Stock getStockOrThrow(UUID productId) {
-        return stockRepository
-                .findByProductId(productId)
-                .orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
-    }
+	private Stock getStockOrThrow(UUID productId) {
+		return stockRepository
+				.findByProductId(productId)
+				.orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
+	}
 
-    @Override
-    @Transactional
-    public StockResult create(StockRequests.Create request) {
+	@Override
+	@Transactional
+	public StockResult create(StockRequests.Create request) {
 
-        Product product = getProductOrThrow(request.productId());
+		Product product = getProductOrThrow(request.productId());
 
-        Stock stock =
-                Stock.create(
-                        request.productId(),
-                        request.companyId(),
-                        request.hubId(),
-                        request.quantity());
+		Stock stock =
+				Stock.create(request.productId(), request.companyId(), request.hubId(), request.quantity());
 
-        Stock savedStock = stockRepository.save(stock);
+		Stock savedStock = stockRepository.save(stock);
 
-        return StockResult.from(savedStock, product.getName());
-    }
+		return StockResult.from(savedStock, product.getName());
+	}
 
-    @Override
-    @Transactional(readOnly = true)
-    public StockResult getStockByProductId(UUID productId) {
+	@Override
+	@Transactional(readOnly = true)
+	public StockResult getStockByProductId(UUID productId) {
 
-        Product product = getProductOrThrow(productId);
+		Product product = getProductOrThrow(productId);
 
-        Stock stock = getStockOrThrow(productId);
+		Stock stock = getStockOrThrow(productId);
 
-        return StockResult.from(stock, product.getName());
-    }
+		return StockResult.from(stock, product.getName());
+	}
 
-    @Override
-    @Transactional
-    public StockResult decreaseStock(StockRequests.Decrease request) {
+	@Override
+	@Transactional
+	public StockResult decreaseStock(StockRequests.Decrease request) {
 
-        Product product = getProductOrThrow(request.productId());
+		Product product = getProductOrThrow(request.productId());
 
-        Stock stock = getStockOrThrow(request.productId());
+		Stock stock = getStockOrThrow(request.productId());
 
-        stock.decreaseQuantity(request.quantity());
+		stock.decreaseQuantity(request.quantity());
 
-        return StockResult.from(stock, product.getName());
-    }
+		return StockResult.from(stock, product.getName());
+	}
 
-    @Override
-    @Transactional
-    public StockResult restoreStock(StockRequests.Restore request) {
+	@Override
+	@Transactional
+	public StockResult restoreStock(StockRequests.Restore request) {
 
-        Product product = getProductOrThrow(request.productId());
+		Product product = getProductOrThrow(request.productId());
 
-        Stock stock = getStockOrThrow(request.productId());
+		Stock stock = getStockOrThrow(request.productId());
 
-        stock.restoreQuantity(request.quantity());
+		stock.restoreQuantity(request.quantity());
 
-        Stock updatedStock = stockRepository.save(stock);
+		Stock updatedStock = stockRepository.save(stock);
 
-        return StockResult.from(updatedStock, product.getName());
-    }
+		return StockResult.from(updatedStock, product.getName());
+	}
 }
