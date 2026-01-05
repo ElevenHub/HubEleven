@@ -4,22 +4,24 @@ import com.commonLib.common.code.SuccessCode;
 import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
+import com.hubEleven.delivery.application.command.service.DeliveryCommandService;
 import com.hubEleven.delivery.application.dto.DeliveryDetailResponseDto;
 import com.hubEleven.delivery.application.dto.DeliveryRequestDto;
 import com.hubEleven.delivery.application.dto.DeliveryResponseDto;
-import com.hubEleven.delivery.application.service.DeliveryService;
+import com.hubEleven.delivery.application.query.service.DeliveryQueryService;
 import com.hubEleven.delivery.domain.DeliveryStatus;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteRequestDto;
 import com.hubEleven.deliveryRoute.application.dto.DeliveryRouteResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.security.Principal;
-import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.UUID;
 
 @Tag(name = "배송", description = "배송 API")
 @RestController
@@ -27,7 +29,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/delivery")
 public class DeliveryController {
 
-	private final DeliveryService deliveryService;
+    private final DeliveryCommandService commandService;
+    private final DeliveryQueryService queryService;
 
 	// 배송 검색
 	@Operation(summary = "배송 검색", description = "조건을 가지고 배송 내역 검색")
@@ -46,7 +49,7 @@ public class DeliveryController {
 			@RequestParam(value = "sort", defaultValue = "createdAt") String sort // 정렬기준
 			) {
 		Page<DeliveryResponseDto> result =
-				deliveryService.searchDelivery(
+                queryService.searchDelivery(
 						deliveryId,
 						orderId,
 						status,
@@ -70,7 +73,7 @@ public class DeliveryController {
 			@RequestParam(value = "size", defaultValue = "10") int size, // 조회할 항목수
 			@RequestParam(value = "sort", defaultValue = "createdAt") String sort // 정렬기준
 			) {
-		Page<DeliveryResponseDto> result = deliveryService.getDeliveryList(page, size, sort);
+		Page<DeliveryResponseDto> result = queryService.getDeliveryList(page, size, sort);
 		CommonPageResponse<DeliveryResponseDto> response = CommonPageResponse.of(result);
 		return ApiResponseEntity.success(response);
 	}
@@ -80,7 +83,7 @@ public class DeliveryController {
 	@GetMapping("/{deliveryId}")
 	public ResponseEntity<ApiResponse<DeliveryDetailResponseDto>> getDelivery(
 			@PathVariable UUID deliveryId) {
-		DeliveryDetailResponseDto result = deliveryService.getDelivery(deliveryId);
+		DeliveryDetailResponseDto result = queryService.getDelivery(deliveryId);
 
 		return ApiResponseEntity.create(SuccessCode.SUCCESS, "/delivery/" + deliveryId, result);
 	}
@@ -92,7 +95,7 @@ public class DeliveryController {
 	public ResponseEntity<ApiResponse<DeliveryResponseDto>> createDelivery(
 			@RequestBody DeliveryRequestDto deliveryRequestDto) {
 		UUID orderId = deliveryRequestDto.orderId();
-		DeliveryResponseDto result = deliveryService.createDelivery(orderId);
+		DeliveryResponseDto result = commandService.createDelivery(orderId);
 		return ApiResponseEntity.create(SuccessCode.CREATED, "/delivery/" + orderId, result);
 	}
 
@@ -102,7 +105,7 @@ public class DeliveryController {
 	@PatchMapping("/{deliveryId}")
 	public ResponseEntity<ApiResponse<DeliveryResponseDto>> updateDelivery(
 			@PathVariable UUID deliveryId, @RequestBody DeliveryRequestDto deliveryRequestDto) {
-		DeliveryResponseDto result = deliveryService.updateDelivery(deliveryId, deliveryRequestDto);
+		DeliveryResponseDto result = commandService.updateDelivery(deliveryId, deliveryRequestDto);
 		return ApiResponseEntity.create(SuccessCode.UPDATED, "/delivery/" + deliveryId, result);
 	}
 
@@ -113,7 +116,7 @@ public class DeliveryController {
 	public ResponseEntity<ApiResponse<Object>> deleteDelivery(
 			@PathVariable UUID deliveryId, Principal principal) {
 		Long userId = Long.parseLong(principal.getName()); // getName으로 userId를 String 타입으로 받아온다
-		deliveryService.deleteDelivery(deliveryId, userId);
+        commandService.deleteDelivery(deliveryId, userId);
 		return ApiResponseEntity.create(SuccessCode.DELETED, "/delivery/" + deliveryId, null);
 	}
 
@@ -121,10 +124,10 @@ public class DeliveryController {
 	@PatchMapping("/{deliveryId}/route")
 	@Operation(summary = "배송 경로 수정", description = "배송 경로를 수정합니다.")
 	@PreAuthorize("hasAnyAuthority('MASTER', 'HUB_MANAGER', 'DELIVERY_MANAGER')")
-	public ResponseEntity<ApiResponse<DeliveryRouteResponseDto>> updateDelivery(
+	public ResponseEntity<ApiResponse<DeliveryRouteResponseDto>> updateRouteDelivery(
 			@PathVariable UUID deliveryId, @RequestBody DeliveryRouteRequestDto deliveryRouteRequestDto) {
 		DeliveryRouteResponseDto result =
-				deliveryService.updateDeliveryRoute(deliveryId, deliveryRouteRequestDto);
+                commandService.updateDeliveryRoute(deliveryId, deliveryRouteRequestDto);
 		return ApiResponseEntity.create(SuccessCode.UPDATED, "/delivery/{deliveryId}/route", result);
 	}
 }
