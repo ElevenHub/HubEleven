@@ -1,4 +1,4 @@
-package com.hubEleven.company.infrastructure.configuration;
+package com.hubEleven.company.infrastructure.config;
 
 import java.util.Optional;
 import org.springframework.context.annotation.Bean;

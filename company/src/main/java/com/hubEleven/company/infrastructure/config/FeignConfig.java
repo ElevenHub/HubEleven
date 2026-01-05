@@ -1,4 +1,4 @@
-package com.hubEleven.company.infrastructure.configuration;
+package com.hubEleven.company.infrastructure.config;
 
 import feign.RequestInterceptor;
 import org.springframework.context.annotation.Bean;
