@@ -2,6 +2,12 @@ plugins {
     id "com.diffplug.spotless" version "6.25.0"
 }
 
+// 버전 관리용 변수 선언
+ext {
+    springCloudVersion = "2023.0.0"
+    springdocVersion   = "2.3.0"
+}
+
 subprojects {
     apply plugin: "com.diffplug.spotless"
 
