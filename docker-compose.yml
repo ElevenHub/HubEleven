@@ -1,0 +1,259 @@
+services:
+  eurekaServer:
+    image: hubeleven-eureka-server:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: eurekaServer
+    container_name: eureka-service
+    ports:
+      - 8761:8761
+    networks:
+      - hubeleven-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8761/actuator/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config:
+    image: hubeleven-config:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: config
+    container_name: config-service
+    ports:
+      - 8888:8888
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+    depends_on:
+      eurekaServer:
+        condition: service_healthy
+    networks:
+      - hubeleven-network
+
+  gateWay:
+    image: hubeleven-gateway:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: gateWay
+    container_name: gateway-service
+    ports:
+      - 8080:8080
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+  user:
+    image: hubeleven-user:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: user
+    container_name: user-service
+    ports:
+      - 8082:8082
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=false
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_REDIS_HOST=${REDIS_HOST}
+      - SPRING_REDIS_PORT=${REDIS_PORT}
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+  hub:
+    image: hubeleven-hub:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: hub
+    container_name: hub-service
+    ports:
+      - 8083:8083
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=false
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_REDIS_HOST=${REDIS_HOST}
+      - SPRING_REDIS_PORT=${REDIS_PORT}
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+  delivery:
+    image: hubeleven-delivery:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: delivery
+    container_name: delivery-service
+    ports:
+      - 8084:8084
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=false
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_REDIS_HOST=${REDIS_HOST}
+      - SPRING_REDIS_PORT=${REDIS_PORT}
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+  order:
+    image: hubeleven-order:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: order
+    container_name: order-service
+    ports:
+      - 8085:8085
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=false
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_REDIS_HOST=${REDIS_HOST}
+      - SPRING_REDIS_PORT=${REDIS_PORT}
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+  product:
+    image: hubeleven-product:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: product
+    container_name: product-service
+    ports:
+      - 8086:8086
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=false
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_REDIS_HOST=${REDIS_HOST}
+      - SPRING_REDIS_PORT=${REDIS_PORT}
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+  company:
+    image: hubeleven-company:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: company
+    container_name: company-service
+    ports:
+      - 8087:8087
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=false
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_REDIS_HOST=${REDIS_HOST}
+      - SPRING_REDIS_PORT=${REDIS_PORT}
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+  notification:
+    image: hubeleven-notification:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        SERVICE_NAME: notification
+    container_name: notification-service
+    ports:
+      - 8088:8088
+    environment:
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
+      - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
+      - SPRING_CLOUD_CONFIG_FAIL_FAST=false
+      - SPRING_DATASOURCE_URL=${SPRING_DATASOURCE_URL}
+      - SPRING_DATASOURCE_USERNAME=${SPRING_DATASOURCE_USERNAME}
+      - SPRING_DATASOURCE_PASSWORD=${SPRING_DATASOURCE_PASSWORD}
+      - SPRING_JPA_DATABASE_PLATFORM=org.hibernate.dialect.MySQL8Dialect
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - SPRING_REDIS_HOST=${REDIS_HOST}
+      - SPRING_REDIS_PORT=${REDIS_PORT}
+      - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
+      - JWT_SECRET=${JWT_SECRET}
+    depends_on:
+      - eurekaServer
+      - config
+    networks:
+      - hubeleven-network
+
+networks:
+  msa-network:
+    external: true
+    name: hubeleven-network
