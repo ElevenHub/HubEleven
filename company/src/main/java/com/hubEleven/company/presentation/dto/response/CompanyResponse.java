@@ -1,6 +1,6 @@
 package com.hubEleven.company.presentation.dto.response;
 
-import com.hubEleven.company.application.dto.CompanyDTO;
+import com.hubEleven.company.application.dto.response.CompanyResult;
 import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.model.CompanyStatus;
 import com.hubEleven.company.domain.model.CompanyType;
@@ -17,7 +17,7 @@ public record CompanyResponse(
 		String address,
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt) {
-	public static CompanyResponse from(CompanyDTO company) {
+	public static CompanyResponse from(CompanyResult company) {
 		return new CompanyResponse(
 				company.companyId(),
 				company.hubId(),

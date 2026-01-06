@@ -4,7 +4,7 @@ import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
-import com.hubEleven.company.application.dto.CompanyDTO;
+import com.hubEleven.company.application.dto.response.CompanyResult;
 import com.hubEleven.company.application.service.CompanyAppService;
 import com.hubEleven.company.domain.model.CompanyStatus;
 import com.hubEleven.company.domain.model.CompanyType;
@@ -31,7 +31,7 @@ public class CompanyController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<CompanyResponse>> create(
 			@Valid @RequestBody CompanyRequests.Create req) {
-		CompanyDTO dto = companyAppService.createCompany(req);
+		CompanyResult dto = companyAppService.createCompany(req);
 		return ApiResponseEntity.success(CompanyResponse.from(dto));
 	}
 
@@ -39,14 +39,14 @@ public class CompanyController {
 	@PatchMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
 			@PathVariable UUID companyId, @Valid @RequestBody CompanyRequests.Update req) {
-		CompanyDTO dto = companyAppService.updateCompany(companyId, req);
+		CompanyResult dto = companyAppService.updateCompany(companyId, req);
 		return ApiResponseEntity.success(CompanyResponse.from(dto));
 	}
 
 	@Operation(summary = "업체 단건 조회 API", description = "업체 ID로 업체를 조회한다.")
 	@GetMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<CompanyResponse>> getCompany(@PathVariable UUID companyId) {
-		CompanyDTO dto = companyAppService.getCompany(companyId);
+		CompanyResult dto = companyAppService.getCompany(companyId);
 		return ApiResponseEntity.success(CompanyResponse.from(dto));
 	}
 
@@ -100,7 +100,7 @@ public class CompanyController {
 	@PatchMapping("/{companyId}/status")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompanyStatus(
 			@PathVariable UUID companyId, @Valid @RequestBody CompanyRequests.StatusChange req) {
-		CompanyDTO dto = companyAppService.changeStatus(companyId, req.status());
+		CompanyResult dto = companyAppService.changeStatus(companyId, req.status());
 		return ApiResponseEntity.success(CompanyResponse.from(dto));
 	}
 

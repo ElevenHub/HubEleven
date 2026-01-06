@@ -5,7 +5,7 @@ import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
-import com.hubEleven.company.application.dto.CompanyDTO;
+import com.hubEleven.company.application.dto.response.CompanyResult;
 import com.hubEleven.company.exception.CompanyErrorCode;
 import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.model.CompanyStatus;
@@ -78,7 +78,7 @@ public class CompanyAppService {
 	}
 
 	@Transactional
-	public CompanyDTO createCompany(CompanyRequests.Create req) {
+	public CompanyResult createCompany(CompanyRequests.Create req) {
 		assertCreateAccess(req.hubId());
 		assertHubExists(req.hubId());
 
@@ -88,11 +88,11 @@ public class CompanyAppService {
 
 		Company company =
 				Company.create(req.hubId(), req.name(), req.type(), req.slackId(), req.address());
-		return CompanyDTO.from(companyRepository.save(company));
+		return CompanyResult.from(companyRepository.save(company));
 	}
 
 	@Transactional
-	public CompanyDTO updateCompany(UUID companyId, CompanyRequests.Update req) {
+	public CompanyResult updateCompany(UUID companyId, CompanyRequests.Update req) {
 		var company =
 				companyRepository
 						.findById(companyId)
@@ -110,28 +110,28 @@ public class CompanyAppService {
 
 		company.changeType(req.type());
 		company.update(req.name(), req.address(), req.slackId());
-		return CompanyDTO.from(company);
+		return CompanyResult.from(company);
 	}
 
 	@Transactional(readOnly = true)
-	public CompanyDTO getCompany(UUID companyId) {
+	public CompanyResult getCompany(UUID companyId) {
 		var company =
 				companyRepository
 						.findById(companyId)
 						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
-		return CompanyDTO.from(company);
+		return CompanyResult.from(company);
 	}
 
 	@Transactional(readOnly = true)
-	public CommonPageResponse<CompanyDTO> findCompanyList(CommonPageRequest pageReq) {
+	public CommonPageResponse<CompanyResult> findCompanyList(CommonPageRequest pageReq) {
 		var page =
 				companyRepository.search(
 						new CompanySearchCondition(null, null, null, null), pageReq.toPageable());
-		return PagingUtils.convert(page, CompanyDTO::from);
+		return PagingUtils.convert(page, CompanyResult::from);
 	}
 
 	@Transactional(readOnly = true)
-	public CommonPageResponse<CompanyDTO> searchCompany(
+	public CommonPageResponse<CompanyResult> searchCompany(
 			Optional<UUID> hubId,
 			Optional<String> name,
 			Optional<CompanyType> type,
@@ -142,11 +142,11 @@ public class CompanyAppService {
 				new CompanySearchCondition(
 						hubId.orElse(null), name.orElse(null), type.orElse(null), status.orElse(null));
 		var page = companyRepository.search(cond, pageReq.toPageable());
-		return PagingUtils.convert(page, CompanyDTO::from);
+		return PagingUtils.convert(page, CompanyResult::from);
 	}
 
 	@Transactional
-	public CompanyDTO changeStatus(UUID companyId, String rawStatus) {
+	public CompanyResult changeStatus(UUID companyId, String rawStatus) {
 		var company =
 				companyRepository
 						.findById(companyId)
@@ -162,7 +162,7 @@ public class CompanyAppService {
 		}
 
 		company.changeStatus(newStatus);
-		return CompanyDTO.from(company);
+		return CompanyResult.from(company);
 	}
 
 	@Transactional
