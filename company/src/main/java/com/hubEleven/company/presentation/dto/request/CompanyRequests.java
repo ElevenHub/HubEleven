@@ -1,7 +1,7 @@
 package com.hubEleven.company.presentation.dto.request;
 
-import com.hubEleven.company.domain.model.CompanyStatus;
-import com.hubEleven.company.domain.model.CompanyType;
+import com.hubEleven.company.domain.vo.CompanyStatus;
+import com.hubEleven.company.domain.vo.CompanyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;

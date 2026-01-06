@@ -1,6 +1,6 @@
 package com.hubEleven.company.application.command;
 
-import com.hubEleven.company.domain.model.CompanyType;
+import com.hubEleven.company.domain.vo.CompanyType;
 
 import java.util.UUID;
 

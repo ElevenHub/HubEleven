@@ -1,4 +1,4 @@
-package com.hubEleven.company.domain.model;
+package com.hubEleven.company.domain.vo;
 
 public enum CompanyStatus {
 	ACTIVE,

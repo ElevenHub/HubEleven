@@ -1,4 +1,4 @@
-package com.hubEleven.company.domain.model;
+package com.hubEleven.company.domain.vo;
 
 import static com.hubEleven.company.exception.CompanyErrorCode.COMPANY_NOT_FOUND;
 

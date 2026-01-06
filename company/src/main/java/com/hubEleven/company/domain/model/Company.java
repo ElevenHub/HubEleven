@@ -2,6 +2,8 @@ package com.hubEleven.company.domain.model;
 
 import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
+import com.hubEleven.company.domain.vo.CompanyStatus;
+import com.hubEleven.company.domain.vo.CompanyType;
 import jakarta.persistence.*;
 import java.util.UUID;
 import lombok.Getter;

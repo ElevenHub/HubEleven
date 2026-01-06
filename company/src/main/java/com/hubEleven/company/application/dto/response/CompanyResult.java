@@ -1,8 +1,8 @@
 package com.hubEleven.company.application.dto.response;
 
 import com.hubEleven.company.domain.model.Company;
-import com.hubEleven.company.domain.model.CompanyStatus;
-import com.hubEleven.company.domain.model.CompanyType;
+import com.hubEleven.company.domain.vo.CompanyStatus;
+import com.hubEleven.company.domain.vo.CompanyType;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
