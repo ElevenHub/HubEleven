@@ -12,7 +12,9 @@ import com.hubEleven.company.application.dto.response.CompanyResult;
 import com.hubEleven.company.application.service.CompanyAppService;
 import com.hubEleven.company.domain.vo.CompanyStatus;
 import com.hubEleven.company.domain.vo.CompanyType;
-import com.hubEleven.company.presentation.dto.request.CompanyRequests;
+import com.hubEleven.company.presentation.dto.request.CreateCompanyRequest;
+import com.hubEleven.company.presentation.dto.request.UpdateCompanyRequest;
+import com.hubEleven.company.presentation.dto.request.ChangeCompanyStatusRequest;
 import com.hubEleven.company.presentation.dto.response.CompanyResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +35,7 @@ public class CompanyController {
 	@Operation(summary = "업체 생성 API", description = "새로운 업체를 생성한다.")
 	@PostMapping
 	public ResponseEntity<ApiResponse<CompanyResponse>> create(
-			@Valid @RequestBody CompanyRequests.Create req,
+			@Valid @RequestBody CreateCompanyRequest req,
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
@@ -50,7 +52,7 @@ public class CompanyController {
 	@PatchMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
 			@PathVariable UUID companyId,
-			@Valid @RequestBody CompanyRequests.Update req,
+			@Valid @RequestBody UpdateCompanyRequest req,
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
@@ -116,7 +118,7 @@ public class CompanyController {
 	@PatchMapping("/{companyId}/status")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompanyStatus(
 			@PathVariable UUID companyId,
-			@Valid @RequestBody CompanyRequests.StatusChange req,
+			@Valid @RequestBody ChangeCompanyStatusRequest req,
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
