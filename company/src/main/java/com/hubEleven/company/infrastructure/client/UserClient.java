@@ -1,5 +1,6 @@
 package com.hubEleven.company.infrastructure.client;
 
+import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,5 +23,5 @@ public interface UserClient {
 			String phoneNumber,
 			String role,
 			String status,
-			java.util.UUID companyId) {}
+			UUID companyId) {}
 }

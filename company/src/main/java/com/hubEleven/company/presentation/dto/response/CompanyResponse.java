@@ -1,7 +1,6 @@
 package com.hubEleven.company.presentation.dto.response;
 
 import com.hubEleven.company.application.dto.response.CompanyResult;
-import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.vo.CompanyStatus;
 import com.hubEleven.company.domain.vo.CompanyType;
 import java.time.LocalDateTime;
@@ -28,18 +27,5 @@ public record CompanyResponse(
 				company.address(),
 				company.createdAt(),
 				company.updatedAt());
-	}
-
-	public static CompanyResponse from(Company company) {
-		return new CompanyResponse(
-				company.getCompanyId(),
-				company.getHubId(),
-				company.getName(),
-				company.getCompanyType(),
-				company.getStatus(),
-				company.getSlackId(),
-				company.getAddress(),
-				company.getCreatedAt(),
-				company.getUpdatedAt());
 	}
 }
