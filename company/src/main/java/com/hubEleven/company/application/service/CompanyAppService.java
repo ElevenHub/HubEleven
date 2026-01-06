@@ -15,24 +15,21 @@ import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.repository.CompanyRepository;
 import com.hubEleven.company.domain.repository.CompanySearchCondition;
 import com.hubEleven.company.infrastructure.client.HubClient;
-import com.hubEleven.company.infrastructure.security.AuthUser;
-import com.hubEleven.company.infrastructure.security.AuthUserContext;
-import com.hubEleven.company.infrastructure.security.Role;
+import com.hubEleven.company.infrastructure.client.UserClient;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CompanyAppService {
 
 	private final CompanyRepository companyRepository;
 	private final HubClient hubClient;
-
-	private AuthUser currentUser() {
-		return AuthUserContext.get();
-	}
+	private final UserClient userClient;
 
 	private void assertHubExists(UUID hubId) {
 		try {
@@ -44,42 +41,138 @@ public class CompanyAppService {
 		}
 	}
 
-	private void assertCreateAccess(UUID hubId) {
-		AuthUser user = currentUser();
-		if (user == null) throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
+	/**
+	 * 사용자의 hubId를 조회합니다.
+	 * user-service에서 사용자 정보를 가져온 후, companyId로 DB에서 직접 company를 조회하여 hubId를 가져옵니다.
+	 */
+	private UUID getUserHubId(Long userId, String userRole) {
+		String normalizedRole = normalizeRole(userRole);
+		
+		// MASTER는 hubId가 없을 수 있음
+		if ("MASTER".equals(normalizedRole)) {
+			return null;
+		}
+		
+		try {
+			UserClient.UserDTO user = userClient.getUser(userId, userId, userRole);
+			if (user.companyId() == null) {
+				log.warn("사용자의 companyId가 null입니다. userId: {}", userId);
+				return null;
+			}
+			
+			// DB에서 직접 company 조회하여 hubId 가져오기
+			return companyRepository.findById(user.companyId())
+					.map(Company::getHubId)
+					.orElse(null);
+		} catch (Exception e) {
+			log.error("사용자 hubId 조회 실패. userId: {}, error: {}", userId, e.getMessage());
+			return null;
+		}
+	}
 
-		if (user.role() == Role.MASTER) return;
-		if (user.role() == Role.HUB_MANAGER && hubId != null && hubId.equals(user.hubId())) return;
+	/**
+	 * 사용자의 companyId를 조회합니다.
+	 */
+	private UUID getUserCompanyId(Long userId, String userRole) {
+		try {
+			UserClient.UserDTO user = userClient.getUser(userId, userId, userRole);
+			return user.companyId();
+		} catch (Exception e) {
+			log.error("사용자 companyId 조회 실패. userId: {}, error: {}", userId, e.getMessage());
+			return null;
+		}
+	}
+
+	/**
+	 * Role 문자열을 정규화합니다.
+	 */
+	private String normalizeRole(String userRole) {
+		if (userRole == null) {
+			return null;
+		}
+		String normalized = userRole.trim().toUpperCase();
+		if (normalized.startsWith("ROLE_")) {
+			normalized = normalized.substring("ROLE_".length());
+		}
+		return normalized;
+	}
+
+	private void assertCreateAccess(UUID hubId, Long userId, String userRole) {
+		if (userId == null || userRole == null) {
+			throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
+		}
+
+		String normalizedRole = normalizeRole(userRole);
+
+		if ("MASTER".equals(normalizedRole)) {
+			return;
+		}
+		
+		if ("HUB_MANAGER".equals(normalizedRole)) {
+			UUID userHubId = getUserHubId(userId, userRole);
+			if (hubId != null && hubId.equals(userHubId)) {
+				return;
+			}
+		}
 
 		throw new GlobalException(CompanyErrorCode.FORBIDDEN);
 	}
 
-	private void assertUpdateAccess(UUID hubId, UUID companyId) {
-		AuthUser user = currentUser();
-		if (user == null) throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
+	private void assertUpdateAccess(UUID hubId, UUID companyId, Long userId, String userRole) {
+		if (userId == null || userRole == null) {
+			throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
+		}
 
-		if (user.role() == Role.MASTER) return;
-		if (user.role() == Role.HUB_MANAGER && hubId != null && hubId.equals(user.hubId())) return;
-		if (user.role() == Role.COMPANY_MANAGER
-				&& companyId != null
-				&& companyId.equals(user.companyId())) return;
+		String normalizedRole = normalizeRole(userRole);
+
+		if ("MASTER".equals(normalizedRole)) {
+			return;
+		}
+		
+		if ("HUB_MANAGER".equals(normalizedRole)) {
+			UUID userHubId = getUserHubId(userId, userRole);
+			if (hubId != null && hubId.equals(userHubId)) {
+				return;
+			}
+		}
+		
+		if ("COMPANY_MANAGER".equals(normalizedRole)) {
+			UUID userCompanyId = getUserCompanyId(userId, userRole);
+			if (companyId != null && companyId.equals(userCompanyId)) {
+				return;
+			}
+		}
 
 		throw new GlobalException(CompanyErrorCode.FORBIDDEN);
 	}
 
-	private void assertDeleteAccess(UUID hubId) {
-		AuthUser user = currentUser();
-		if (user == null) throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
+	private void assertDeleteAccess(UUID hubId, Long userId, String userRole) {
+		if (userId == null || userRole == null) {
+			throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
+		}
 
-		if (user.role() == Role.MASTER) return;
-		if (user.role() == Role.HUB_MANAGER && hubId != null && hubId.equals(user.hubId())) return;
+		String normalizedRole = normalizeRole(userRole);
+
+		if ("MASTER".equals(normalizedRole)) {
+			return;
+		}
+		
+		if ("HUB_MANAGER".equals(normalizedRole)) {
+			UUID userHubId = getUserHubId(userId, userRole);
+			if (hubId != null && hubId.equals(userHubId)) {
+				return;
+			}
+		}
 
 		throw new GlobalException(CompanyErrorCode.FORBIDDEN);
 	}
 
 	@Transactional
-	public CompanyResult createCompany(CreateCompanyCommand cmd) {
-		assertCreateAccess(cmd.hubId());
+	public CompanyResult createCompany(
+			CreateCompanyCommand cmd,
+			Long userId, String userRole) {
+
+		assertCreateAccess(cmd.hubId(), userId, userRole);
 		assertHubExists(cmd.hubId());
 
 		if (companyRepository.existsByHubIdAndName(cmd.hubId(), cmd.name())) {
@@ -91,11 +184,14 @@ public class CompanyAppService {
 	}
 
 	@Transactional
-	public CompanyResult updateCompany(UpdateCompanyCommand cmd) {
+	public CompanyResult updateCompany(
+			UpdateCompanyCommand cmd,
+			Long userId, String userRole) {
+
 		var company = companyRepository.findById(cmd.companyId())
 				.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
-		assertUpdateAccess(company.getHubId(), company.getCompanyId());
+		assertUpdateAccess(company.getHubId(), company.getCompanyId(), userId, userRole);
 		assertHubExists(company.getHubId());
 
 		if (cmd.name() != null && !cmd.name().isBlank()) {
@@ -135,27 +231,29 @@ public class CompanyAppService {
 	}
 
 	@Transactional
-	public CompanyResult changeStatus(ChangeCompanyStatusCommand cmd) {
+	public CompanyResult changeStatus(
+			ChangeCompanyStatusCommand cmd,
+			Long userId, String userRole) {
+
 		var company = companyRepository.findById(cmd.companyId())
 				.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
-		assertUpdateAccess(company.getHubId(), company.getCompanyId());
+		assertUpdateAccess(company.getHubId(), company.getCompanyId(), userId, userRole);
 
 		company.changeStatus(cmd.status());
 		return CompanyResult.from(company);
 	}
 
-
 	@Transactional
-	public void deleteCompany(UUID companyId) {
+	public void deleteCompany(UUID companyId, Long userId, String userRole) {
 		var company =
 				companyRepository
 						.findById(companyId)
 						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
-		assertDeleteAccess(company.getHubId());
+		assertDeleteAccess(company.getHubId(), userId, userRole);
 
-		company.delete(currentUser().userId());
+		company.delete(userId);
 		companyRepository.save(company);
 	}
 }

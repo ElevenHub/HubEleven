@@ -33,9 +33,13 @@ public class CompanyController {
 	@Operation(summary = "업체 생성 API", description = "새로운 업체를 생성한다.")
 	@PostMapping
 	public ResponseEntity<ApiResponse<CompanyResponse>> create(
-			@Valid @RequestBody CompanyRequests.Create req) {
+			@Valid @RequestBody CompanyRequests.Create req,
+			@RequestHeader("X-User-Id") Long userId,
+			@RequestHeader("X-User-Role") String userRole) {
+
 		CompanyResult result = companyAppService.createCompany(
-				new CreateCompanyCommand(req.hubId(), req.name(), req.type(), req.slackId(), req.address())
+				new CreateCompanyCommand(req.hubId(), req.name(), req.type(), req.slackId(), req.address()),
+				userId, userRole
 		);
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
@@ -43,9 +47,14 @@ public class CompanyController {
 	@Operation(summary = "업체 수정 API", description = "업체의 기본 정보를 수정한다.")
 	@PatchMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
-			@PathVariable UUID companyId, @Valid @RequestBody CompanyRequests.Update req) {
+			@PathVariable UUID companyId,
+			@Valid @RequestBody CompanyRequests.Update req,
+			@RequestHeader("X-User-Id") Long userId,
+			@RequestHeader("X-User-Role") String userRole) {
+
 		CompanyResult result = companyAppService.updateCompany(
-				new UpdateCompanyCommand(companyId, req.name(), req.type(), req.slackId(), req.address())
+				new UpdateCompanyCommand(companyId, req.name(), req.type(), req.slackId(), req.address()),
+				userId, userRole
 		);
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
@@ -103,17 +112,26 @@ public class CompanyController {
 	@Operation(summary = "업체 상태 변경 API", description = "업체의 상태를 변경한다.")
 	@PatchMapping("/{companyId}/status")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompanyStatus(
-			@PathVariable UUID companyId, @Valid @RequestBody CompanyRequests.StatusChange req) {
+			@PathVariable UUID companyId,
+			@Valid @RequestBody CompanyRequests.StatusChange req,
+			@RequestHeader("X-User-Id") Long userId,
+			@RequestHeader("X-User-Role") String userRole) {
+
 		CompanyResult result = companyAppService.changeStatus(
-				new ChangeCompanyStatusCommand(companyId, req.status())
+				new ChangeCompanyStatusCommand(companyId, req.status()),
+				userId, userRole
 		);
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
 	@Operation(summary = "업체 삭제 API", description = "업체를 삭제한다.")
 	@DeleteMapping("{companyId}")
-	public ResponseEntity<ApiResponse<Object>> deleteCompany(@PathVariable UUID companyId) {
-		companyAppService.deleteCompany(companyId);
+	public ResponseEntity<ApiResponse<Object>> deleteCompany(
+			@PathVariable UUID companyId,
+			@RequestHeader("X-User-Id") Long userId,
+			@RequestHeader("X-User-Role") String userRole) {
+
+		companyAppService.deleteCompany(companyId, userId, userRole);
 		return ApiResponseEntity.success(null);
 	}
 }
