@@ -37,10 +37,12 @@ public class CompanyController {
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
-		CompanyResult result = companyAppService.createCompany(
-				new CreateCompanyCommand(req.hubId(), req.name(), req.type(), req.slackId(), req.address()),
-				userId, userRole
-		);
+		CompanyResult result =
+				companyAppService.createCompany(
+						new CreateCompanyCommand(
+								req.hubId(), req.name(), req.type(), req.slackId(), req.address()),
+						userId,
+						userRole);
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
@@ -52,10 +54,12 @@ public class CompanyController {
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
-		CompanyResult result = companyAppService.updateCompany(
-				new UpdateCompanyCommand(companyId, req.name(), req.type(), req.slackId(), req.address()),
-				userId, userRole
-		);
+		CompanyResult result =
+				companyAppService.updateCompany(
+						new UpdateCompanyCommand(
+								companyId, req.name(), req.type(), req.slackId(), req.address()),
+						userId,
+						userRole);
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
@@ -92,10 +96,9 @@ public class CompanyController {
 			@RequestParam(required = false) CompanyType type,
 			@RequestParam(required = false) CompanyStatus status) {
 
-		var page = companyAppService.searchCompany(
-				new SearchCompanyCommand(hubId, name, type, status),
-				pageReq
-		);
+		var page =
+				companyAppService.searchCompany(
+						new SearchCompanyCommand(hubId, name, type, status), pageReq);
 
 		var mapped =
 				new CommonPageResponse<>(
@@ -117,10 +120,9 @@ public class CompanyController {
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
-		CompanyResult result = companyAppService.changeStatus(
-				new ChangeCompanyStatusCommand(companyId, req.status()),
-				userId, userRole
-		);
+		CompanyResult result =
+				companyAppService.changeStatus(
+						new ChangeCompanyStatusCommand(companyId, req.status()), userId, userRole);
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 

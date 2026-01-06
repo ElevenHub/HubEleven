@@ -10,10 +10,10 @@ import com.hubEleven.company.application.command.CreateCompanyCommand;
 import com.hubEleven.company.application.command.SearchCompanyCommand;
 import com.hubEleven.company.application.command.UpdateCompanyCommand;
 import com.hubEleven.company.application.dto.response.CompanyResult;
-import com.hubEleven.company.exception.CompanyErrorCode;
 import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.repository.CompanyRepository;
 import com.hubEleven.company.domain.repository.CompanySearchCondition;
+import com.hubEleven.company.exception.CompanyErrorCode;
 import com.hubEleven.company.infrastructure.client.HubClient;
 import com.hubEleven.company.infrastructure.client.UserClient;
 import java.util.UUID;
@@ -42,37 +42,32 @@ public class CompanyAppService {
 	}
 
 	/**
-	 * 사용자의 hubId를 조회합니다.
-	 * user-service에서 사용자 정보를 가져온 후, companyId로 DB에서 직접 company를 조회하여 hubId를 가져옵니다.
+	 * 사용자의 hubId를 조회합니다. user-service에서 사용자 정보를 가져온 후, companyId로 DB에서 직접 company를 조회하여 hubId를 가져옵니다.
 	 */
 	private UUID getUserHubId(Long userId, String userRole) {
 		String normalizedRole = normalizeRole(userRole);
-		
+
 		// MASTER는 hubId가 없을 수 있음
 		if ("MASTER".equals(normalizedRole)) {
 			return null;
 		}
-		
+
 		try {
 			UserClient.UserDTO user = userClient.getUser(userId, userId, userRole);
 			if (user.companyId() == null) {
 				log.warn("사용자의 companyId가 null입니다. userId: {}", userId);
 				return null;
 			}
-			
+
 			// DB에서 직접 company 조회하여 hubId 가져오기
-			return companyRepository.findById(user.companyId())
-					.map(Company::getHubId)
-					.orElse(null);
+			return companyRepository.findById(user.companyId()).map(Company::getHubId).orElse(null);
 		} catch (Exception e) {
 			log.error("사용자 hubId 조회 실패. userId: {}, error: {}", userId, e.getMessage());
 			return null;
 		}
 	}
 
-	/**
-	 * 사용자의 companyId를 조회합니다.
-	 */
+	/** 사용자의 companyId를 조회합니다. */
 	private UUID getUserCompanyId(Long userId, String userRole) {
 		try {
 			UserClient.UserDTO user = userClient.getUser(userId, userId, userRole);
@@ -83,9 +78,7 @@ public class CompanyAppService {
 		}
 	}
 
-	/**
-	 * Role 문자열을 정규화합니다.
-	 */
+	/** Role 문자열을 정규화합니다. */
 	private String normalizeRole(String userRole) {
 		if (userRole == null) {
 			return null;
@@ -107,7 +100,7 @@ public class CompanyAppService {
 		if ("MASTER".equals(normalizedRole)) {
 			return;
 		}
-		
+
 		if ("HUB_MANAGER".equals(normalizedRole)) {
 			UUID userHubId = getUserHubId(userId, userRole);
 			if (hubId != null && hubId.equals(userHubId)) {
@@ -128,14 +121,14 @@ public class CompanyAppService {
 		if ("MASTER".equals(normalizedRole)) {
 			return;
 		}
-		
+
 		if ("HUB_MANAGER".equals(normalizedRole)) {
 			UUID userHubId = getUserHubId(userId, userRole);
 			if (hubId != null && hubId.equals(userHubId)) {
 				return;
 			}
 		}
-		
+
 		if ("COMPANY_MANAGER".equals(normalizedRole)) {
 			UUID userCompanyId = getUserCompanyId(userId, userRole);
 			if (companyId != null && companyId.equals(userCompanyId)) {
@@ -156,7 +149,7 @@ public class CompanyAppService {
 		if ("MASTER".equals(normalizedRole)) {
 			return;
 		}
-		
+
 		if ("HUB_MANAGER".equals(normalizedRole)) {
 			UUID userHubId = getUserHubId(userId, userRole);
 			if (hubId != null && hubId.equals(userHubId)) {
@@ -168,9 +161,7 @@ public class CompanyAppService {
 	}
 
 	@Transactional
-	public CompanyResult createCompany(
-			CreateCompanyCommand cmd,
-			Long userId, String userRole) {
+	public CompanyResult createCompany(CreateCompanyCommand cmd, Long userId, String userRole) {
 
 		assertCreateAccess(cmd.hubId(), userId, userRole);
 		assertHubExists(cmd.hubId());
@@ -179,17 +170,18 @@ public class CompanyAppService {
 			throw new GlobalException(CompanyErrorCode.COMPANY_DUPLICATED);
 		}
 
-		Company company = Company.create(cmd.hubId(), cmd.name(), cmd.type(), cmd.slackId(), cmd.address());
+		Company company =
+				Company.create(cmd.hubId(), cmd.name(), cmd.type(), cmd.slackId(), cmd.address());
 		return CompanyResult.from(companyRepository.save(company));
 	}
 
 	@Transactional
-	public CompanyResult updateCompany(
-			UpdateCompanyCommand cmd,
-			Long userId, String userRole) {
+	public CompanyResult updateCompany(UpdateCompanyCommand cmd, Long userId, String userRole) {
 
-		var company = companyRepository.findById(cmd.companyId())
-				.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
+		var company =
+				companyRepository
+						.findById(cmd.companyId())
+						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
 		assertUpdateAccess(company.getHubId(), company.getCompanyId(), userId, userRole);
 		assertHubExists(company.getHubId());
@@ -224,19 +216,20 @@ public class CompanyAppService {
 	}
 
 	@Transactional(readOnly = true)
-	public CommonPageResponse<CompanyResult> searchCompany(SearchCompanyCommand cmd, CommonPageRequest pageReq) {
+	public CommonPageResponse<CompanyResult> searchCompany(
+			SearchCompanyCommand cmd, CommonPageRequest pageReq) {
 		var cond = new CompanySearchCondition(cmd.hubId(), cmd.name(), cmd.type(), cmd.status());
 		var page = companyRepository.search(cond, pageReq.toPageable());
 		return PagingUtils.convert(page, CompanyResult::from);
 	}
 
 	@Transactional
-	public CompanyResult changeStatus(
-			ChangeCompanyStatusCommand cmd,
-			Long userId, String userRole) {
+	public CompanyResult changeStatus(ChangeCompanyStatusCommand cmd, Long userId, String userRole) {
 
-		var company = companyRepository.findById(cmd.companyId())
-				.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
+		var company =
+				companyRepository
+						.findById(cmd.companyId())
+						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
 		assertUpdateAccess(company.getHubId(), company.getCompanyId(), userId, userRole);
 
