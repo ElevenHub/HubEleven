@@ -1,5 +1,6 @@
 package com.hubEleven.company.presentation.dto.request;
 
+import com.hubEleven.company.domain.model.CompanyStatus;
 import com.hubEleven.company.domain.model.CompanyType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -21,5 +22,5 @@ public class CompanyRequests {
 			@Size(max = 100) String slackId,
 			@Size(max = 300) String address) {}
 
-	public record StatusChange(@NotNull String status) {}
+	public record StatusChange(@NotNull CompanyStatus status) {}
 }

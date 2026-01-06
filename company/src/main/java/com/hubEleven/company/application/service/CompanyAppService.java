@@ -5,19 +5,19 @@ import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
+import com.hubEleven.company.application.command.ChangeCompanyStatusCommand;
+import com.hubEleven.company.application.command.CreateCompanyCommand;
+import com.hubEleven.company.application.command.SearchCompanyCommand;
+import com.hubEleven.company.application.command.UpdateCompanyCommand;
 import com.hubEleven.company.application.dto.response.CompanyResult;
 import com.hubEleven.company.exception.CompanyErrorCode;
 import com.hubEleven.company.domain.model.Company;
-import com.hubEleven.company.domain.model.CompanyStatus;
-import com.hubEleven.company.domain.model.CompanyType;
 import com.hubEleven.company.domain.repository.CompanyRepository;
 import com.hubEleven.company.domain.repository.CompanySearchCondition;
 import com.hubEleven.company.infrastructure.client.HubClient;
 import com.hubEleven.company.infrastructure.security.AuthUser;
 import com.hubEleven.company.infrastructure.security.AuthUserContext;
 import com.hubEleven.company.infrastructure.security.Role;
-import com.hubEleven.company.presentation.dto.request.CompanyRequests;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -78,38 +78,35 @@ public class CompanyAppService {
 	}
 
 	@Transactional
-	public CompanyResult createCompany(CompanyRequests.Create req) {
-		assertCreateAccess(req.hubId());
-		assertHubExists(req.hubId());
+	public CompanyResult createCompany(CreateCompanyCommand cmd) {
+		assertCreateAccess(cmd.hubId());
+		assertHubExists(cmd.hubId());
 
-		if (companyRepository.existsByHubIdAndName(req.hubId(), req.name())) {
+		if (companyRepository.existsByHubIdAndName(cmd.hubId(), cmd.name())) {
 			throw new GlobalException(CompanyErrorCode.COMPANY_DUPLICATED);
 		}
 
-		Company company =
-				Company.create(req.hubId(), req.name(), req.type(), req.slackId(), req.address());
+		Company company = Company.create(cmd.hubId(), cmd.name(), cmd.type(), cmd.slackId(), cmd.address());
 		return CompanyResult.from(companyRepository.save(company));
 	}
 
 	@Transactional
-	public CompanyResult updateCompany(UUID companyId, CompanyRequests.Update req) {
-		var company =
-				companyRepository
-						.findById(companyId)
-						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
+	public CompanyResult updateCompany(UpdateCompanyCommand cmd) {
+		var company = companyRepository.findById(cmd.companyId())
+				.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
 		assertUpdateAccess(company.getHubId(), company.getCompanyId());
 		assertHubExists(company.getHubId());
 
-		if (req.name() != null && !req.name().isBlank()) {
-			boolean changed = !req.name().equalsIgnoreCase(company.getName());
-			if (changed && companyRepository.existsByHubIdAndName(company.getHubId(), req.name())) {
+		if (cmd.name() != null && !cmd.name().isBlank()) {
+			boolean changed = !cmd.name().equalsIgnoreCase(company.getName());
+			if (changed && companyRepository.existsByHubIdAndName(company.getHubId(), cmd.name())) {
 				throw new GlobalException(CompanyErrorCode.COMPANY_DUPLICATED);
 			}
 		}
 
-		company.changeType(req.type());
-		company.update(req.name(), req.address(), req.slackId());
+		company.changeType(cmd.type());
+		company.update(cmd.name(), cmd.address(), cmd.slackId());
 		return CompanyResult.from(company);
 	}
 
@@ -131,39 +128,23 @@ public class CompanyAppService {
 	}
 
 	@Transactional(readOnly = true)
-	public CommonPageResponse<CompanyResult> searchCompany(
-			Optional<UUID> hubId,
-			Optional<String> name,
-			Optional<CompanyType> type,
-			Optional<CompanyStatus> status,
-			CommonPageRequest pageReq) {
-
-		var cond =
-				new CompanySearchCondition(
-						hubId.orElse(null), name.orElse(null), type.orElse(null), status.orElse(null));
+	public CommonPageResponse<CompanyResult> searchCompany(SearchCompanyCommand cmd, CommonPageRequest pageReq) {
+		var cond = new CompanySearchCondition(cmd.hubId(), cmd.name(), cmd.type(), cmd.status());
 		var page = companyRepository.search(cond, pageReq.toPageable());
 		return PagingUtils.convert(page, CompanyResult::from);
 	}
 
 	@Transactional
-	public CompanyResult changeStatus(UUID companyId, String rawStatus) {
-		var company =
-				companyRepository
-						.findById(companyId)
-						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
+	public CompanyResult changeStatus(ChangeCompanyStatusCommand cmd) {
+		var company = companyRepository.findById(cmd.companyId())
+				.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
 		assertUpdateAccess(company.getHubId(), company.getCompanyId());
 
-		CompanyStatus newStatus;
-		try {
-			newStatus = CompanyStatus.valueOf(rawStatus.toUpperCase());
-		} catch (IllegalArgumentException e) {
-			throw new GlobalException(ErrorCode.SERVER_ERROR);
-		}
-
-		company.changeStatus(newStatus);
+		company.changeStatus(cmd.status());
 		return CompanyResult.from(company);
 	}
+
 
 	@Transactional
 	public void deleteCompany(UUID companyId) {

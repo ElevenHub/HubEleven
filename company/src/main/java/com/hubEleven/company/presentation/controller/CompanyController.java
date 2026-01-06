@@ -4,6 +4,10 @@ import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
+import com.hubEleven.company.application.command.ChangeCompanyStatusCommand;
+import com.hubEleven.company.application.command.CreateCompanyCommand;
+import com.hubEleven.company.application.command.SearchCompanyCommand;
+import com.hubEleven.company.application.command.UpdateCompanyCommand;
 import com.hubEleven.company.application.dto.response.CompanyResult;
 import com.hubEleven.company.application.service.CompanyAppService;
 import com.hubEleven.company.domain.model.CompanyStatus;
@@ -13,7 +17,6 @@ import com.hubEleven.company.presentation.dto.response.CompanyResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import java.util.Optional;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -31,16 +34,20 @@ public class CompanyController {
 	@PostMapping
 	public ResponseEntity<ApiResponse<CompanyResponse>> create(
 			@Valid @RequestBody CompanyRequests.Create req) {
-		CompanyResult dto = companyAppService.createCompany(req);
-		return ApiResponseEntity.success(CompanyResponse.from(dto));
+		CompanyResult result = companyAppService.createCompany(
+				new CreateCompanyCommand(req.hubId(), req.name(), req.type(), req.slackId(), req.address())
+		);
+		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
 	@Operation(summary = "업체 수정 API", description = "업체의 기본 정보를 수정한다.")
 	@PatchMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompany(
 			@PathVariable UUID companyId, @Valid @RequestBody CompanyRequests.Update req) {
-		CompanyResult dto = companyAppService.updateCompany(companyId, req);
-		return ApiResponseEntity.success(CompanyResponse.from(dto));
+		CompanyResult result = companyAppService.updateCompany(
+				new UpdateCompanyCommand(companyId, req.name(), req.type(), req.slackId(), req.address())
+		);
+		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
 	@Operation(summary = "업체 단건 조회 API", description = "업체 ID로 업체를 조회한다.")
@@ -76,13 +83,10 @@ public class CompanyController {
 			@RequestParam(required = false) CompanyType type,
 			@RequestParam(required = false) CompanyStatus status) {
 
-		var page =
-				companyAppService.searchCompany(
-						Optional.ofNullable(hubId),
-						Optional.ofNullable(name),
-						Optional.ofNullable(type),
-						Optional.ofNullable(status),
-						pageReq);
+		var page = companyAppService.searchCompany(
+				new SearchCompanyCommand(hubId, name, type, status),
+				pageReq
+		);
 
 		var mapped =
 				new CommonPageResponse<>(
@@ -100,8 +104,10 @@ public class CompanyController {
 	@PatchMapping("/{companyId}/status")
 	public ResponseEntity<ApiResponse<CompanyResponse>> updateCompanyStatus(
 			@PathVariable UUID companyId, @Valid @RequestBody CompanyRequests.StatusChange req) {
-		CompanyResult dto = companyAppService.changeStatus(companyId, req.status());
-		return ApiResponseEntity.success(CompanyResponse.from(dto));
+		CompanyResult result = companyAppService.changeStatus(
+				new ChangeCompanyStatusCommand(companyId, req.status())
+		);
+		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
 	@Operation(summary = "업체 삭제 API", description = "업체를 삭제한다.")
