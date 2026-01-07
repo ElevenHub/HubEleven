@@ -70,15 +70,6 @@ public class CompanyServiceImpl implements CompanyService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public CommonPageResponse<CompanyResult> findCompanyList(CommonPageRequest pageReq) {
-		var page =
-				companyRepository.search(
-						new CompanySearchCondition(null, null, null, null), pageReq.toPageable());
-		return PagingUtils.convert(page, CompanyResult::from);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
 	public CommonPageResponse<CompanyResult> searchCompany(
 			SearchCompanyCommand cmd, CommonPageRequest pageReq) {
 		var cond = new CompanySearchCondition(cmd.hubId(), cmd.name(), cmd.type(), cmd.status());

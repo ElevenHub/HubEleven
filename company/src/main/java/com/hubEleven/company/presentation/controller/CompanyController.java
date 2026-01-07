@@ -72,35 +72,17 @@ public class CompanyController {
 		return ApiResponseEntity.success(CompanyResponse.from(dto));
 	}
 
-	@Operation(summary = "업체 목록 조회 API", description = "업체 전체 목록을 조회한다.")
+	@Operation(summary = "업체 목록 조회/검색 API", description = "업체 목록을 조회하거나 검색 조건으로 필터링한다.")
 	@GetMapping
 	public ResponseEntity<ApiResponse<CommonPageResponse<CompanyResponse>>> getCompanyList(
-			@Valid CommonPageRequest pageReq) {
-		var page = companyService.findCompanyList(pageReq);
-		var mapped =
-				new CommonPageResponse<>(
-						page.content().stream().map(CompanyResponse::from).toList(),
-						page.page(),
-						page.size(),
-						page.totalElements(),
-						page.totalPages(),
-						page.first(),
-						page.last());
-		return ApiResponseEntity.success(mapped);
-	}
-
-	@Operation(summary = "업체 검색 API", description = "허브, 이름, 타입 등으로 업체를 검색한다.")
-	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<CommonPageResponse<CompanyResponse>>> search(
 			@Valid CommonPageRequest pageReq,
 			@RequestParam(required = false) UUID hubId,
 			@RequestParam(required = false) String name,
 			@RequestParam(required = false) CompanyType type,
 			@RequestParam(required = false) CompanyStatus status) {
 
-		var page =
-				companyService.searchCompany(
-						new SearchCompanyCommand(hubId, name, type, status), pageReq);
+		var page = companyService.searchCompany(
+				new SearchCompanyCommand(hubId, name, type, status), pageReq);
 
 		var mapped =
 				new CommonPageResponse<>(
