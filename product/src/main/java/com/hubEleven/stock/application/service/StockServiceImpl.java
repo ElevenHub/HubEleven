@@ -1,6 +1,5 @@
 package com.hubEleven.stock.application.service;
 
-import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_DELETED;
 import static com.hubEleven.product.domain.exception.ProductErrorCode.PRODUCT_NOT_FOUND;
 import static com.hubEleven.stock.domain.exception.StockErrorCode.STOCK_NOT_FOUND;
 
@@ -23,15 +22,13 @@ public class StockServiceImpl implements StockService {
 	private final StockRepository stockRepository;
 	private final ProductRepository productRepository;
 
-	// 상품 존재 여부 확인 메서드
-	private Product validateProductExists(UUID productId) {
+	private Product getProductOrThrow(UUID productId) {
 		return productRepository
 				.findByIdNotDeleted(productId)
 				.orElseThrow(() -> new GlobalException(PRODUCT_NOT_FOUND));
 	}
 
-	// 재고 존재 여부 확인 메서드
-	private Stock validateStockExists(UUID productId) {
+	private Stock getStockOrThrow(UUID productId) {
 		return stockRepository
 				.findByProductId(productId)
 				.orElseThrow(() -> new GlobalException(STOCK_NOT_FOUND));
@@ -40,11 +37,11 @@ public class StockServiceImpl implements StockService {
 	@Override
 	@Transactional
 	public StockResult create(StockRequests.Create request) {
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(request.productId());
+
+		Product product = getProductOrThrow(request.productId());
 
 		Stock stock =
-				Stock.create(request.quantity(), request.productId(), request.companyId(), request.hubId());
+				Stock.create(request.productId(), request.companyId(), request.hubId(), request.quantity());
 
 		Stock savedStock = stockRepository.save(stock);
 
@@ -55,16 +52,9 @@ public class StockServiceImpl implements StockService {
 	@Transactional(readOnly = true)
 	public StockResult getStockByProductId(UUID productId) {
 
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(productId);
+		Product product = getProductOrThrow(productId);
 
-		// 삭제된 상품인지 확인
-		if (product.isDeleted()) {
-			throw new GlobalException(PRODUCT_DELETED);
-		}
-
-		// 재고 조회
-		Stock stock = validateStockExists(productId);
+		Stock stock = getStockOrThrow(productId);
 
 		return StockResult.from(stock, product.getName());
 	}
@@ -73,14 +63,11 @@ public class StockServiceImpl implements StockService {
 	@Transactional
 	public StockResult decreaseStock(StockRequests.Decrease request) {
 
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(request.productId());
+		Product product = getProductOrThrow(request.productId());
 
-		// 재고 조회
-		Stock stock = validateStockExists(request.productId());
+		Stock stock = getStockOrThrow(request.productId());
 
-		// 재고 차감
-		stock.decreaseQuantity(request.quantity()); // ToDo : 재고 부족 예외 처리
+		stock.decreaseQuantity(request.quantity());
 
 		return StockResult.from(stock, product.getName());
 	}
@@ -88,14 +75,12 @@ public class StockServiceImpl implements StockService {
 	@Override
 	@Transactional
 	public StockResult restoreStock(StockRequests.Restore request) {
-		// 상품 존재 여부 확인
-		Product product = validateProductExists(request.productId());
 
-		// 재고 조회
-		Stock stock = validateStockExists(request.productId());
+		Product product = getProductOrThrow(request.productId());
 
-		// 재고 복원 로직
-		stock.restoreQuantity(request.quantity()); // ToDo : 재고 복원 예외 처리
+		Stock stock = getStockOrThrow(request.productId());
+
+		stock.restoreQuantity(request.quantity());
 
 		Stock updatedStock = stockRepository.save(stock);
 

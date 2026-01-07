@@ -5,9 +5,9 @@ import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hubEleven.notification.ai.application.dto.MessageGenerationResponse;
-import com.hubEleven.notification.ai.domain.exception.NotificationErrorCode;
+import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
 import com.hubEleven.notification.ai.domain.repository.AiRequestLogRepository;
+import com.hubEleven.notification.ai.exception.NotificationErrorCode;
 import com.hubEleven.notification.slack.application.dto.SlackMessageCreateRequest;
 import com.hubEleven.notification.slack.application.dto.SlackMessageResponse;
 import com.hubEleven.notification.slack.application.dto.SlackMessageUpdateRequest;
@@ -49,7 +49,7 @@ public class SlackMessageAppService {
 							throw new GlobalException(SlackMessageErrorCode.SLACK_MESSAGE_ALREADY_SENT);
 						});
 
-		MessageGenerationResponse aiResponse = findAiResultOrThrow(request.orderId());
+		GenerateMessageResponse aiResponse = findAiResultOrThrow(request.orderId());
 		String formattedMessage = slackMessageDomainService.formatMessage(request, aiResponse);
 
 		SlackMessage slackMessage =
@@ -115,7 +115,7 @@ public class SlackMessageAppService {
 		return PagingUtils.convert(page, SlackMessageResponse::from);
 	}
 
-	private MessageGenerationResponse findAiResultOrThrow(UUID orderId) {
+	private GenerateMessageResponse findAiResultOrThrow(UUID orderId) {
 		var logEntry =
 				aiRequestLogRepository
 						.findByOrderId(orderId)
@@ -133,7 +133,7 @@ public class SlackMessageAppService {
 			if (payload.messageBody == null || payload.messageBody.isBlank()) {
 				throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
 			}
-			return MessageGenerationResponse.success(payload.finalDispatchDeadline, payload.messageBody);
+			return GenerateMessageResponse.success(payload.finalDispatchDeadline, payload.messageBody);
 		} catch (Exception e) {
 			throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
 		}

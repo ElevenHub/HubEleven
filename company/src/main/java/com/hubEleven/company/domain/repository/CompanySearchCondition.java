@@ -1,7 +1,7 @@
 package com.hubEleven.company.domain.repository;
 
-import com.hubEleven.company.domain.model.CompanyStatus;
-import com.hubEleven.company.domain.model.CompanyType;
+import com.hubEleven.company.domain.vo.CompanyStatus;
+import com.hubEleven.company.domain.vo.CompanyType;
 import java.util.UUID;
 
 public record CompanySearchCondition(

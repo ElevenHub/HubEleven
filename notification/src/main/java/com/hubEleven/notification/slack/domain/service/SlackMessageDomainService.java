@@ -1,6 +1,6 @@
 package com.hubEleven.notification.slack.domain.service;
 
-import com.hubEleven.notification.ai.application.dto.MessageGenerationResponse;
+import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
 import com.hubEleven.notification.slack.application.dto.SlackMessageCreateRequest;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
@@ -12,7 +12,7 @@ public class SlackMessageDomainService {
 	private static final DateTimeFormatter DATETIME_FORMATTER =
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	public String formatMessage(SlackMessageCreateRequest req, MessageGenerationResponse aiResponse) {
+	public String formatMessage(SlackMessageCreateRequest req, GenerateMessageResponse aiResponse) {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("주문 번호 : ").append(req.orderId()).append("\n");
