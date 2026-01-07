@@ -6,8 +6,9 @@ plugins {
 
 // 버전 관리용 변수 선언
 ext {
+    springBootVersion = "3.2.0"
     springCloudVersion = "2023.0.0"
-    springdocVersion = "2.8.13"
+    springdocVersion = "2.5.0"
 }
 
 subprojects {
