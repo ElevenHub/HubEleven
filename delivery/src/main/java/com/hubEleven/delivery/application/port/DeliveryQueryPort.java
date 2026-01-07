@@ -4,5 +4,5 @@ import com.hubEleven.delivery.domain.Delivery;
 import java.util.UUID;
 
 public interface DeliveryQueryPort {
-    Delivery delivery(UUID id);
+	Delivery delivery(UUID id);
 }
