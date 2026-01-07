@@ -25,19 +25,34 @@ repositories {
 }
 
 dependencies {
+    // Spring Boot Starter
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // Spring Cloud
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
-    implementation 'org.springframework.boot:spring-boot-starter-validation'
+
+    // External Libraries
+    implementation 'com.github.Doritosch:commonLib:1.0.5'
+
+    // API Documentation
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+    // Lombok
     compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Database Driver
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    
+    // Testing
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
-    implementation 'com.github.Doritosch:commonLib:1.0.5'
 
     // zipkin
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
