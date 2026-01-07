@@ -7,87 +7,89 @@ eureka:
 spring:
   cloud:
     gateway:
-      routes:
-        # User Service Routes
-        - id: user-service
-          uri: lb://user-service
-          predicates:
-            - Path=/v1/user/**
-        - id: user-service-openapi
-          uri: lb://user-service
-          predicates:
-            - Path=/springdoc/openapi3-user-service.json
-          filters:
-            - RewritePath=/springdoc/openapi3-user-service.json,/v3/api-docs
-        # Delivery Service
-        - id: delivery-service
-          uri: lb://delivery-service
-          predicates:
-            - Path=/v1/delivery/**,/v1/delivery-managers/**
-        - id: delivery-service-openapi
-          uri: lb://delivery-service
-          predicates:
-            - Path=/springdoc/openapi3-delivery-service.json
-          filters:
-            - RewritePath=/springdoc/openapi3-delivery-service.json,/v3/api-docs
-        # Company Service
-        - id: company-service
-          uri: lb://company-service
-          predicates:
-            - Path=/v1/companies/**
-        - id: company-service-openapi
-          uri: lb://company-service
-          predicates:
-            - Path=/springdoc/openapi3-company-service.json
-          filters:
-            - RewritePath=/springdoc/openapi3-company-service.json,/v3/api-docs
-        # Product Service
-        - id: product-service
-          uri: lb://product-service
-          predicates:
-            - Path=/v1/products/**
-        - id: product-service-openapi
-          uri: lb://product-service
-          predicates:
-            - Path=/springdoc/openapi3-product-service.json
-          filters:
-            - RewritePath=/springdoc/openapi3-product-service.json,/v3/api-docs
-        # Hub Service
-        - id: hub-service
-          uri: lb://hub-service
-          predicates:
-            - Path=/v1/hubs/**,/v1/hub-routes/**,/v1/internal/hub-routes/**
-        - id: hub-service-openapi
-          uri: lb://hub-service
-          predicates:
-            - Path=/springdoc/openapi3-hub-service.json
-          filters:
-            - RewritePath=/springdoc/openapi3-hub-service.json,/v3/api-docs
-        # Order Service
-        - id: order-service
-          uri: lb://order-service
-          predicates:
-            - Path=/v1/order/**,/v1/orders/**
-        - id: order-service-openapi
-          uri: lb://order-service
-          predicates:
-            - Path=/springdoc/openapi3-order-service.json
-          filters:
-            - RewritePath=/springdoc/openapi3-order-service.json,/v3/api-docs
-        # Notification Service
-        - id: notification-service
-          uri: lb://notification-service
-          predicates:
-            - Path=/v1/ai/dispatch/**
-        - id: notification-service-openapi
-          uri: lb://notification-service
-          predicates:
-            - Path=/springdoc/openapi3-notification-service.json
-          filters:
-            - RewritePath=/springdoc/openapi3-notification-service.json,/v3/api-docs
-      discovery:
-        locator:
-          enabled: true
+      server:
+        webflux:
+          discovery:
+            locator:
+              enabled: true
+          routes:
+            # User Service Routes
+            - id: user-service
+              uri: lb://user-service
+              predicates:
+                - Path=/v1/user/**
+            - id: user-service-openapi
+              uri: lb://user-service
+              predicates:
+                - Path=/springdoc/openapi3-user-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-user-service.json,/v3/api-docs
+            # Delivery Service
+            - id: delivery-service
+              uri: lb://delivery-service
+              predicates:
+                - Path=/v1/delivery/**,/v1/delivery-managers/**
+            - id: delivery-service-openapi
+              uri: lb://delivery-service
+              predicates:
+                - Path=/springdoc/openapi3-delivery-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-delivery-service.json,/v3/api-docs
+            # Company Service
+            - id: company-service
+              uri: lb://company-service
+              predicates:
+                - Path=/v1/companies/**
+            - id: company-service-openapi
+              uri: lb://company-service
+              predicates:
+                - Path=/springdoc/openapi3-company-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-company-service.json,/v3/api-docs
+            # Product Service
+            - id: product-service
+              uri: lb://product-service
+              predicates:
+                - Path=/v1/products/**
+            - id: product-service-openapi
+              uri: lb://product-service
+              predicates:
+                - Path=/springdoc/openapi3-product-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-product-service.json,/v3/api-docs
+            # Hub Service
+            - id: hub-service
+              uri: lb://hub-service
+              predicates:
+                - Path=/v1/hubs/**,/v1/hub-routes/**,/v1/internal/hub-routes/**
+            - id: hub-service-openapi
+              uri: lb://hub-service
+              predicates:
+                - Path=/springdoc/openapi3-hub-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-hub-service.json,/v3/api-docs
+            # Order Service
+            - id: order-service
+              uri: lb://order-service
+              predicates:
+                - Path=/v1/order/**,/v1/orders/**
+            - id: order-service-openapi
+              uri: lb://order-service
+              predicates:
+                - Path=/springdoc/openapi3-order-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-order-service.json,/v3/api-docs
+            # Notification Service
+            - id: notification-service
+              uri: lb://notification-service
+              predicates:
+                - Path=/v1/ai/dispatch/**
+            - id: notification-service-openapi
+              uri: lb://notification-service
+              predicates:
+                - Path=/springdoc/openapi3-notification-service.json
+              filters:
+                - RewritePath=/springdoc/openapi3-notification-service.json,/v3/api-docs
 springdoc:
   swagger-ui:
     path: /swagger-ui.html

@@ -29,18 +29,20 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // Spring Cloud
-    implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
+    implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 
-    // OpenAPI (WebFlux)
-    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.3.0'
+    // WebFlux Security
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'  // JWT 검증
+
+    // OpenAPI (WebFlux용)
+    implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:${springdocVersion}"
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // zipkin
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
     implementation 'io.github.openfeign:feign-micrometer'
