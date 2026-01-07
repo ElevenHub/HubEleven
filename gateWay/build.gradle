@@ -46,6 +46,9 @@ dependencies {
     implementation 'io.micrometer:micrometer-tracing-bridge-brave'
     implementation 'io.zipkin.reporter2:zipkin-reporter-brave'
     implementation 'io.github.openfeign:feign-micrometer'
+
+    // LoadBalancer 고성능 캐시
+    implementation 'com.github.ben-manes.caffeine:caffeine:3.1.8'
 }
 
 dependencyManagement {
