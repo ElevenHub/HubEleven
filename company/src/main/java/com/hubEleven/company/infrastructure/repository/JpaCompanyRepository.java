@@ -1,10 +1,9 @@
 package com.hubEleven.company.infrastructure.repository;
 
 import com.hubEleven.company.domain.model.Company;
-import java.util.UUID;
-
 import com.hubEleven.company.domain.vo.CompanyStatus;
 import com.hubEleven.company.domain.vo.CompanyType;
+import java.util.UUID;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

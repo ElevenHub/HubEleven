@@ -1,5 +1,6 @@
 package com.hubEleven.company.application.service.impl;
 
+import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
@@ -13,7 +14,6 @@ import com.hubEleven.company.application.validator.CompanyValidator;
 import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.repository.CompanyRepository;
 import com.hubEleven.company.exception.CompanyErrorCode;
-import com.commonLib.common.exception.GlobalException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,9 +48,11 @@ public class CompanyServiceImpl implements CompanyService {
 						.findById(cmd.companyId())
 						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
-		companyValidator.assertUpdateAccess(company.getHubId(), company.getCompanyId(), userId, userRole);
+		companyValidator.assertUpdateAccess(
+				company.getHubId(), company.getCompanyId(), userId, userRole);
 		companyValidator.assertHubExists(company.getHubId());
-		companyValidator.assertCompanyNameNotDuplicated(company.getHubId(), cmd.name(), company.getName());
+		companyValidator.assertCompanyNameNotDuplicated(
+				company.getHubId(), cmd.name(), company.getName());
 
 		company.changeType(cmd.type());
 		company.update(cmd.name(), cmd.address(), cmd.slackId());
@@ -83,7 +85,8 @@ public class CompanyServiceImpl implements CompanyService {
 						.findById(cmd.companyId())
 						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
 
-		companyValidator.assertUpdateAccess(company.getHubId(), company.getCompanyId(), userId, userRole);
+		companyValidator.assertUpdateAccess(
+				company.getHubId(), company.getCompanyId(), userId, userRole);
 
 		company.changeStatus(cmd.status());
 		return CompanyResult.from(company);

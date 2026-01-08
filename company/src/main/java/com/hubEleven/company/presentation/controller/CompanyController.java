@@ -81,8 +81,8 @@ public class CompanyController {
 			@RequestParam(required = false) CompanyType type,
 			@RequestParam(required = false) CompanyStatus status) {
 
-		var page = companyService.searchCompany(
-				new SearchCompanyCommand(hubId, name, type, status), pageReq);
+		var page =
+				companyService.searchCompany(new SearchCompanyCommand(hubId, name, type, status), pageReq);
 
 		var mapped =
 				new CommonPageResponse<>(

@@ -17,7 +17,8 @@ public interface CompanyService {
 
 	CompanyResult getCompany(UUID companyId);
 
-	CommonPageResponse<CompanyResult> searchCompany(SearchCompanyCommand cmd, CommonPageRequest pageReq);
+	CommonPageResponse<CompanyResult> searchCompany(
+			SearchCompanyCommand cmd, CommonPageRequest pageReq);
 
 	CompanyResult changeStatus(ChangeCompanyStatusCommand cmd, Long userId, String userRole);
 
