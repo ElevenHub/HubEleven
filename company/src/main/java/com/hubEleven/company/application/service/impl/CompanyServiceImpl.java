@@ -12,7 +12,6 @@ import com.hubEleven.company.application.service.CompanyService;
 import com.hubEleven.company.application.validator.CompanyValidator;
 import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.repository.CompanyRepository;
-import com.hubEleven.company.domain.repository.CompanySearchCondition;
 import com.hubEleven.company.exception.CompanyErrorCode;
 import com.commonLib.common.exception.GlobalException;
 import java.util.UUID;
@@ -72,8 +71,7 @@ public class CompanyServiceImpl implements CompanyService {
 	@Override
 	public CommonPageResponse<CompanyResult> searchCompany(
 			SearchCompanyCommand cmd, CommonPageRequest pageReq) {
-		var cond = new CompanySearchCondition(cmd.hubId(), cmd.name(), cmd.type(), cmd.status());
-		var page = companyRepository.search(cond, pageReq.toPageable());
+		var page = companyRepository.search(cmd, pageReq.toPageable());
 		return PagingUtils.convert(page, CompanyResult::from);
 	}
 

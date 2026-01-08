@@ -1,5 +1,6 @@
 package com.hubEleven.company.domain.repository;
 
+import com.hubEleven.company.application.command.SearchCompanyCommand;
 import com.hubEleven.company.domain.model.Company;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,5 +14,5 @@ public interface CompanyRepository {
 
 	boolean existsByHubIdAndName(UUID hubId, String companyName);
 
-	Page<Company> search(CompanySearchCondition condition, Pageable pageable);
+	Page<Company> search(SearchCompanyCommand cmd, Pageable pageable);
 }
