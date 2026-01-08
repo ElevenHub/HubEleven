@@ -1,17 +1,27 @@
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://eureka-service:8761/eureka/
+  instance:
+    instance-id: ${spring.cloud.client.hostname}:${spring.application.instance_id:${random.value}}
+
 spring:
   application:
     name: notification-service
-
   config:
     import: "configserver:"
-
   cloud:
     config:
       discovery:
         enabled: true
-        service-id: config
+        service-id: CONFIG
 
-  profiles:
-    include:
-      - eureka
-      - swagger
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+  default-server-url: http://localhost:8080
+
