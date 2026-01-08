@@ -16,6 +16,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 60s
 
   config:
     image: hubeleven-config:latest
@@ -27,6 +28,8 @@ services:
     container_name: config-service
     ports:
       - 8888:8888
+    env_file:
+      - .env
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
     depends_on:
@@ -34,6 +37,12 @@ services:
         condition: service_healthy
     networks:
       - hubeleven-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
 
   gateWay:
     image: hubeleven-gateway:latest
@@ -79,8 +88,10 @@ services:
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
-      - eurekaServer
-      - config
+      eurekaServer:
+        condition: service_healthy
+      config:
+        condition: service_healthy
     networks:
       - hubeleven-network
 
@@ -107,8 +118,10 @@ services:
       - SPRING_REDIS_PORT=${REDIS_PORT}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
     depends_on:
-      - eurekaServer
-      - config
+      eurekaServer:
+        condition: service_healthy
+      config:
+        condition: service_healthy
     networks:
       - hubeleven-network
 
@@ -135,8 +148,10 @@ services:
       - SPRING_REDIS_PORT=${REDIS_PORT}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
     depends_on:
-      - eurekaServer
-      - config
+      eurekaServer:
+        condition: service_healthy
+      config:
+        condition: service_healthy
     networks:
       - hubeleven-network
 
@@ -163,8 +178,10 @@ services:
       - SPRING_REDIS_PORT=${REDIS_PORT}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
     depends_on:
-      - eurekaServer
-      - config
+      eurekaServer:
+        condition: service_healthy
+      config:
+        condition: service_healthy
     networks:
       - hubeleven-network
 
@@ -191,8 +208,10 @@ services:
       - SPRING_REDIS_PORT=${REDIS_PORT}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
     depends_on:
-      - eurekaServer
-      - config
+      eurekaServer:
+        condition: service_healthy
+      config:
+        condition: service_healthy
     networks:
       - hubeleven-network
 
@@ -219,8 +238,10 @@ services:
       - SPRING_REDIS_PORT=${REDIS_PORT}
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
     depends_on:
-      - eurekaServer
-      - config
+      eurekaServer:
+        condition: service_healthy
+      config:
+        condition: service_healthy
     networks:
       - hubeleven-network
 
@@ -248,8 +269,10 @@ services:
       - MANAGEMENT_ZIPKIN_TRACING_ENDPOINT=${ZIPKIN_ENDPOINT}
       - JWT_SECRET=${JWT_SECRET}
     depends_on:
-      - eurekaServer
-      - config
+      eurekaServer:
+        condition: service_healthy
+      config:
+        condition: service_healthy
     networks:
       - hubeleven-network
 
