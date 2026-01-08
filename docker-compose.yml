@@ -73,7 +73,7 @@ services:
         SERVICE_NAME: user
     container_name: user-service
     ports:
-      - 8082:8082
+      - 8081:8081
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
@@ -104,7 +104,7 @@ services:
         SERVICE_NAME: hub
     container_name: hub-service
     ports:
-      - 8083:8083
+      - 8082:8082
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
@@ -134,7 +134,7 @@ services:
         SERVICE_NAME: delivery
     container_name: delivery-service
     ports:
-      - 8084:8084
+      - 8083:8083
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
@@ -164,7 +164,7 @@ services:
         SERVICE_NAME: order
     container_name: order-service
     ports:
-      - 8085:8085
+      - 8084:8084
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
@@ -194,7 +194,7 @@ services:
         SERVICE_NAME: product
     container_name: product-service
     ports:
-      - 8086:8086
+      - 8085:8085
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
@@ -224,7 +224,7 @@ services:
         SERVICE_NAME: company
     container_name: company-service
     ports:
-      - 8087:8087
+      - 8086:8086
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
@@ -254,7 +254,7 @@ services:
         SERVICE_NAME: notification
     container_name: notification-service
     ports:
-      - 8088:8088
+      - 8087:8087
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}
