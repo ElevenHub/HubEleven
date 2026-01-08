@@ -9,7 +9,7 @@ import com.hubEleven.company.application.command.CreateCompanyCommand;
 import com.hubEleven.company.application.command.SearchCompanyCommand;
 import com.hubEleven.company.application.command.UpdateCompanyCommand;
 import com.hubEleven.company.application.dto.response.CompanyResult;
-import com.hubEleven.company.application.service.CompanyAppService;
+import com.hubEleven.company.application.service.CompanyService;
 import com.hubEleven.company.domain.vo.CompanyStatus;
 import com.hubEleven.company.domain.vo.CompanyType;
 import com.hubEleven.company.presentation.dto.request.ChangeCompanyStatusRequest;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/v1/companies")
 public class CompanyController {
 
-	private final CompanyAppService companyAppService;
+	private final CompanyService companyService;
 
 	@Operation(summary = "업체 생성 API", description = "새로운 업체를 생성한다.")
 	@PostMapping
@@ -40,7 +40,7 @@ public class CompanyController {
 			@RequestHeader("X-User-Role") String userRole) {
 
 		CompanyResult result =
-				companyAppService.createCompany(
+				companyService.createCompany(
 						new CreateCompanyCommand(
 								req.hubId(), req.name(), req.type(), req.slackId(), req.address()),
 						userId,
@@ -57,7 +57,7 @@ public class CompanyController {
 			@RequestHeader("X-User-Role") String userRole) {
 
 		CompanyResult result =
-				companyAppService.updateCompany(
+				companyService.updateCompany(
 						new UpdateCompanyCommand(
 								companyId, req.name(), req.type(), req.slackId(), req.address()),
 						userId,
@@ -68,30 +68,13 @@ public class CompanyController {
 	@Operation(summary = "업체 단건 조회 API", description = "업체 ID로 업체를 조회한다.")
 	@GetMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<CompanyResponse>> getCompany(@PathVariable UUID companyId) {
-		CompanyResult dto = companyAppService.getCompany(companyId);
+		CompanyResult dto = companyService.getCompany(companyId);
 		return ApiResponseEntity.success(CompanyResponse.from(dto));
 	}
 
-	@Operation(summary = "업체 목록 조회 API", description = "업체 전체 목록을 조회한다.")
+	@Operation(summary = "업체 목록 조회/검색 API", description = "업체 목록을 조회하거나 검색 조건으로 필터링한다.")
 	@GetMapping
 	public ResponseEntity<ApiResponse<CommonPageResponse<CompanyResponse>>> getCompanyList(
-			@Valid CommonPageRequest pageReq) {
-		var page = companyAppService.findCompanyList(pageReq);
-		var mapped =
-				new CommonPageResponse<>(
-						page.content().stream().map(CompanyResponse::from).toList(),
-						page.page(),
-						page.size(),
-						page.totalElements(),
-						page.totalPages(),
-						page.first(),
-						page.last());
-		return ApiResponseEntity.success(mapped);
-	}
-
-	@Operation(summary = "업체 검색 API", description = "허브, 이름, 타입 등으로 업체를 검색한다.")
-	@GetMapping("/search")
-	public ResponseEntity<ApiResponse<CommonPageResponse<CompanyResponse>>> search(
 			@Valid CommonPageRequest pageReq,
 			@RequestParam(required = false) UUID hubId,
 			@RequestParam(required = false) String name,
@@ -99,8 +82,7 @@ public class CompanyController {
 			@RequestParam(required = false) CompanyStatus status) {
 
 		var page =
-				companyAppService.searchCompany(
-						new SearchCompanyCommand(hubId, name, type, status), pageReq);
+				companyService.searchCompany(new SearchCompanyCommand(hubId, name, type, status), pageReq);
 
 		var mapped =
 				new CommonPageResponse<>(
@@ -123,7 +105,7 @@ public class CompanyController {
 			@RequestHeader("X-User-Role") String userRole) {
 
 		CompanyResult result =
-				companyAppService.changeStatus(
+				companyService.changeStatus(
 						new ChangeCompanyStatusCommand(companyId, req.status()), userId, userRole);
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
@@ -135,7 +117,7 @@ public class CompanyController {
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
-		companyAppService.deleteCompany(companyId, userId, userRole);
+		companyService.deleteCompany(companyId, userId, userRole);
 		return ApiResponseEntity.success(null);
 	}
 }
