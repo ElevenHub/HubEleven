@@ -21,9 +21,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @Tag(name = "Company", description = "업체 API")
 @RestController
 @RequiredArgsConstructor
@@ -39,12 +41,16 @@ public class CompanyController {
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
+		log.info("업체 생성 요청 - hubId:{}, name:{}", req.hubId(), req.name());
+
 		CompanyResult result =
 				companyService.createCompany(
 						new CreateCompanyCommand(
 								req.hubId(), req.name(), req.type(), req.slackId(), req.address()),
 						userId,
 						userRole);
+
+		log.info("업체 생성 성공 - companyId:{}", result.companyId());
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
@@ -56,19 +62,27 @@ public class CompanyController {
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
+		log.info("업체 수정 요청 - companyId:{}, name:{}", companyId, req.name());
+
 		CompanyResult result =
 				companyService.updateCompany(
 						new UpdateCompanyCommand(
 								companyId, req.name(), req.type(), req.slackId(), req.address()),
 						userId,
 						userRole);
+
+		log.info("업체 수정 성공 - companyId:{}, name:{}", companyId, req.name());
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
 	@Operation(summary = "업체 단건 조회 API", description = "업체 ID로 업체를 조회한다.")
 	@GetMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<CompanyResponse>> getCompany(@PathVariable UUID companyId) {
+		log.debug("업체 단건 조회 요청 - companyId:{}", companyId);
+
 		CompanyResult dto = companyService.getCompany(companyId);
+
+		log.debug("업체 단건 조회 성공 - companyId:{}", companyId);
 		return ApiResponseEntity.success(CompanyResponse.from(dto));
 	}
 
@@ -80,6 +94,9 @@ public class CompanyController {
 			@RequestParam(required = false) String name,
 			@RequestParam(required = false) CompanyType type,
 			@RequestParam(required = false) CompanyStatus status) {
+
+		log.debug("업체 목록/검색 요청 - hubId:{}, name:{}, type:{}, status:{}, page: {}, size: {}",
+				hubId, name, type, status, pageReq.page(), pageReq.size());
 
 		var page =
 				companyService.searchCompany(new SearchCompanyCommand(hubId, name, type, status), pageReq);
@@ -93,6 +110,9 @@ public class CompanyController {
 						page.totalPages(),
 						page.first(),
 						page.last());
+
+		log.debug("업체 목록/검색 성공 - totalElements: {}, totalPages: {}",
+				page.totalElements(), page.totalPages());
 		return ApiResponseEntity.success(mapped);
 	}
 
@@ -104,20 +124,28 @@ public class CompanyController {
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
+		log.info("업체 상태 변경 요청 - companyId:{} status:{}", companyId, req.status());
+
 		CompanyResult result =
 				companyService.changeStatus(
 						new ChangeCompanyStatusCommand(companyId, req.status()), userId, userRole);
+
+		log.info("업체 상태 변경 성공 - companyId:{} status:{}", companyId, req.status());
 		return ApiResponseEntity.success(CompanyResponse.from(result));
 	}
 
 	@Operation(summary = "업체 삭제 API", description = "업체를 삭제한다.")
-	@DeleteMapping("{companyId}")
+	@DeleteMapping("/{companyId}")
 	public ResponseEntity<ApiResponse<Object>> deleteCompany(
 			@PathVariable UUID companyId,
 			@RequestHeader("X-User-Id") Long userId,
 			@RequestHeader("X-User-Role") String userRole) {
 
+		log.info("업체 삭제 요청 - companyId: {}", companyId);
+
 		companyService.deleteCompany(companyId, userId, userRole);
+
+		log.info("업체 삭제 성공 - companyId: {}", companyId);
 		return ApiResponseEntity.success(null);
 	}
 }
