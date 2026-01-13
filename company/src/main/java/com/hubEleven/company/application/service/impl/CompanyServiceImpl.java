@@ -39,9 +39,9 @@ public class CompanyServiceImpl implements CompanyService {
 				Company.create(cmd.hubId(), cmd.name(), cmd.type(), cmd.slackId(), cmd.address());
 		Company saved = companyRepository.save(company);
 
-		log.info("업체 생성 성공 companyId={} hubId={} name={}", saved.getCompanyId(), cmd.hubId(), cmd.name());
+		log.info(
+				"업체 생성 성공 companyId={} hubId={} name={}", saved.getCompanyId(), cmd.hubId(), cmd.name());
 		return CompanyResult.from(saved);
-
 	}
 
 	@Transactional
@@ -61,7 +61,11 @@ public class CompanyServiceImpl implements CompanyService {
 		company.changeType(cmd.type());
 		company.update(cmd.name(), cmd.address(), cmd.slackId());
 
-		log.info("업체 수정 성공 companyId={} hubId={} name={}", company.getCompanyId(), company.getHubId(), cmd.name());
+		log.info(
+				"업체 수정 성공 companyId={} hubId={} name={}",
+				company.getCompanyId(),
+				company.getHubId(),
+				cmd.name());
 		return CompanyResult.from(company);
 	}
 
@@ -81,14 +85,19 @@ public class CompanyServiceImpl implements CompanyService {
 	@Override
 	public CommonPageResponse<CompanyResult> searchCompany(
 			SearchCompanyCommand cmd, CommonPageRequest pageReq) {
-		log.debug("업체 검색 hubId={} name={} type={} status={} page={} size={}",
-				cmd.hubId(), cmd.name(), cmd.type(), cmd.status(),
-				pageReq.page(), pageReq.size());
+		log.debug(
+				"업체 검색 hubId={} name={} type={} status={} page={} size={}",
+				cmd.hubId(),
+				cmd.name(),
+				cmd.type(),
+				cmd.status(),
+				pageReq.page(),
+				pageReq.size());
 
 		var page = companyRepository.search(cmd, pageReq.toPageable());
 
-		log.debug("업체 검색 결과 totalElements={} totalPages={}",
-				page.getTotalElements(), page.getTotalPages());
+		log.debug(
+				"업체 검색 결과 totalElements={} totalPages={}", page.getTotalElements(), page.getTotalPages());
 		return PagingUtils.convert(page, CompanyResult::from);
 	}
 
@@ -105,7 +114,11 @@ public class CompanyServiceImpl implements CompanyService {
 
 		company.changeStatus(cmd.status());
 
-		log.info("업체 상태 변경 성공 companyId={} hubId={} status={}", company.getCompanyId(), company.getHubId(), cmd.status());
+		log.info(
+				"업체 상태 변경 성공 companyId={} hubId={} status={}",
+				company.getCompanyId(),
+				company.getHubId(),
+				cmd.status());
 		return CompanyResult.from(company);
 	}
 
@@ -122,7 +135,6 @@ public class CompanyServiceImpl implements CompanyService {
 		company.delete(userId);
 		companyRepository.save(company);
 
-		log.info("업체 삭제 성공 companyId={} hubId={}",
-				company.getCompanyId(), company.getHubId());
+		log.info("업체 삭제 성공 companyId={} hubId={}", company.getCompanyId(), company.getHubId());
 	}
 }

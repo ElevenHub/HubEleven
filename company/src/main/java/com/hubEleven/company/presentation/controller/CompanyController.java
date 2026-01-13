@@ -95,8 +95,14 @@ public class CompanyController {
 			@RequestParam(required = false) CompanyType type,
 			@RequestParam(required = false) CompanyStatus status) {
 
-		log.debug("업체 목록/검색 요청 - hubId:{}, name:{}, type:{}, status:{}, page: {}, size: {}",
-				hubId, name, type, status, pageReq.page(), pageReq.size());
+		log.debug(
+				"업체 목록/검색 요청 - hubId:{}, name:{}, type:{}, status:{}, page: {}, size: {}",
+				hubId,
+				name,
+				type,
+				status,
+				pageReq.page(),
+				pageReq.size());
 
 		var page =
 				companyService.searchCompany(new SearchCompanyCommand(hubId, name, type, status), pageReq);
@@ -111,8 +117,8 @@ public class CompanyController {
 						page.first(),
 						page.last());
 
-		log.debug("업체 목록/검색 성공 - totalElements: {}, totalPages: {}",
-				page.totalElements(), page.totalPages());
+		log.debug(
+				"업체 목록/검색 성공 - totalElements: {}, totalPages: {}", page.totalElements(), page.totalPages());
 		return ApiResponseEntity.success(mapped);
 	}
 
