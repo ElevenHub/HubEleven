@@ -7,6 +7,7 @@ import com.hubEleven.company.domain.repository.CompanyRepository;
 import com.hubEleven.company.exception.CompanyErrorCode;
 import com.hubEleven.company.infrastructure.client.HubClient;
 import com.hubEleven.company.infrastructure.client.UserClient;
+import feign.FeignException;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +25,10 @@ public class CompanyValidator {
 	public void assertHubExists(UUID hubId) {
 		try {
 			hubClient.getHub(hubId);
-		} catch (feign.FeignException.NotFound e) {
+		} catch (FeignException.NotFound e) {
 			throw new GlobalException(CompanyErrorCode.HUB_NOT_FOUND);
-		} catch (feign.FeignException e) {
+		} catch (FeignException e) {
+			log.error("hub.get fail hubId={} status={}", hubId, e.status(), e);
 			throw new GlobalException(ErrorCode.SERVER_ERROR);
 		}
 	}
@@ -38,27 +40,31 @@ public class CompanyValidator {
 			return null;
 		}
 
-		try {
-			UserClient.UserDTO user = userClient.getUser(userId, userId, userRole);
-			if (user.companyId() == null) {
-				log.warn("사용자의 companyId가 null입니다. userId: {}", userId);
-				return null;
-			}
+		UserClient.UserDTO user = getUserOrThrow(userId, userRole);
 
-			return companyRepository.findById(user.companyId()).map(Company::getHubId).orElse(null);
-		} catch (Exception e) {
-			log.error("사용자 hubId 조회 실패. userId: {}, error: {}", userId, e.getMessage());
+		UUID companyId = user.companyId();
+		if (companyId == null) {
+			log.debug("user.companyId is null userId={}", userId);
 			return null;
 		}
+
+		return companyRepository.findById(companyId).map(Company::getHubId).orElse(null);
 	}
 
 	public UUID getUserCompanyId(Long userId, String userRole) {
+		UserClient.UserDTO user = getUserOrThrow(userId, userRole);
+		return user.companyId();
+	}
+
+	private UserClient.UserDTO getUserOrThrow(Long userId, String userRole) {
 		try {
-			UserClient.UserDTO user = userClient.getUser(userId, userId, userRole);
-			return user.companyId();
+			return userClient.getUser(userId, userId, userRole);
+		} catch (FeignException e) {
+			log.error("user.get fail userId={} role={} status={}", userId, userRole, e.status(), e);
+			throw new GlobalException(ErrorCode.SERVER_ERROR);
 		} catch (Exception e) {
-			log.error("사용자 companyId 조회 실패. userId: {}, error: {}", userId, e.getMessage());
-			return null;
+			log.error("user.get fail userId={} role={}", userId, userRole, e);
+			throw new GlobalException(ErrorCode.SERVER_ERROR);
 		}
 	}
 
@@ -78,13 +84,13 @@ public class CompanyValidator {
 			throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
 		}
 
-		String normalizedRole = normalizeRole(userRole);
+		String role = normalizeRole(userRole);
 
-		if ("MASTER".equals(normalizedRole)) {
+		if ("MASTER".equals(role)) {
 			return;
 		}
 
-		if ("HUB_MANAGER".equals(normalizedRole)) {
+		if ("HUB_MANAGER".equals(role)) {
 			UUID userHubId = getUserHubId(userId, userRole);
 			if (hubId != null && hubId.equals(userHubId)) {
 				return;
@@ -99,20 +105,20 @@ public class CompanyValidator {
 			throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
 		}
 
-		String normalizedRole = normalizeRole(userRole);
+		String role = normalizeRole(userRole);
 
-		if ("MASTER".equals(normalizedRole)) {
+		if ("MASTER".equals(role)) {
 			return;
 		}
 
-		if ("HUB_MANAGER".equals(normalizedRole)) {
+		if ("HUB_MANAGER".equals(role)) {
 			UUID userHubId = getUserHubId(userId, userRole);
 			if (hubId != null && hubId.equals(userHubId)) {
 				return;
 			}
 		}
 
-		if ("COMPANY_MANAGER".equals(normalizedRole)) {
+		if ("COMPANY_MANAGER".equals(role)) {
 			UUID userCompanyId = getUserCompanyId(userId, userRole);
 			if (companyId != null && companyId.equals(userCompanyId)) {
 				return;
@@ -127,13 +133,13 @@ public class CompanyValidator {
 			throw new GlobalException(CompanyErrorCode.UNAUTHORIZED);
 		}
 
-		String normalizedRole = normalizeRole(userRole);
+		String role = normalizeRole(userRole);
 
-		if ("MASTER".equals(normalizedRole)) {
+		if ("MASTER".equals(role)) {
 			return;
 		}
 
-		if ("HUB_MANAGER".equals(normalizedRole)) {
+		if ("HUB_MANAGER".equals(role)) {
 			UUID userHubId = getUserHubId(userId, userRole);
 			if (hubId != null && hubId.equals(userHubId)) {
 				return;
