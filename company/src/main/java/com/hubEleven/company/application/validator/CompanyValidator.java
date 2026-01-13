@@ -28,7 +28,7 @@ public class CompanyValidator {
 		} catch (FeignException.NotFound e) {
 			throw new GlobalException(CompanyErrorCode.HUB_NOT_FOUND);
 		} catch (FeignException e) {
-			log.error("hub.get fail hubId={} status={}", hubId, e.status(), e);
+			log.error("hub 정보 불러올 수 없음 hubId={} status={}", hubId, e.status(), e);
 			throw new GlobalException(ErrorCode.SERVER_ERROR);
 		}
 	}
@@ -44,7 +44,7 @@ public class CompanyValidator {
 
 		UUID companyId = user.companyId();
 		if (companyId == null) {
-			log.debug("user.companyId is null userId={}", userId);
+			log.debug("사용자의 companyId가 null userId={}", userId);
 			return null;
 		}
 
@@ -60,10 +60,10 @@ public class CompanyValidator {
 		try {
 			return userClient.getUser(userId, userId, userRole);
 		} catch (FeignException e) {
-			log.error("user.get fail userId={} role={} status={}", userId, userRole, e.status(), e);
+			log.error("사용자 정보 불러오기 실패 userId={} role={} status={}", userId, userRole, e.status(), e);
 			throw new GlobalException(ErrorCode.SERVER_ERROR);
 		} catch (Exception e) {
-			log.error("user.get fail userId={} role={}", userId, userRole, e);
+			log.error("사용자 정보 불러오기 실패 userId={} role={}", userId, userRole, e);
 			throw new GlobalException(ErrorCode.SERVER_ERROR);
 		}
 	}
