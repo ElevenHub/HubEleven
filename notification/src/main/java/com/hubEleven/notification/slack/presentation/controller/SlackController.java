@@ -5,9 +5,8 @@ import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
-import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageCreateRequest;
-import com.hubEleven.notification.slack.presentation.dto.response.SlackMessageResponse;
-import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageUpdateRequest;
+import com.hubEleven.notification.slack.presentation.dto.request.CreateSlackMessageRequest;
+import com.hubEleven.notification.slack.presentation.dto.request.UpdateSlackMessageRequest;
 import com.hubEleven.notification.slack.application.service.SlackService;
 import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
@@ -41,7 +40,7 @@ public class SlackController {
 			@RequestHeader("X-User-Role") String roleHeader,
 			@RequestHeader(value = "X-Hub-Id", required = false) String hubIdHeader,
 			@RequestHeader(value = "X-Company-Id", required = false) String companyIdHeader,
-			@Valid @RequestBody SlackMessageCreateRequest request) {
+			@Valid @RequestBody CreateSlackMessageRequest request) {
 		AuthUser authUser = resolveAuthUser(userId, roleHeader, hubIdHeader, companyIdHeader);
 		SlackMessageResponse response = slackService.createMessage(authUser, request);
 		return ApiResponseEntity.success(response);
@@ -55,7 +54,7 @@ public class SlackController {
 			@RequestHeader(value = "X-Hub-Id", required = false) String hubIdHeader,
 			@RequestHeader(value = "X-Company-Id", required = false) String companyIdHeader,
 			@PathVariable UUID messageId,
-			@Valid @RequestBody SlackMessageUpdateRequest request) {
+			@Valid @RequestBody UpdateSlackMessageRequest request) {
 		AuthUser authUser = resolveAuthUser(userId, roleHeader, hubIdHeader, companyIdHeader);
 		SlackMessageResponse response =
 				slackService.updateMessage(authUser, messageId, request);

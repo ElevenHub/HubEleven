@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
-public record SlackMessageCreateRequest(
+public record CreateSlackMessageRequest(
 		@NotNull(message = "주문 ID는 필수 입력 항목입니다.") UUID orderId,
 		@NotBlank(message = "수신자 ID는 필수 입력 항목입니다.") @Size(max = 100, message = "수신자 ID는 100자 이하여야 합니다.")
 				String recipientId,

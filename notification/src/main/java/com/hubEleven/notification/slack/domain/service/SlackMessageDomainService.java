@@ -1,7 +1,7 @@
 package com.hubEleven.notification.slack.domain.service;
 
 import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
-import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageCreateRequest;
+import com.hubEleven.notification.slack.presentation.dto.request.CreateSlackMessageRequest;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
@@ -12,7 +12,7 @@ public class SlackMessageDomainService {
 	private static final DateTimeFormatter DATETIME_FORMATTER =
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-	public String formatMessage(SlackMessageCreateRequest req, GenerateMessageResponse aiResponse) {
+	public String formatMessage(CreateSlackMessageRequest req, GenerateMessageResponse aiResponse) {
 		StringBuilder sb = new StringBuilder();
 
 		sb.append("주문 번호 : ").append(req.orderId()).append("\n");
@@ -44,7 +44,7 @@ public class SlackMessageDomainService {
 		return sb.toString();
 	}
 
-	private String formatItems(java.util.List<SlackMessageCreateRequest.Item> items) {
+	private String formatItems(java.util.List<CreateSlackMessageRequest.Item> items) {
 		if (items == null || items.isEmpty()) {
 			return "정보 없음";
 		}

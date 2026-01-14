@@ -8,9 +8,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
 import com.hubEleven.notification.ai.domain.repository.AiRequestLogRepository;
 import com.hubEleven.notification.ai.exception.NotificationErrorCode;
-import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageCreateRequest;
-import com.hubEleven.notification.slack.presentation.dto.response.SlackMessageResponse;
-import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageUpdateRequest;
+import com.hubEleven.notification.slack.presentation.dto.request.CreateSlackMessageRequest;
+import com.hubEleven.notification.slack.presentation.dto.request.UpdateSlackMessageRequest;
 import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
@@ -39,7 +38,7 @@ public class SlackService {
 	private final ObjectMapper objectMapper;
 
 	@Transactional
-	public SlackMessageResponse createMessage(AuthUser authUser, SlackMessageCreateRequest request) {
+	public SlackMessageResponse createMessage(AuthUser authUser, CreateSlackMessageRequest request) {
 		assertCreateAccess(authUser);
 
 		slackMessageRepository
@@ -64,7 +63,7 @@ public class SlackService {
 
 	@Transactional
 	public SlackMessageResponse updateMessage(
-			AuthUser authUser, UUID messageId, SlackMessageUpdateRequest request) {
+			AuthUser authUser, UUID messageId, UpdateSlackMessageRequest request) {
 		assertUpdateAccess(authUser);
 
 		SlackMessage slackMessage =
