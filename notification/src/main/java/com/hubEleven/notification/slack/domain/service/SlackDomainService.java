@@ -11,7 +11,7 @@ import com.hubEleven.notification.slack.application.command.CreateSlackMessageIt
 import org.springframework.stereotype.Service;
 
 @Service
-public class SlackMessageDomainService {
+public class SlackDomainService {
 
 	private static final DateTimeFormatter DATETIME_FORMATTER =
 			DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");

@@ -17,7 +17,7 @@ import com.hubEleven.notification.slack.application.validator.SlackValidator;
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
-import com.hubEleven.notification.slack.domain.service.SlackMessageDomainService;
+import com.hubEleven.notification.slack.domain.service.SlackDomainService;
 import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.infrastructure.client.SlackWebhookClient;
 import java.util.UUID;
@@ -34,7 +34,7 @@ public class SlackServiceImpl implements SlackService {
 
     private final SlackMessageRepository slackMessageRepository;
     private final SlackWebhookClient slackWebhookClient;
-    private final SlackMessageDomainService slackMessageDomainService;
+    private final SlackDomainService slackDomainService;
     private final AiRequestLogRepository aiRequestLogRepository;
     private final ObjectMapper objectMapper;
     private final SlackValidator slackValidator;
@@ -45,7 +45,7 @@ public class SlackServiceImpl implements SlackService {
         slackValidator.slackCreate(command.orderId());
 
         GenerateMessageResponse aiResponse = findAiResultOrThrow(command.orderId());
-        String formattedMessage = slackMessageDomainService.formatMessage(command, aiResponse);
+        String formattedMessage = slackDomainService.formatMessage(command, aiResponse);
 
         SlackMessage slackMessage =
                 SlackMessage.create(
