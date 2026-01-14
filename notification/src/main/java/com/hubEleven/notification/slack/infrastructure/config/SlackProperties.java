@@ -1,4 +1,4 @@
-package com.hubEleven.notification.slack.infrastructure.configuration;
+package com.hubEleven.notification.slack.infrastructure.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

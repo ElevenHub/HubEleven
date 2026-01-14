@@ -1,4 +1,4 @@
-package com.hubEleven.notification.slack.domain.exception;
+package com.hubEleven.notification.slack.exception;
 
 import com.commonLib.common.code.StatusCode;
 import lombok.Getter;

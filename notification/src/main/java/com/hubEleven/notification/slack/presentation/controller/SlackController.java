@@ -9,7 +9,7 @@ import com.hubEleven.notification.slack.application.dto.SlackMessageCreateReques
 import com.hubEleven.notification.slack.application.dto.SlackMessageResponse;
 import com.hubEleven.notification.slack.application.dto.SlackMessageUpdateRequest;
 import com.hubEleven.notification.slack.application.service.SlackMessageAppService;
-import com.hubEleven.notification.slack.domain.exception.SlackMessageErrorCode;
+import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
 import com.hubEleven.notification.slack.infrastructure.security.AuthUser;
 import com.hubEleven.notification.slack.infrastructure.security.Role;

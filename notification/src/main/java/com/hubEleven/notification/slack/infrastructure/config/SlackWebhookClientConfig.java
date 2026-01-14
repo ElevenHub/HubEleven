@@ -1,4 +1,4 @@
-package com.hubEleven.notification.slack.infrastructure.configuration;
+package com.hubEleven.notification.slack.infrastructure.config;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;

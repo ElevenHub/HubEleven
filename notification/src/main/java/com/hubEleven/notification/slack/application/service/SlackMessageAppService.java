@@ -11,7 +11,7 @@ import com.hubEleven.notification.ai.exception.NotificationErrorCode;
 import com.hubEleven.notification.slack.application.dto.SlackMessageCreateRequest;
 import com.hubEleven.notification.slack.application.dto.SlackMessageResponse;
 import com.hubEleven.notification.slack.application.dto.SlackMessageUpdateRequest;
-import com.hubEleven.notification.slack.domain.exception.SlackMessageErrorCode;
+import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
