@@ -22,7 +22,7 @@ public record CreateSlackMessageCommand(
         String requestNote,
 
         String deliveryManagerName,
-        String deliverManagerEmail,
+        String deliveryManagerEmail,
 
         List<CreateSlackMessageItemCommand> items
 ) {
