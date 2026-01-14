@@ -1,4 +1,4 @@
-package com.hubEleven.notification.slack.application.dto;
+package com.hubEleven.notification.slack.presentation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import java.time.LocalDateTime;

@@ -5,10 +5,10 @@ import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
-import com.hubEleven.notification.slack.application.dto.SlackMessageCreateRequest;
-import com.hubEleven.notification.slack.application.dto.SlackMessageResponse;
-import com.hubEleven.notification.slack.application.dto.SlackMessageUpdateRequest;
-import com.hubEleven.notification.slack.application.service.SlackMessageAppService;
+import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageCreateRequest;
+import com.hubEleven.notification.slack.presentation.dto.response.SlackMessageResponse;
+import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageUpdateRequest;
+import com.hubEleven.notification.slack.application.service.SlackService;
 import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
 import com.hubEleven.notification.slack.infrastructure.security.AuthUser;
@@ -32,7 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/v1/slack/messages")
 public class SlackController {
-	private final SlackMessageAppService slackMessageAppService;
+	private final SlackService slackService;
 
 	@Operation(summary = "메시지 발송 API", description = "AI를 통해 메시지를 생성하고 Slack으로 발송한다.")
 	@PostMapping
@@ -43,7 +43,7 @@ public class SlackController {
 			@RequestHeader(value = "X-Company-Id", required = false) String companyIdHeader,
 			@Valid @RequestBody SlackMessageCreateRequest request) {
 		AuthUser authUser = resolveAuthUser(userId, roleHeader, hubIdHeader, companyIdHeader);
-		SlackMessageResponse response = slackMessageAppService.createMessage(authUser, request);
+		SlackMessageResponse response = slackService.createMessage(authUser, request);
 		return ApiResponseEntity.success(response);
 	}
 
@@ -58,7 +58,7 @@ public class SlackController {
 			@Valid @RequestBody SlackMessageUpdateRequest request) {
 		AuthUser authUser = resolveAuthUser(userId, roleHeader, hubIdHeader, companyIdHeader);
 		SlackMessageResponse response =
-				slackMessageAppService.updateMessage(authUser, messageId, request);
+				slackService.updateMessage(authUser, messageId, request);
 		return ApiResponseEntity.success(response);
 	}
 
@@ -71,7 +71,7 @@ public class SlackController {
 			@RequestHeader(value = "X-Company-Id", required = false) String companyIdHeader,
 			@PathVariable UUID messageId) {
 		AuthUser authUser = resolveAuthUser(userId, roleHeader, hubIdHeader, companyIdHeader);
-		slackMessageAppService.deleteMessage(authUser, messageId);
+		slackService.deleteMessage(authUser, messageId);
 		return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
 	}
 
@@ -84,7 +84,7 @@ public class SlackController {
 			@RequestHeader(value = "X-Company-Id", required = false) String companyIdHeader,
 			@PathVariable UUID messageId) {
 		AuthUser authUser = resolveAuthUser(userId, roleHeader, hubIdHeader, companyIdHeader);
-		SlackMessageResponse response = slackMessageAppService.getMessage(authUser, messageId);
+		SlackMessageResponse response = slackService.getMessage(authUser, messageId);
 		return ApiResponseEntity.success(response);
 	}
 
@@ -104,7 +104,7 @@ public class SlackController {
 			@Valid CommonPageRequest pageReq) {
 		AuthUser authUser = resolveAuthUser(userId, roleHeader, hubIdHeader, companyIdHeader);
 		var page =
-				slackMessageAppService.searchMessages(authUser, status, channel, dateFrom, dateTo, pageReq);
+				slackService.searchMessages(authUser, status, channel, dateFrom, dateTo, pageReq);
 		return ApiResponseEntity.success(page);
 	}
 

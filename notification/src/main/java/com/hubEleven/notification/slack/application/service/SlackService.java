@@ -8,9 +8,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
 import com.hubEleven.notification.ai.domain.repository.AiRequestLogRepository;
 import com.hubEleven.notification.ai.exception.NotificationErrorCode;
-import com.hubEleven.notification.slack.application.dto.SlackMessageCreateRequest;
-import com.hubEleven.notification.slack.application.dto.SlackMessageResponse;
-import com.hubEleven.notification.slack.application.dto.SlackMessageUpdateRequest;
+import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageCreateRequest;
+import com.hubEleven.notification.slack.presentation.dto.response.SlackMessageResponse;
+import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageUpdateRequest;
 import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class SlackMessageAppService {
+public class SlackService {
 
 	private final SlackMessageRepository slackMessageRepository;
 	private final SlackWebhookClient slackWebhookClient;

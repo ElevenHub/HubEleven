@@ -1,7 +1,7 @@
 package com.hubEleven.notification.slack.domain.service;
 
 import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
-import com.hubEleven.notification.slack.application.dto.SlackMessageCreateRequest;
+import com.hubEleven.notification.slack.presentation.dto.request.SlackMessageCreateRequest;
 import java.time.format.DateTimeFormatter;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;

@@ -1,4 +1,4 @@
-package com.hubEleven.notification.slack.application.dto;
+package com.hubEleven.notification.slack.presentation.dto.response;
 
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;

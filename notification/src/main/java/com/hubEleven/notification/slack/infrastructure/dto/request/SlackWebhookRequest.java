@@ -1,4 +1,4 @@
-package com.hubEleven.notification.slack.application.dto;
+package com.hubEleven.notification.slack.infrastructure.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
