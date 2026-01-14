@@ -1,4 +1,4 @@
-package com.hubEleven.notification.slack.domain.model;
+package com.hubEleven.notification.slack.domain.vo;
 
 public enum SlackMessageStatus {
 	PENDING,

@@ -2,6 +2,7 @@ package com.hubEleven.notification.slack.domain.model;
 
 import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
+import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

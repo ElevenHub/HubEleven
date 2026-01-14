@@ -1,7 +1,7 @@
 package com.hubEleven.notification.slack.infrastructure.repository;
 
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
-import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
+import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;

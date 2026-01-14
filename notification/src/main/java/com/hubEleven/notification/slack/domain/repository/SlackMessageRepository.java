@@ -1,7 +1,7 @@
 package com.hubEleven.notification.slack.domain.repository;
 
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
-import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
+import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;

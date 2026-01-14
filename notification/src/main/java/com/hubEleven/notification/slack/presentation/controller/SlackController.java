@@ -7,7 +7,7 @@ import com.commonLib.common.response.CommonPageResponse;
 import com.hubEleven.notification.slack.application.command.SearchSlackMessageCommand;
 import com.hubEleven.notification.slack.application.dto.response.SlackMessageResult;
 import com.hubEleven.notification.slack.application.service.SlackService;
-import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
+import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import com.hubEleven.notification.slack.presentation.dto.request.CreateSlackMessageRequest;
 import com.hubEleven.notification.slack.presentation.dto.request.UpdateSlackMessageRequest;
 import io.swagger.v3.oas.annotations.Operation;

@@ -1,7 +1,7 @@
 package com.hubEleven.notification.slack.application.validator;
 
 import com.commonLib.common.exception.GlobalException;
-import com.hubEleven.notification.slack.domain.model.SlackMessageStatus;
+import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
 import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import lombok.RequiredArgsConstructor;
