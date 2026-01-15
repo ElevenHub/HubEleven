@@ -22,11 +22,12 @@ configurations {
 
 repositories {
     mavenCentral()
+    maven { url 'https://jitpack.io' }
 }
 
 dependencies {
     // Common 모듈
-    implementation 'com.github.Doritosch:commonLib:1.0.2'
+    implementation 'com.github.ElevenHub:HubEleven-common:v0.0.1'
 
     // Core
     implementation 'org.springframework.boot:spring-boot-starter-web'
