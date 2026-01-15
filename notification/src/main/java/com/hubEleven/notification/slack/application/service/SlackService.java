@@ -6,7 +6,6 @@ import com.hubEleven.notification.slack.application.command.CreateSlackMessageCo
 import com.hubEleven.notification.slack.application.command.SearchSlackMessageCommand;
 import com.hubEleven.notification.slack.application.command.UpdateSlackMessageCommand;
 import com.hubEleven.notification.slack.application.dto.response.SlackMessageResult;
-
 import java.util.UUID;
 
 public interface SlackService {
@@ -19,7 +18,5 @@ public interface SlackService {
 	SlackMessageResult getMessage(UUID messageId);
 
 	CommonPageResponse<SlackMessageResult> searchMessages(
-			SearchSlackMessageCommand command,
-			CommonPageRequest pageReq
-	);
+			SearchSlackMessageCommand command, CommonPageRequest pageReq);
 }

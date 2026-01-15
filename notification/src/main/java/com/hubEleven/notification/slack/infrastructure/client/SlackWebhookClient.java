@@ -1,7 +1,7 @@
 package com.hubEleven.notification.slack.infrastructure.client;
 
-import com.hubEleven.notification.slack.infrastructure.dto.request.SlackWebhookRequest;
 import com.hubEleven.notification.slack.infrastructure.config.SlackProperties;
+import com.hubEleven.notification.slack.infrastructure.dto.request.SlackWebhookRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

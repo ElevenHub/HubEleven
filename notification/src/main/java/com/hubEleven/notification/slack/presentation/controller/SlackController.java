@@ -43,8 +43,7 @@ public class SlackController {
 	@Operation(summary = "메시지 수정 API", description = "기존 Slack 메시지를 수정합니다.")
 	@PatchMapping("/{messageId}")
 	public ResponseEntity<ApiResponse<SlackMessageResult>> updateMessage(
-			@PathVariable UUID messageId,
-			@Valid @RequestBody UpdateSlackMessageRequest request) {
+			@PathVariable UUID messageId, @Valid @RequestBody UpdateSlackMessageRequest request) {
 
 		SlackMessageResult response = slackService.updateMessage(request.toCommand(messageId));
 		return ApiResponseEntity.success(response);
@@ -69,15 +68,14 @@ public class SlackController {
 	public ResponseEntity<ApiResponse<CommonPageResponse<SlackMessageResult>>> searchMessages(
 			@RequestParam(required = false) SlackMessageStatus status,
 			@RequestParam(required = false) String channel,
-			@RequestParam(required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-			LocalDateTime dateFrom,
-			@RequestParam(required = false)
-			@DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-			LocalDateTime dateTo,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+					LocalDateTime dateFrom,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+					LocalDateTime dateTo,
 			@Valid CommonPageRequest pageReq) {
 
-		SearchSlackMessageCommand command = new SearchSlackMessageCommand(status, channel, dateFrom, dateTo);
+		SearchSlackMessageCommand command =
+				new SearchSlackMessageCommand(status, channel, dateFrom, dateTo);
 		CommonPageResponse<SlackMessageResult> page = slackService.searchMessages(command, pageReq);
 
 		return ApiResponseEntity.success(page);
