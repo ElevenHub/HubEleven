@@ -52,8 +52,7 @@ public class CompanyController {
 
 		log.info("업체 생성 성공 - companyId:{}", result.companyId());
 
-		return ResponseEntity
-				.status(HttpStatus.CREATED)
+		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(ApiResponse.success(CompanyResponse.from(result)));
 	}
 
@@ -76,15 +75,13 @@ public class CompanyController {
 
 		log.info("업체 수정 성공 - companyId:{}, name:{}", companyId, req.name());
 
-		return ResponseEntity
-				.status(HttpStatus.OK)
+		return ResponseEntity.status(HttpStatus.OK)
 				.body(ApiResponse.success(CompanyResponse.from(result)));
 	}
 
 	@Operation(summary = "업체 단건 조회 API", description = "업체 ID로 업체를 조회한다.")
 	@GetMapping("/{companyId}")
-	public ResponseEntity<ApiResponse<CompanyResponse>> getCompany(
-			@PathVariable UUID companyId) {
+	public ResponseEntity<ApiResponse<CompanyResponse>> getCompany(@PathVariable UUID companyId) {
 
 		log.debug("업체 단건 조회 요청 - companyId:{}", companyId);
 
@@ -92,8 +89,7 @@ public class CompanyController {
 
 		log.debug("업체 단건 조회 성공 - companyId:{}", companyId);
 
-		return ResponseEntity
-				.status(HttpStatus.OK)
+		return ResponseEntity.status(HttpStatus.OK)
 				.body(ApiResponse.success(CompanyResponse.from(result)));
 	}
 
@@ -108,11 +104,15 @@ public class CompanyController {
 
 		log.debug(
 				"업체 목록/검색 요청 - hubId:{}, name:{}, type:{}, status:{}, page: {}, size: {}",
-				hubId, name, type, status, pageReq.page(), pageReq.size());
+				hubId,
+				name,
+				type,
+				status,
+				pageReq.page(),
+				pageReq.size());
 
 		var page =
-				companyService.searchCompany(
-						new SearchCompanyCommand(hubId, name, type, status), pageReq);
+				companyService.searchCompany(new SearchCompanyCommand(hubId, name, type, status), pageReq);
 
 		var mapped =
 				new CommonPageResponse<>(
@@ -125,12 +125,9 @@ public class CompanyController {
 						page.last());
 
 		log.debug(
-				"업체 목록/검색 성공 - totalElements: {}, totalPages: {}",
-				page.totalElements(), page.totalPages());
+				"업체 목록/검색 성공 - totalElements: {}, totalPages: {}", page.totalElements(), page.totalPages());
 
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(ApiResponse.success(mapped));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(mapped));
 	}
 
 	@Operation(summary = "업체 상태 변경 API", description = "업체의 상태를 변경한다.")
@@ -145,14 +142,11 @@ public class CompanyController {
 
 		CompanyResult result =
 				companyService.changeStatus(
-						new ChangeCompanyStatusCommand(companyId, req.status()),
-						userId,
-						userRole);
+						new ChangeCompanyStatusCommand(companyId, req.status()), userId, userRole);
 
 		log.info("업체 상태 변경 성공 - companyId:{} status:{}", companyId, req.status());
 
-		return ResponseEntity
-				.status(HttpStatus.OK)
+		return ResponseEntity.status(HttpStatus.OK)
 				.body(ApiResponse.success(CompanyResponse.from(result)));
 	}
 
@@ -169,8 +163,6 @@ public class CompanyController {
 
 		log.info("업체 삭제 성공 - companyId: {}", companyId);
 
-		return ResponseEntity
-				.status(HttpStatus.OK)
-				.body(ApiResponse.success(null));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 }

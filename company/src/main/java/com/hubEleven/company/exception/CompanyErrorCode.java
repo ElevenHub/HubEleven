@@ -1,6 +1,6 @@
 package com.hubEleven.company.exception;
 
-import com.commonLib.common.code.ErrorCode;;
+import com.commonLib.common.code.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,5 +21,4 @@ public enum CompanyErrorCode implements ErrorCode {
 
 	private final HttpStatus httpStatus;
 	private final String message;
-
 }
