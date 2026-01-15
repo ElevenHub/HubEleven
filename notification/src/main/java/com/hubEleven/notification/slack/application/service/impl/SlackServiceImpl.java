@@ -5,7 +5,6 @@ import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
 import com.hubEleven.notification.ai.domain.repository.AiRequestLogRepository;
 import com.hubEleven.notification.ai.exception.NotificationErrorCode;
 import com.hubEleven.notification.slack.application.command.CreateSlackMessageCommand;
@@ -17,9 +16,14 @@ import com.hubEleven.notification.slack.application.validator.SlackValidator;
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
 import com.hubEleven.notification.slack.domain.service.SlackDomainService;
+import com.hubEleven.notification.slack.domain.vo.SlackMessageContext;
+import com.hubEleven.notification.slack.domain.vo.SlackMessageItem;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
 import com.hubEleven.notification.slack.infrastructure.client.SlackWebhookClient;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -44,8 +48,11 @@ public class SlackServiceImpl implements SlackService {
 	public SlackMessageResult createMessage(CreateSlackMessageCommand command) {
 		slackValidator.slackCreate(command.orderId());
 
-		GenerateMessageResponse aiResponse = findAiResultOrThrow(command.orderId());
-		String formattedMessage = slackDomainService.formatMessage(command, aiResponse);
+		ResponsePayload payload = findAiPayloadOrThrow(command.orderId());
+
+		SlackMessageContext context = buildSlackMessageContext(command.orderId(), payload);
+
+		String formattedMessage = slackDomainService.formatMessage(context, payload.messageBody);
 
 		SlackMessage slackMessage =
 				SlackMessage.create(
@@ -79,10 +86,9 @@ public class SlackServiceImpl implements SlackService {
 	public void deleteMessage(UUID messageId) {
 		slackValidator.slackDelete();
 
-		SlackMessage slackMessage =
-				slackMessageRepository
-						.findById(messageId)
-						.orElseThrow(() -> new GlobalException(SlackMessageErrorCode.SLACK_MESSAGE_NOT_FOUND));
+		slackMessageRepository
+				.findById(messageId)
+				.orElseThrow(() -> new GlobalException(SlackMessageErrorCode.SLACK_MESSAGE_NOT_FOUND));
 
 		throw new UnsupportedOperationException("삭제 로직을 연결하세요.");
 	}
@@ -115,7 +121,7 @@ public class SlackServiceImpl implements SlackService {
 		return PagingUtils.convert(page, SlackMessageResult::from);
 	}
 
-	private GenerateMessageResponse findAiResultOrThrow(UUID orderId) {
+	private ResponsePayload findAiPayloadOrThrow(UUID orderId) {
 		var logEntry =
 				aiRequestLogRepository
 						.findByOrderId(orderId)
@@ -133,7 +139,7 @@ public class SlackServiceImpl implements SlackService {
 			if (payload.messageBody == null || payload.messageBody.isBlank()) {
 				throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
 			}
-			return GenerateMessageResponse.success(payload.finalDispatchDeadline, payload.messageBody);
+			return payload;
 		} catch (Exception e) {
 			throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
 		}
@@ -150,6 +156,53 @@ public class SlackServiceImpl implements SlackService {
 		if (cleaned.endsWith("```")) cleaned = cleaned.substring(0, cleaned.length() - 3);
 
 		return cleaned.trim();
+	}
+
+	private SlackMessageContext buildSlackMessageContext(UUID orderId, ResponsePayload payload) {
+		LocalDateTime orderDateTime = parseLocalDateTime(payload.orderDateTime);
+
+		List<String> viaHubs = (payload.viaHubs == null) ? Collections.emptyList() : payload.viaHubs;
+
+		List<SlackMessageItem> items =
+				(payload.items == null)
+						? Collections.emptyList()
+						: payload.items.stream()
+								.map(
+										it ->
+												new SlackMessageItem(
+														nullToEmpty(it.name), it.quantity, nullToEmpty(it.note)))
+								.toList();
+
+		return new SlackMessageContext(
+				orderId,
+				blankToNull(payload.customerName),
+				blankToNull(payload.customerEmail),
+				orderDateTime,
+				blankToNull(payload.sourceHub),
+				viaHubs,
+				blankToNull(payload.destinationHub),
+				blankToNull(payload.destinationAddress),
+				blankToNull(payload.requestNote),
+				blankToNull(payload.deliveryManagerName),
+				blankToNull(payload.deliveryManagerEmail),
+				items);
+	}
+
+	private LocalDateTime parseLocalDateTime(String value) {
+		if (value == null || value.isBlank()) return null;
+		try {
+			return LocalDateTime.parse(value.trim());
+		} catch (Exception ignore) {
+			return null;
+		}
+	}
+
+	private String blankToNull(String s) {
+		return (s == null || s.isBlank()) ? null : s;
+	}
+
+	private String nullToEmpty(String s) {
+		return (s == null) ? "" : s;
 	}
 
 	private void sendToSlackAsync(UUID messageId, String messageText) {
@@ -191,5 +244,23 @@ public class SlackServiceImpl implements SlackService {
 	private static final class ResponsePayload {
 		public String finalDispatchDeadline;
 		public String messageBody;
+
+		public String customerName;
+		public String customerEmail;
+		public String orderDateTime;
+		public String sourceHub;
+		public List<String> viaHubs;
+		public String destinationHub;
+		public String destinationAddress;
+		public String requestNote;
+		public String deliveryManagerName;
+		public String deliveryManagerEmail;
+		public List<ItemPayload> items;
+	}
+
+	private static final class ItemPayload {
+		public String name;
+		public int quantity;
+		public String note;
 	}
 }
