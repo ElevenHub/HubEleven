@@ -1,6 +1,6 @@
 package com.hubEleven.user.infrastructure.security;
 
-import static com.hubEleven.user.domain.exception.ErrorCode.FORBIDDEN_USER;
+import static com.hubEleven.user.domain.exception.UserErrorCode.FORBIDDEN_USER;
 
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.user.domain.model.User;

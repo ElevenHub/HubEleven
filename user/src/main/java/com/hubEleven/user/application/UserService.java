@@ -1,6 +1,6 @@
 package com.hubEleven.user.application;
 
-import static com.hubEleven.user.domain.exception.ErrorCode.*;
+import static com.hubEleven.user.domain.exception.UserErrorCode.*;
 
 import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.request.CommonPageRequest;
@@ -10,7 +10,7 @@ import com.hubEleven.user.application.command.UserCreateCommand;
 import com.hubEleven.user.application.command.UserStatusUpdateCommand;
 import com.hubEleven.user.application.command.UserUpdateCommand;
 import com.hubEleven.user.application.dto.UserCreateResult;
-import com.hubEleven.user.application.dto.UserInfo;
+import com.hubEleven.user.application.dto.UserInfoResult;
 import com.hubEleven.user.domain.model.User;
 import com.hubEleven.user.domain.repository.UserRepository;
 import com.hubEleven.user.domain.vo.Role;
@@ -47,7 +47,7 @@ public class UserService {
 		return UserCreateResult.from(user);
 	}
 
-	public UserInfo findUserById(Long id, Long requestUserId, Role requestUserRole) {
+	public UserInfoResult findUserById(Long id, Long requestUserId, Role requestUserRole) {
 		if (!Role.isMaster(requestUserRole) && !id.equals(requestUserId)) {
 			throw new GlobalException(UNAUTHORIZED_ACCESS);
 		}
@@ -57,7 +57,7 @@ public class UserService {
 						.findByIdAndNotDeleted(id)
 						.orElseThrow(() -> new GlobalException(NOT_FOUND_USER));
 
-		return UserInfo.from(user);
+		return UserInfoResult.from(user);
 	}
 
 	@Transactional
@@ -71,18 +71,18 @@ public class UserService {
 		userRepository.save(user);
 	}
 
-	public CommonPageResponse<UserInfo> getAllUsers(CommonPageRequest pageRequest) {
+	public CommonPageResponse<UserInfoResult> getAllUsers(CommonPageRequest pageRequest) {
 		Page<User> users = userRepository.searchUsers(null, pageRequest.toPageable());
-		return PagingUtils.convert(users, UserInfo::from);
+		return PagingUtils.convert(users, UserInfoResult::from);
 	}
 
-	public CommonPageResponse<UserInfo> searchUsers(CommonPageRequest pageRequest) {
+	public CommonPageResponse<UserInfoResult> searchUsers(CommonPageRequest pageRequest) {
 		Page<User> users = userRepository.searchUsers(pageRequest.keyword(), pageRequest.toPageable());
-		return PagingUtils.convert(users, UserInfo::from);
+		return PagingUtils.convert(users, UserInfoResult::from);
 	}
 
 	@Transactional
-	public UserInfo updateUser(UserUpdateCommand command) {
+	public UserInfoResult updateUser(UserUpdateCommand command) {
 		User user =
 				userRepository
 						.findByIdAndNotDeleted(command.userId())
@@ -95,7 +95,7 @@ public class UserService {
 				command.role(),
 				command.companyId());
 		userRepository.save(user);
-		return UserInfo.from(user);
+		return UserInfoResult.from(user);
 	}
 
 	@Transactional

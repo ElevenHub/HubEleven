@@ -1,7 +1,7 @@
 package com.hubEleven.user.application;
 
-import static com.hubEleven.user.domain.exception.ErrorCode.FAILED_LOGIN;
-import static com.hubEleven.user.domain.exception.ErrorCode.NOT_APPROVED_USER;
+import static com.hubEleven.user.domain.exception.UserErrorCode.FAILED_LOGIN;
+import static com.hubEleven.user.domain.exception.UserErrorCode.NOT_APPROVED_USER;
 
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.user.application.command.LoginCommand;

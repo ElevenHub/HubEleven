@@ -1,9 +1,7 @@
 package com.hubEleven.user.presentation.controller;
 
-import com.commonLib.common.code.SuccessCode;
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.ApiResponse;
-import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
 import com.hubEleven.user.application.AuthService;
 import com.hubEleven.user.application.UserService;
@@ -12,7 +10,7 @@ import com.hubEleven.user.application.command.UserCreateCommand;
 import com.hubEleven.user.application.command.UserStatusUpdateCommand;
 import com.hubEleven.user.application.command.UserUpdateCommand;
 import com.hubEleven.user.application.dto.UserCreateResult;
-import com.hubEleven.user.application.dto.UserInfo;
+import com.hubEleven.user.application.dto.UserInfoResult;
 import com.hubEleven.user.domain.vo.Role;
 import com.hubEleven.user.presentation.dto.request.LoginRequest;
 import com.hubEleven.user.presentation.dto.request.SignupRequest;
@@ -24,6 +22,7 @@ import com.hubEleven.user.presentation.dto.response.UserInfoResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -59,7 +58,7 @@ public class UserController {
 						user.slackId(),
 						user.role(),
 						user.companyId());
-		return ApiResponseEntity.create(SuccessCode.CREATED, "/v1/user/" + user.userId(), response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
 	}
 
 	@PostMapping("/login")
@@ -70,16 +69,16 @@ public class UserController {
 		String token = authService.login(command);
 		LoginResponse response = new LoginResponse(token);
 
-		return ResponseEntity.ok()
+		return ResponseEntity.status(HttpStatus.OK)
 				.header(HttpHeaders.AUTHORIZATION, "Bearer " + token)
-				.body(ApiResponseEntity.success(response).getBody());
+				.body(ApiResponse.success(response));
 	}
 
 	@GetMapping
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> getAllUsers(
 			@Valid CommonPageRequest pageRequest) {
 
-		CommonPageResponse<UserInfo> result = userService.getAllUsers(pageRequest);
+		CommonPageResponse<UserInfoResult> result = userService.getAllUsers(pageRequest);
 
 		CommonPageResponse<UserInfoResponse> response =
 				new CommonPageResponse<>(
@@ -91,7 +90,7 @@ public class UserController {
 						result.first(),
 						result.last());
 
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@GetMapping("/{id}")
@@ -112,7 +111,7 @@ public class UserController {
 						userInfo.status(),
 						userInfo.companyId());
 
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@PatchMapping("/{id}/status")
@@ -121,13 +120,13 @@ public class UserController {
 		UserStatusUpdateCommand command = new UserStatusUpdateCommand(id, request.status());
 		userService.updateUserStatus(command);
 
-		return ApiResponseEntity.success(null);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 
 	@GetMapping("/search")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> searchUsers(
 			@Valid CommonPageRequest pageRequest) {
-		CommonPageResponse<UserInfo> result = userService.searchUsers(pageRequest);
+		CommonPageResponse<UserInfoResult> result = userService.searchUsers(pageRequest);
 
 		CommonPageResponse<UserInfoResponse> response =
 				new CommonPageResponse<>(
@@ -139,7 +138,7 @@ public class UserController {
 						result.first(),
 						result.last());
 
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@PutMapping("/{id}")
@@ -153,10 +152,10 @@ public class UserController {
 						request.phoneNumber(),
 						request.role(),
 						request.companyId());
-		UserInfo userInfo = userService.updateUser(command);
+		UserInfoResult userInfoResult = userService.updateUser(command);
 
-		UserInfoResponse response = UserInfoResponse.from(userInfo);
-		return ApiResponseEntity.success(response);
+		UserInfoResponse response = UserInfoResponse.from(userInfoResult);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@DeleteMapping("/{id}")
@@ -164,6 +163,6 @@ public class UserController {
 			@PathVariable("id") Long id, @RequestHeader("X-User-Id") Long requestUserId) {
 		userService.deleteUser(id, requestUserId);
 
-		return ApiResponseEntity.success(null);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 }

@@ -1,0 +1,32 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+    show-sql: true
+
+  h2:
+    console:
+      enabled: true
+
+# Feign 로깅 설정
+logging:
+  level:
+    com.hubEleven.deliveryManager.infrastructure.client: DEBUG
+    feign: DEBUG
+    feign.Logger: DEBUG
+
+feign:
+  client:
+    config:
+      default:
+        loggerLevel: FULL
