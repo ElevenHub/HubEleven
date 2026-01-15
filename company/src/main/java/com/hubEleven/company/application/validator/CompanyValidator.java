@@ -1,6 +1,6 @@
 package com.hubEleven.company.application.validator;
 
-import com.commonLib.common.code.ErrorCode;
+import com.commonLib.common.code.CommonErrorCode;
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.company.domain.model.Company;
 import com.hubEleven.company.domain.repository.CompanyRepository;
@@ -29,7 +29,7 @@ public class CompanyValidator {
 			throw new GlobalException(CompanyErrorCode.HUB_NOT_FOUND);
 		} catch (FeignException e) {
 			log.error("hub 정보 불러올 수 없음 hubId={} status={}", hubId, e.status(), e);
-			throw new GlobalException(ErrorCode.SERVER_ERROR);
+			throw new GlobalException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
 
@@ -61,10 +61,10 @@ public class CompanyValidator {
 			return userClient.getUser(userId, userId, userRole);
 		} catch (FeignException e) {
 			log.error("사용자 정보 불러오기 실패 userId={} role={} status={}", userId, userRole, e.status(), e);
-			throw new GlobalException(ErrorCode.SERVER_ERROR);
+			throw new GlobalException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		} catch (Exception e) {
 			log.error("사용자 정보 불러오기 실패 userId={} role={}", userId, userRole, e);
-			throw new GlobalException(ErrorCode.SERVER_ERROR);
+			throw new GlobalException(CommonErrorCode.INTERNAL_SERVER_ERROR);
 		}
 	}
 
