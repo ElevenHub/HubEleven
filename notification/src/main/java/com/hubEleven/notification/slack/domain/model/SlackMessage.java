@@ -1,6 +1,5 @@
 package com.hubEleven.notification.slack.domain.model;
 
-import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import jakarta.persistence.*;
@@ -20,7 +19,6 @@ import lombok.NoArgsConstructor;
 			@Index(name = "idx_slack_status", columnList = "status")
 		})
 @NoArgsConstructor
-@SoftDeletable
 public class SlackMessage extends BaseEntity {
 
 	@Id
