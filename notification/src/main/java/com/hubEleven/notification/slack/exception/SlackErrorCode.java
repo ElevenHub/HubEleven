@@ -1,13 +1,13 @@
 package com.hubEleven.notification.slack.exception;
 
-import com.commonLib.common.code.StatusCode;
+import com.commonLib.common.code.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum SlackMessageErrorCode implements StatusCode {
+public enum SlackErrorCode implements ErrorCode {
 	UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "인증 정보가 필요합니다."),
 	FORBIDDEN(HttpStatus.FORBIDDEN, "해당 작업을 수행할 권한이 없습니다."),
 	SLACK_MESSAGE_NOT_FOUND(HttpStatus.NOT_FOUND, "Slack 메시지를 찾을 수 없습니다."),
@@ -15,9 +15,4 @@ public enum SlackMessageErrorCode implements StatusCode {
 
 	private final HttpStatus httpStatus;
 	private final String message;
-
-	@Override
-	public String getName() {
-		return name();
-	}
 }

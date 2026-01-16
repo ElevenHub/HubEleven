@@ -19,7 +19,7 @@ import com.hubEleven.notification.slack.domain.service.SlackDomainService;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageContext;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageItem;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
-import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
+import com.hubEleven.notification.slack.exception.SlackErrorCode;
 import com.hubEleven.notification.slack.infrastructure.client.SlackWebhookClient;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -73,7 +73,7 @@ public class SlackServiceImpl implements SlackService {
 		SlackMessage slackMessage =
 				slackMessageRepository
 						.findById(command.messageId())
-						.orElseThrow(() -> new GlobalException(SlackMessageErrorCode.SLACK_MESSAGE_NOT_FOUND));
+						.orElseThrow(() -> new GlobalException(SlackErrorCode.SLACK_MESSAGE_NOT_FOUND));
 
 		slackMessage.updateMessage(command.message());
 		SlackMessage updated = slackMessageRepository.save(slackMessage);
@@ -88,7 +88,7 @@ public class SlackServiceImpl implements SlackService {
 
 		slackMessageRepository
 				.findById(messageId)
-				.orElseThrow(() -> new GlobalException(SlackMessageErrorCode.SLACK_MESSAGE_NOT_FOUND));
+				.orElseThrow(() -> new GlobalException(SlackErrorCode.SLACK_MESSAGE_NOT_FOUND));
 
 		throw new UnsupportedOperationException("삭제 로직을 연결하세요.");
 	}
@@ -100,7 +100,7 @@ public class SlackServiceImpl implements SlackService {
 		SlackMessage slackMessage =
 				slackMessageRepository
 						.findById(messageId)
-						.orElseThrow(() -> new GlobalException(SlackMessageErrorCode.SLACK_MESSAGE_NOT_FOUND));
+						.orElseThrow(() -> new GlobalException(SlackErrorCode.SLACK_MESSAGE_NOT_FOUND));
 
 		return SlackMessageResult.from(slackMessage);
 	}
