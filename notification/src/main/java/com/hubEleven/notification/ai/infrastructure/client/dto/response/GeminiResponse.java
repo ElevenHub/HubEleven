@@ -28,8 +28,7 @@ public record GeminiResponse(List<Candidate> candidates) {
 											.findFirst();
 								});
 
-		return text.orElseThrow(
-				() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
+		return text.orElseThrow(() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)

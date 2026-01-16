@@ -39,25 +39,19 @@ public class GeminiClient {
 						s -> s.value() == 400,
 						resp ->
 								resp.bodyToMono(String.class)
-										.flatMap(
-												msg ->
-														Mono.error(new GlobalException(AiErrorCode.AI_BAD_REQUEST))))
+										.flatMap(msg -> Mono.error(new GlobalException(AiErrorCode.AI_BAD_REQUEST))))
 				.onStatus(
 						s -> s.value() == 429,
 						resp ->
 								resp.bodyToMono(String.class)
-										.flatMap(
-												msg ->
-														Mono.error(new GlobalException(AiErrorCode.AI_RATE_LIMITED))))
+										.flatMap(msg -> Mono.error(new GlobalException(AiErrorCode.AI_RATE_LIMITED))))
 				.onStatus(
 						HttpStatusCode::is5xxServerError,
 						resp ->
 								resp.bodyToMono(String.class)
 										.flatMap(
 												msg ->
-														Mono.error(
-																new GlobalException(
-																		AiErrorCode.AI_UPSTREAM_UNAVAILABLE))))
+														Mono.error(new GlobalException(AiErrorCode.AI_UPSTREAM_UNAVAILABLE))))
 				.bodyToMono(GeminiResponse.class)
 				.onErrorMap(
 						ex ->

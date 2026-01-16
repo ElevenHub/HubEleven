@@ -36,8 +36,7 @@ public class SlackController {
 	public ResponseEntity<ApiResponse<SlackMessageResponse>> createMessage(
 			@Valid @RequestBody CreateSlackMessageRequest req,
 			@RequestHeader("X-User-Id") Long userId,
-			@RequestHeader("X-User-Role") String userRole
-	) {
+			@RequestHeader("X-User-Role") String userRole) {
 		log.info("Slack 메시지 발송 요청 - channel:{}", req.channel());
 
 		SlackMessageResult result = slackService.createMessage(req.toCommand());
@@ -53,8 +52,7 @@ public class SlackController {
 			@PathVariable UUID messageId,
 			@Valid @RequestBody UpdateSlackMessageRequest req,
 			@RequestHeader("X-User-Id") Long userId,
-			@RequestHeader("X-User-Role") String userRole
-	) {
+			@RequestHeader("X-User-Role") String userRole) {
 		log.info("Slack 메시지 수정 요청 - messageId:{}", messageId);
 
 		SlackMessageResult result = slackService.updateMessage(req.toCommand(messageId));
@@ -69,8 +67,7 @@ public class SlackController {
 	public ResponseEntity<ApiResponse<Object>> deleteMessage(
 			@PathVariable UUID messageId,
 			@RequestHeader("X-User-Id") Long userId,
-			@RequestHeader("X-User-Role") String userRole
-	) {
+			@RequestHeader("X-User-Role") String userRole) {
 		log.info("Slack 메시지 삭제 요청 - messageId:{}", messageId);
 
 		slackService.deleteMessage(messageId);
@@ -81,7 +78,8 @@ public class SlackController {
 
 	@Operation(summary = "메시지 상세 조회 API", description = "특정 Slack 메시지의 상세 정보를 조회한다.")
 	@GetMapping("/{messageId}")
-	public ResponseEntity<ApiResponse<SlackMessageResponse>> getMessage(@PathVariable UUID messageId) {
+	public ResponseEntity<ApiResponse<SlackMessageResponse>> getMessage(
+			@PathVariable UUID messageId) {
 		log.debug("Slack 메시지 단건 조회 요청 - messageId:{}", messageId);
 
 		SlackMessageResult result = slackService.getMessage(messageId);
@@ -98,31 +96,37 @@ public class SlackController {
 			@Valid CommonPageRequest pageReq,
 			@RequestParam(required = false) SlackMessageStatus status,
 			@RequestParam(required = false) String channel,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateFrom,
-			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime dateTo
-	) {
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+					LocalDateTime dateFrom,
+			@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+					LocalDateTime dateTo) {
 		log.debug(
 				"Slack 메시지 목록/검색 요청 - status:{}, channel:{}, dateFrom:{}, dateTo:{}, page:{}, size:{}",
-				status, channel, dateFrom, dateTo, pageReq.page(), pageReq.size()
-		);
+				status,
+				channel,
+				dateFrom,
+				dateTo,
+				pageReq.page(),
+				pageReq.size());
 
-		var page = slackService.searchMessages(
-				new SearchSlackMessageCommand(status, channel, dateFrom, dateTo),
-				pageReq
-		);
+		var page =
+				slackService.searchMessages(
+						new SearchSlackMessageCommand(status, channel, dateFrom, dateTo), pageReq);
 
-		var mapped = new CommonPageResponse<>(
-				page.content().stream().map(SlackMessageResponse::from).toList(),
-				page.page(),
-				page.size(),
+		var mapped =
+				new CommonPageResponse<>(
+						page.content().stream().map(SlackMessageResponse::from).toList(),
+						page.page(),
+						page.size(),
+						page.totalElements(),
+						page.totalPages(),
+						page.first(),
+						page.last());
+
+		log.debug(
+				"Slack 메시지 목록/검색 성공 - totalElements:{}, totalPages:{}",
 				page.totalElements(),
-				page.totalPages(),
-				page.first(),
-				page.last()
-		);
-
-		log.debug("Slack 메시지 목록/검색 성공 - totalElements:{}, totalPages:{}",
-				page.totalElements(), page.totalPages());
+				page.totalPages());
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(mapped));
 	}
