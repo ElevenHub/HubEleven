@@ -1,7 +1,6 @@
 package com.hubEleven.notification.ai.presentation.controller;
 
 import com.commonLib.common.response.ApiResponse;
-import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.notification.ai.application.dto.response.GenerateMessageResponse;
 import com.hubEleven.notification.ai.application.service.GenerateDispatchService;
 import com.hubEleven.notification.ai.presentation.dto.request.GenerateMessageRequest;
@@ -9,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,6 +27,6 @@ public class AiController {
 	public ResponseEntity<ApiResponse<GenerateMessageResponse>> generateMessage(
 			@Valid @RequestBody GenerateMessageRequest request) {
 		GenerateMessageResponse response = generateDispatchService.generate(request.toCommand());
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
 	}
 }
