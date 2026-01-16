@@ -6,7 +6,7 @@ import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubEleven.notification.ai.domain.repository.AiRequestLogRepository;
-import com.hubEleven.notification.ai.exception.NotificationErrorCode;
+import com.hubEleven.notification.ai.exception.AiErrorCode;
 import com.hubEleven.notification.slack.application.command.CreateSlackMessageCommand;
 import com.hubEleven.notification.slack.application.command.SearchSlackMessageCommand;
 import com.hubEleven.notification.slack.application.command.UpdateSlackMessageCommand;
@@ -125,7 +125,7 @@ public class SlackServiceImpl implements SlackService {
 		var logEntry =
 				aiRequestLogRepository
 						.findByOrderId(orderId)
-						.orElseThrow(() -> new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL));
+						.orElseThrow(() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
 
 		String raw = logEntry.getRawResponse();
 		String cleaned = cleanJsonResponse(raw);
@@ -134,14 +134,14 @@ public class SlackServiceImpl implements SlackService {
 			var payload = objectMapper.readValue(cleaned, ResponsePayload.class);
 
 			if (payload.finalDispatchDeadline == null || payload.finalDispatchDeadline.isBlank()) {
-				throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
+				throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
 			}
 			if (payload.messageBody == null || payload.messageBody.isBlank()) {
-				throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
+				throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
 			}
 			return payload;
 		} catch (Exception e) {
-			throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
+			throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
 		}
 	}
 

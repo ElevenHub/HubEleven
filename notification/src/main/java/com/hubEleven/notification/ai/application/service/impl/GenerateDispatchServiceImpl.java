@@ -12,7 +12,7 @@ import com.hubEleven.notification.ai.domain.service.PromptService;
 import com.hubEleven.notification.ai.domain.vo.DispatchContext;
 import com.hubEleven.notification.ai.domain.vo.DispatchResult;
 import com.hubEleven.notification.ai.domain.vo.RequestStatus;
-import com.hubEleven.notification.ai.exception.NotificationErrorCode;
+import com.hubEleven.notification.ai.exception.AiErrorCode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class GenerateDispatchServiceImpl implements GenerateDispatchService {
 				return GenerateMessageResponse.success(
 						existing.getFinalDispatchDeadline(), existing.getMessageBody());
 			}
-			throw new GlobalException(NotificationErrorCode.AI_REQUEST_DUPLICATED);
+			throw new GlobalException(AiErrorCode.AI_REQUEST_DUPLICATED);
 		}
 
 		DispatchContext ctx = toContext(command);
@@ -93,20 +93,20 @@ public class GenerateDispatchServiceImpl implements GenerateDispatchService {
 				}
 
 				aiService.markFail(logRow.getId(), ex.toString(), metadataText);
-				throw new GlobalException(NotificationErrorCode.AI_GENERATION_FAIL);
+				throw new GlobalException(AiErrorCode.AI_GENERATION_FAIL);
 			}
 		}
 
-		throw new GlobalException(NotificationErrorCode.AI_GENERATION_FAIL);
+		throw new GlobalException(AiErrorCode.AI_GENERATION_FAIL);
 	}
 
 	private boolean isRetryableByMessage(GlobalException e) {
 		String msg = safe(e.getMessage());
 
-		return msg.equals(NotificationErrorCode.AI_UPSTREAM_UNAVAILABLE.getMessage())
-				|| msg.equals(NotificationErrorCode.AI_RATE_LIMITED.getMessage())
-				|| msg.contains(NotificationErrorCode.AI_UPSTREAM_UNAVAILABLE.getMessage())
-				|| msg.contains(NotificationErrorCode.AI_RATE_LIMITED.getMessage());
+		return msg.equals(AiErrorCode.AI_UPSTREAM_UNAVAILABLE.getMessage())
+				|| msg.equals(AiErrorCode.AI_RATE_LIMITED.getMessage())
+				|| msg.contains(AiErrorCode.AI_UPSTREAM_UNAVAILABLE.getMessage())
+				|| msg.contains(AiErrorCode.AI_RATE_LIMITED.getMessage());
 	}
 
 	private boolean isRetryableByCause(Throwable t) {

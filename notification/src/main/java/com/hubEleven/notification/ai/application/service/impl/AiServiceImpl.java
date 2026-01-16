@@ -4,7 +4,7 @@ import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.notification.ai.application.service.AiService;
 import com.hubEleven.notification.ai.domain.model.AiRequestLog;
 import com.hubEleven.notification.ai.domain.repository.AiRequestLogRepository;
-import com.hubEleven.notification.ai.exception.NotificationErrorCode;
+import com.hubEleven.notification.ai.exception.AiErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,7 +27,7 @@ public class AiServiceImpl implements AiService {
 		try {
 			return aiRequestLogRepository.save(AiRequestLog.requested(orderId, prompt, metadataText));
 		} catch (DataIntegrityViolationException e) {
-			throw new GlobalException(NotificationErrorCode.AI_REQUEST_DUPLICATED);
+			throw new GlobalException(AiErrorCode.AI_REQUEST_DUPLICATED);
 		}
 	}
 
@@ -42,7 +42,7 @@ public class AiServiceImpl implements AiService {
 		AiRequestLog log =
 				aiRequestLogRepository
 						.findById(logId)
-						.orElseThrow(() -> new GlobalException(NotificationErrorCode.AI_GENERATION_FAIL));
+						.orElseThrow(() -> new GlobalException(AiErrorCode.AI_GENERATION_FAIL));
 
 		log.success(finalDispatchDeadline, messageBody, rawResponse, metadataText);
 		aiRequestLogRepository.save(log);
@@ -54,7 +54,7 @@ public class AiServiceImpl implements AiService {
 		AiRequestLog log =
 				aiRequestLogRepository
 						.findById(logId)
-						.orElseThrow(() -> new GlobalException(NotificationErrorCode.AI_GENERATION_FAIL));
+						.orElseThrow(() -> new GlobalException(AiErrorCode.AI_GENERATION_FAIL));
 
 		log.fail(failureReason, metadataText);
 		aiRequestLogRepository.save(log);
