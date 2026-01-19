@@ -37,7 +37,7 @@ dependencies {
     implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 
     // External Libraries
-    implementation 'com.github.Doritosch:commonLib:1.0.5'
+    implementation 'com.github.ElevenHub:HubEleven-common:v0.0.1'
 
     // API Documentation
     implementation "org.springdoc:springdoc-openapi-starter-webmvc-ui:${springdocVersion}"

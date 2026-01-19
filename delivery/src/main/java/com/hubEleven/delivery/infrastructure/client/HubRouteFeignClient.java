@@ -14,6 +14,5 @@ import org.springframework.web.bind.annotation.RequestParam;
 		configuration = FeignClientConfig.class)
 public interface HubRouteFeignClient {
 	@GetMapping("/v1/hub-routes/search")
-	ApiResponse<HubRouteFeignResponseDto> getRoute(
-			@RequestParam UUID fromHubId, @RequestParam UUID toHubId);
+	ApiResponse<HubRouteFeignResponseDto> getRoute(@RequestParam UUID fromHubId, @RequestParam UUID toHubId);
 }

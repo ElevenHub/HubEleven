@@ -2,7 +2,6 @@ package com.hubEleven.deliveryManager.presentation;
 
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.ApiResponse;
-import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
 import com.hubEleven.deliveryManager.application.DeliveryManagerService;
 import com.hubEleven.deliveryManager.domain.DeliveryType;
@@ -17,6 +16,7 @@ import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +56,7 @@ public class DeliveryManagerController {
 				deliveryManagerService.createDeliveryManager(
 						createRequestDto /* , requestUserId, requestUserRole */);
 
-		return ApiResponseEntity.success(responseDto);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responseDto));
 	}
 
 	// @PreAuthorize("hasAnyRole('MASTER','HUB_MANAGER')")
@@ -78,7 +78,7 @@ public class DeliveryManagerController {
 
 		CommonPageResponse<DeliveryManagerResponseDto> responseDtoList =
 				CommonPageResponse.of(deliveryManagerList);
-		return ApiResponseEntity.success(responseDtoList);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responseDtoList));
 	}
 
 	// @PreAuthorize("hasAnyRole('MASTER','HUB_MANAGER', 'DELIVERY_MANAGER')")
@@ -88,7 +88,7 @@ public class DeliveryManagerController {
 			@PathVariable Long managerId) {
 		log.info("[DeliveryManager Controller] 배달 담당자 단일 조회 요청");
 		DeliveryManagerResponseDto responseDto = deliveryManagerService.getDeliveryManager(managerId);
-		return ApiResponseEntity.success(responseDto);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responseDto));
 	}
 
 	// @PreAuthorize("hasAnyRole('MASTER','HUB_MANAGER')")
@@ -96,18 +96,18 @@ public class DeliveryManagerController {
 	@DeleteMapping("/{managerId}")
 	public ResponseEntity<ApiResponse<Void>> deleteDeliveryManager(@PathVariable Long managerId) {
 		deliveryManagerService.deleteDeliveryManager(managerId);
-		return ApiResponseEntity.ok("삭제가 완료되었습니다.");
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success("삭제가 완료되었습니다."));
 	}
 
 	// @PreAuthorize("hasAnyRole('MASTER')")
 	@Operation(summary = "배송 담당자 배정 API", description = "특정 배송경로에 대한 배송 담당자를 배정한다.")
 	@PatchMapping("/assign")
-	public ResponseEntity<DeliveryManagerAssignResponseDto> assignDeliveryManager(
+	public ResponseEntity<ApiResponse<DeliveryManagerAssignResponseDto>> assignDeliveryManager(
 			@RequestBody @Valid DeliveryManagerAssignRequestDto assignRequestDto) {
 		DeliveryManagerAssignResponseDto assignResponseDtoList =
 				deliveryManagerService.assignDeliveryManagers(assignRequestDto);
 
-		return ResponseEntity.ok(assignResponseDtoList);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(assignResponseDtoList));
 	}
 
 	// MSA 서버 내부용 메서드
@@ -147,6 +147,6 @@ public class DeliveryManagerController {
 
 		CommonPageResponse<DeliveryManagerResponseDto> responseDtoList =
 				CommonPageResponse.of(response);
-		return ApiResponseEntity.success(responseDtoList);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(responseDtoList));
 	}
 }

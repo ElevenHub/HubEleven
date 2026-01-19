@@ -2,7 +2,6 @@ package com.hubEleven.order.presentation.controller;
 
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.ApiResponse;
-import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
 import com.hubEleven.order.application.dto.OrderResult;
@@ -15,6 +14,7 @@ import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,7 +41,7 @@ public class OrderController {
 
 		OrderResult result = orderService.create(request);
 
-		return ApiResponseEntity.success(OrderResponse.from(result));
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(OrderResponse.from(result)));
 	}
 
 	@Operation(summary = "주문 전체  조회 API", description = "주문 전체 목록을 조회한다.")
@@ -55,7 +55,7 @@ public class OrderController {
 		// Application 계층의 OrderResult를 Presentation 계층의 OrderResponse로 변환
 		CommonPageResponse<OrderResponse> response = PagingUtils.convert(orders, OrderResponse::from);
 
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@Operation(summary = "주문 단건 조회 API", description = "주문 ID로 상품을 조회한다.")
@@ -64,7 +64,7 @@ public class OrderController {
 
 		OrderResult result = orderService.getOrderDetail(orderId);
 
-		return ApiResponseEntity.success(OrderResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(OrderResponse.from(result)));
 	}
 
 	@Operation(summary = "주문 수정 API", description = "주문 정보를 수정한다.")
@@ -74,7 +74,7 @@ public class OrderController {
 
 		OrderResult result = orderService.updateOrder(orderId, request);
 
-		return ApiResponseEntity.success(OrderResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(OrderResponse.from(result)));
 	}
 
 	@Operation(summary = "주문 삭제 API", description = "주문을 삭제한다.")
@@ -83,7 +83,7 @@ public class OrderController {
 
 		orderService.deleteOrder(orderId, userId);
 
-		return ApiResponseEntity.success(null);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 
 	@Operation(summary = "주문 검색 API", description = "키워드 기반으로 주문을 검색한다.")
@@ -95,7 +95,7 @@ public class OrderController {
 
 		CommonPageResponse<OrderResponse> response = PagingUtils.convert(orders, OrderResponse::from);
 
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@Operation(summary = "주문 취소 API", description = "주문을 취소한다.")
@@ -104,6 +104,6 @@ public class OrderController {
 
 		orderService.cancelOrder(orderId, userId);
 
-		return ApiResponseEntity.success(null);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 }

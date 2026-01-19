@@ -1,7 +1,6 @@
 package com.hubEleven.stock.presentation.controller;
 
 import com.commonLib.common.response.ApiResponse;
-import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.stock.application.dto.StockResult;
 import com.hubEleven.stock.application.service.StockService;
 import com.hubEleven.stock.presentation.dto.request.StockRequests;
@@ -11,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -36,7 +36,7 @@ public class StockController {
 
 		StockResult result = stockService.create(request);
 
-		return ApiResponseEntity.success(StockResponse.from(result));
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(StockResponse.from(result)));
 	}
 
 	@Operation(summary = "재고 단건 조회 API", description = "상품 ID로 재고 상세 정보를 조회한다.")
@@ -45,7 +45,7 @@ public class StockController {
 
 		StockResult result = stockService.getStockByProductId(productId);
 
-		return ApiResponseEntity.success(StockResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(StockResponse.from(result)));
 	}
 
 	@Operation(summary = "재고 감소 API", description = "상품 주문시 재고가 감소한다.")
@@ -56,7 +56,7 @@ public class StockController {
 		// 재고 감소 로직 호출
 		StockResult result = stockService.decreaseStock(request);
 
-		return ApiResponseEntity.success(StockResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(StockResponse.from(result)));
 	}
 
 	@Operation(summary = "재고 복원 API", description = "상품 취소시 재고가 복원된다.")
@@ -67,6 +67,6 @@ public class StockController {
 		// 재고 복원 로직 호출
 		StockResult result = stockService.restoreStock(request);
 
-		return ApiResponseEntity.success(StockResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(StockResponse.from(result)));
 	}
 }

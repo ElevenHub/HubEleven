@@ -2,7 +2,6 @@ package com.hubEleven.hub.presentation;
 
 import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.response.ApiResponse;
-import com.commonLib.common.response.ApiResponseEntity;
 import com.hubEleven.hub.application.command.CreateHubCommand;
 import com.hubEleven.hub.application.command.DeleteHubCommand;
 import com.hubEleven.hub.application.command.UpdateHubCommand;
@@ -19,6 +18,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -49,7 +49,7 @@ public class HubController {
 		CreateHubCommand command = request.toCommand(userId);
 		HubResult result = hubService.createHub(command);
 		HubResponseDto response = HubResponseDto.from(result);
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(response));
 	}
 
 	@PatchMapping("/{hubId}")
@@ -65,7 +65,7 @@ public class HubController {
 		UpdateHubCommand command = request.toCommand(hubId, userId);
 		HubResult result = hubService.updateHub(command);
 		HubResponseDto response = HubResponseDto.from(result);
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@DeleteMapping("/{hubId}")
@@ -79,14 +79,14 @@ public class HubController {
 		}
 		hubService.deleteHub(new DeleteHubCommand(hubId, userId));
 		HubDeleteResponseDto response = new HubDeleteResponseDto(hubId, true);
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@GetMapping("/{hubId}")
 	public ResponseEntity<ApiResponse<HubResponseDto>> getHub(@PathVariable UUID hubId) {
 		HubResult result = hubService.getHub(hubId);
 		HubResponseDto response = HubResponseDto.from(result);
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@GetMapping
@@ -94,6 +94,6 @@ public class HubController {
 		HubListResult result = hubService.getHubs();
 		List<HubResponseDto> responses = HubResponseDto.fromList(result.hubs());
 		HubListResponseDto response = new HubListResponseDto(responses);
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 }

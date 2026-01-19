@@ -1,6 +1,5 @@
 package com.hubEleven.deliveryRoute.domain;
 
-import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
 import com.hubEleven.delivery.domain.Delivery;
 import com.hubEleven.delivery.domain.DeliveryStatus;
@@ -15,7 +14,6 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SoftDeletable
 @Table(name = "p_delivery_route")
 public class DeliveryRoute extends BaseEntity {
 	@Id

@@ -1,11 +1,11 @@
 package com.hubEleven.deliveryManager.domain.exception;
 
-import com.commonLib.common.code.StatusCode;
+import com.commonLib.common.code.ErrorCode;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
 @Getter
-public enum DeliveryManagerErrorCode implements StatusCode {
+public enum DeliveryManagerErrorCode implements ErrorCode {
 	DELIVERY_MANAGER_NOT_FOUND(HttpStatus.NOT_FOUND, "배송 담당자를 찾을 수 없습니다."),
 	HUB_DELIVERY_MANAGER_NOT_FOUND(HttpStatus.NOT_FOUND, "허브 배송 담당자가 존재하지 않습니다."),
 	COMPANY_DELIVERY_MANAGER_NOT_FOUND(HttpStatus.NOT_FOUND, "업체 배송 담당자가 존재하지 않습니다."),
@@ -27,10 +27,5 @@ public enum DeliveryManagerErrorCode implements StatusCode {
 	DeliveryManagerErrorCode(HttpStatus httpStatus, String message) {
 		this.httpStatus = httpStatus;
 		this.message = message;
-	}
-
-	@Override
-	public String getName() {
-		return name();
 	}
 }

@@ -1,6 +1,5 @@
 package com.hubEleven.delivery.application.command.service;
 
-import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.delivery.application.dto.DeliveryRequestDto;
 import com.hubEleven.delivery.application.dto.DeliveryResponseDto;
 import com.hubEleven.delivery.application.port.DeliveryQueryPort;
@@ -42,24 +41,23 @@ public class DeliveryCommandService {
 	@Transactional
 	public DeliveryResponseDto createDelivery(UUID orderId) {
 		// 주문 ID를 기준으로 주문 정보 가져오기
-		ApiResponse<OrderFeignResponseDto> order = orderFeignService.getOrderInfo(orderId);
+		OrderFeignResponseDto order = orderFeignService.getOrderInfo(orderId).data();
 
-		UUID fromCompanyId = order.result().requestorCompanyId(); // 요청업체
-		UUID toCompanyId = order.result().recipientCompanyId(); // 수령 업체
+		UUID fromCompanyId = order.requestorCompanyId(); // 요청업체
+		UUID toCompanyId = order.recipientCompanyId(); // 수령 업체
 
 		// 요청업체의 관리 허브 ID는 업체 테이블에 있음
 		// 주문 정보에 있는 요청 업체 소속 허브를 출발 허브로 수령 업체 소속 허브를 도착 허브로 생각하고
 		// 허브 경로에서 출발 허브 부터 도착 허브의 경로를 받아와서 그 갯수 만큼 배송 경로 생성
-		UUID fromHubId = companyFeignService.getCompanyInfo(fromCompanyId).result().hubId();
-		UUID toHubId = companyFeignService.getCompanyInfo(fromCompanyId).result().hubId();
+		UUID fromHubId = companyFeignService.getCompanyInfo(fromCompanyId).data().hubId();
+		UUID toHubId = companyFeignService.getCompanyInfo(fromCompanyId).data().hubId();
 
 		// 유저정보에서 수령인, 수령인 슬랙ID 받아오기
-		ApiResponse<UserFeignResponseDto> toUser =
-				userFeignService.getUserInfo(toCompanyId, Role.COMPANY_MANAGER);
+		UserFeignResponseDto toUser = userFeignService.getUserInfo(toCompanyId, Role.COMPANY_MANAGER).data();
 
 		// 배송담당자에서 배송담당자 ID 받아오기
-		ApiResponse<DeliveryManagerFeignResponseDto> deliveryManager =
-				deliveryManagerFeignService.getDeliveryManagerInfo(orderId, toHubId, DeliveryType.COMPANY);
+		DeliveryManagerFeignResponseDto deliveryManager =
+				deliveryManagerFeignService.getDeliveryManagerInfo(orderId, toHubId, DeliveryType.COMPANY).data();
 
 		// 배송 생성
 		Delivery delivery =
@@ -68,21 +66,20 @@ public class DeliveryCommandService {
 						DeliveryStatus.HUB_WAITHING,
 						fromCompanyId,
 						toCompanyId,
-						toUser.result().name(),
-						toUser.result().slackId(),
-						deliveryManager.result().deliveryManagerId());
+						toUser.name(),
+						toUser.slackId(),
+						deliveryManager.deliveryManagerId());
 
 		// 허브 경로에 출발허브ID 와 도착허브ID를 넘기고 경로를 받는다.
-		ApiResponse<HubRouteFeignResponseDto> hubRouteFeign =
-				hubRouteFeignService.getRoute(fromHubId, toHubId);
-		List<HubRouteSegmentResponseDto> hubRoute = hubRouteFeign.result().segments().stream().toList();
+		HubRouteFeignResponseDto hubRouteFeign = hubRouteFeignService.getRoute(fromHubId, toHubId).data();
+		List<HubRouteSegmentResponseDto> hubRoute = hubRouteFeign.segments().stream().toList();
 		for (int seq = 0; seq < hubRoute.size(); seq++) {
 			HubRouteSegmentResponseDto deliveryRoute = hubRoute.get(seq);
 			// 배송 담당자 ID
-			ApiResponse<DeliveryManagerFeignResponseDto> hubDeliveryManager =
+			DeliveryManagerFeignResponseDto hubDeliveryManager =
 					deliveryManagerFeignService.getDeliveryManagerInfo(
-							orderId, deliveryRoute.toHubId(), DeliveryType.HUB);
-			Long deliveryManagerId = hubDeliveryManager.result().deliveryManagerId();
+							orderId, deliveryRoute.toHubId(), DeliveryType.HUB).data();
+			Long deliveryManagerId = hubDeliveryManager.deliveryManagerId();
 
 			// 배송 경로 생성 요청
 			DeliveryRoute route = deliveryRouteService.creatRoute(deliveryRoute, seq, deliveryManagerId);

@@ -1,8 +1,6 @@
 package com.hubEleven.delivery.presentation;
 
-import com.commonLib.common.code.SuccessCode;
 import com.commonLib.common.response.ApiResponse;
-import com.commonLib.common.response.ApiResponseEntity;
 import com.commonLib.common.response.CommonPageResponse;
 import com.hubEleven.delivery.application.command.service.DeliveryCommandService;
 import com.hubEleven.delivery.application.dto.DeliveryDetailResponseDto;
@@ -18,6 +16,7 @@ import java.security.Principal;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -61,7 +60,7 @@ public class DeliveryController {
 						size,
 						sort);
 		CommonPageResponse<DeliveryResponseDto> response = CommonPageResponse.of(result);
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	// 배송 전체 조회
@@ -74,7 +73,7 @@ public class DeliveryController {
 			) {
 		Page<DeliveryResponseDto> result = queryService.getDeliveryList(page, size, sort);
 		CommonPageResponse<DeliveryResponseDto> response = CommonPageResponse.of(result);
-		return ApiResponseEntity.success(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	// 배송 상세 조회
@@ -84,7 +83,7 @@ public class DeliveryController {
 			@PathVariable UUID deliveryId) {
 		DeliveryDetailResponseDto result = queryService.getDelivery(deliveryId);
 
-		return ApiResponseEntity.create(SuccessCode.SUCCESS, "/delivery/" + deliveryId, result);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(result));
 	}
 
 	// 배송 생성
@@ -95,7 +94,7 @@ public class DeliveryController {
 			@RequestBody DeliveryRequestDto deliveryRequestDto) {
 		UUID orderId = deliveryRequestDto.orderId();
 		DeliveryResponseDto result = commandService.createDelivery(orderId);
-		return ApiResponseEntity.create(SuccessCode.CREATED, "/delivery/" + orderId, result);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(result));
 	}
 
 	// 배송 수정
@@ -105,7 +104,7 @@ public class DeliveryController {
 	public ResponseEntity<ApiResponse<DeliveryResponseDto>> updateDelivery(
 			@PathVariable UUID deliveryId, @RequestBody DeliveryRequestDto deliveryRequestDto) {
 		DeliveryResponseDto result = commandService.updateDelivery(deliveryId, deliveryRequestDto);
-		return ApiResponseEntity.create(SuccessCode.UPDATED, "/delivery/" + deliveryId, result);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(result));
 	}
 
 	// 배송 삭제
@@ -116,7 +115,7 @@ public class DeliveryController {
 			@PathVariable UUID deliveryId, Principal principal) {
 		Long userId = Long.parseLong(principal.getName()); // getName으로 userId를 String 타입으로 받아온다
 		commandService.deleteDelivery(deliveryId, userId);
-		return ApiResponseEntity.create(SuccessCode.DELETED, "/delivery/" + deliveryId, null);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 
 	// 배송 경로 수정
@@ -127,6 +126,6 @@ public class DeliveryController {
 			@PathVariable UUID deliveryId, @RequestBody DeliveryRouteRequestDto deliveryRouteRequestDto) {
 		DeliveryRouteResponseDto result =
 				commandService.updateDeliveryRoute(deliveryId, deliveryRouteRequestDto);
-		return ApiResponseEntity.create(SuccessCode.UPDATED, "/delivery/{deliveryId}/route", result);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(result));
 	}
 }

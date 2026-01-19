@@ -1,6 +1,5 @@
 package com.hubEleven.deliveryManager.infrastructure.client;
 
-import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.deliveryManager.infrastructure.dto.HubResponseDto;
 import java.util.UUID;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -12,5 +11,5 @@ import org.springframework.web.bind.annotation.PathVariable;
 public interface HubFeignClient {
 
 	@GetMapping("/v1/hubs/{hubId}")
-	ResponseEntity<ApiResponse<HubResponseDto>> getHub(@PathVariable("hubId") UUID hubId);
+	ResponseEntity<HubResponseDto> getHub(@PathVariable("hubId") UUID hubId);
 }

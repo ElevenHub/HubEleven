@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import com.commonLib.common.response.ApiResponse;
 import com.hubEleven.deliveryManager.infrastructure.client.UserFeignClient;
 import com.hubEleven.deliveryManager.infrastructure.dto.UserInfoResponse;
 import org.junit.jupiter.api.Test;
@@ -26,7 +25,7 @@ public class DeliveryManagerFeignClientTest {
 		String requestUserRole = "MASTER"; // 또는 "HUB_MANAGER" 등
 
 		// when
-		ResponseEntity<ApiResponse<UserInfoResponse>> response =
+		ResponseEntity<UserInfoResponse> response =
 				userFeignClient.getUser(userId, requestUserId, requestUserRole);
 
 		// then
@@ -34,10 +33,10 @@ public class DeliveryManagerFeignClientTest {
 		assertNotNull(response.getBody(), "응답 body가 null이 아니어야 합니다");
 		assertTrue(response.getStatusCode().is2xxSuccessful(), "HTTP 상태 코드가 2xx여야 합니다");
 
-		ApiResponse<UserInfoResponse> apiResponse = response.getBody();
-		assertNotNull(apiResponse.result(), "result가 null이 아니어야 합니다");
+		UserInfoResponse apiResponse = response.getBody();
+		assertNotNull(apiResponse, "result가 null이 아니어야 합니다");
 
-		UserInfoResponse userDto = apiResponse.result();
+		UserInfoResponse userDto = apiResponse;
 		assertThat(userDto.userId()).isEqualTo(userId);
 
 		// 로그 출력

@@ -1,13 +1,13 @@
 package com.hubEleven.hub.common.exception;
 
-import com.commonLib.common.code.StatusCode;
+import com.commonLib.common.code.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum HubErrorCode implements StatusCode {
+public enum HubErrorCode implements ErrorCode {
 	DUPLICATE_HUB_NAME(HttpStatus.BAD_REQUEST, "이미 동일한 이름의 허브가 존재합니다."),
 	HUB_NOT_FOUND(HttpStatus.NOT_FOUND, "허브를 찾을 수 없습니다."),
 	GEOCODING_FAILED(HttpStatus.BAD_REQUEST, "주소로부터 좌표를 찾을 수 없습니다."),
@@ -17,9 +17,4 @@ public enum HubErrorCode implements StatusCode {
 
 	private final HttpStatus httpStatus;
 	private final String message;
-
-	@Override
-	public String getName() {
-		return this.name();
-	}
 }
