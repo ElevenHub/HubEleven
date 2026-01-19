@@ -41,7 +41,8 @@ public class ProductController {
 
 		ProductResult result = productService.create(request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ProductResponse.from(result)));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.success(ProductResponse.from(result)));
 	}
 
 	@Operation(summary = "상품 전체  조회 API", description = "상품 전체 목록을 조회한다.")
@@ -64,11 +65,13 @@ public class ProductController {
 
 	@Operation(summary = "상품 단건 조회 API", description = "상품 ID로 상품을 조회한다.")
 	@GetMapping("/{productId}")
-	public ResponseEntity<ApiResponse<ProductResponse>> getProductDetail(@PathVariable UUID productId) {
+	public ResponseEntity<ApiResponse<ProductResponse>> getProductDetail(
+			@PathVariable UUID productId) {
 
 		ProductResult result = productService.getProduct(productId);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ProductResponse.from(result)));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.success(ProductResponse.from(result)));
 	}
 
 	@Operation(summary = "상품 수정 API", description = "상품 정보를 수정한다.")
@@ -78,12 +81,14 @@ public class ProductController {
 
 		ProductResult result = productService.updateProduct(productId, request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ProductResponse.from(result)));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.success(ProductResponse.from(result)));
 	}
 
 	@Operation(summary = "상품 삭제 API", description = "상품을 삭제한다.")
 	@DeleteMapping("/{productId}")
-	public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable UUID productId, Long userId) {
+	public ResponseEntity<ApiResponse<Void>> deleteProduct(
+			@PathVariable UUID productId, Long userId) {
 
 		productService.deleteProduct(productId, userId);
 

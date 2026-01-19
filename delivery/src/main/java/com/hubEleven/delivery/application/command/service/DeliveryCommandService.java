@@ -54,7 +54,8 @@ public class DeliveryCommandService {
 		UUID toHubId = companyFeignService.getCompanyInfo(fromCompanyId).data().hubId();
 
 		// 유저정보에서 수령인, 수령인 슬랙ID 받아오기
-		UserFeignResponseDto toUser = userFeignService.getUserInfo(toCompanyId, Role.COMPANY_MANAGER).data();
+		UserFeignResponseDto toUser =
+				userFeignService.getUserInfo(toCompanyId, Role.COMPANY_MANAGER).data();
 
 		// 배송담당자에서 배송담당자 ID 받아오기
 		ApiResponse<DeliveryManagerFeignResponseDto> deliveryManager =
@@ -72,7 +73,8 @@ public class DeliveryCommandService {
 						deliveryManager.data().deliveryManagerId());
 
 		// 허브 경로에 출발허브ID 와 도착허브ID를 넘기고 경로를 받는다.
-		ApiResponse<HubRouteFeignResponseDto> hubRouteFeign = hubRouteFeignService.getRoute(fromHubId, toHubId);
+		ApiResponse<HubRouteFeignResponseDto> hubRouteFeign =
+				hubRouteFeignService.getRoute(fromHubId, toHubId);
 		List<HubRouteSegmentResponseDto> hubRoute = hubRouteFeign.data().segments().stream().toList();
 		for (int seq = 0; seq < hubRoute.size(); seq++) {
 			HubRouteSegmentResponseDto deliveryRoute = hubRoute.get(seq);

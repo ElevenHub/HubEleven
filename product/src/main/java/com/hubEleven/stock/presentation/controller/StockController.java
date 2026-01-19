@@ -36,7 +36,8 @@ public class StockController {
 
 		StockResult result = stockService.create(request);
 
-		return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success(StockResponse.from(result)));
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(ApiResponse.success(StockResponse.from(result)));
 	}
 
 	@Operation(summary = "재고 단건 조회 API", description = "상품 ID로 재고 상세 정보를 조회한다.")
@@ -45,7 +46,8 @@ public class StockController {
 
 		StockResult result = stockService.getStockByProductId(productId);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(StockResponse.from(result)));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.success(StockResponse.from(result)));
 	}
 
 	@Operation(summary = "재고 감소 API", description = "상품 주문시 재고가 감소한다.")
@@ -56,7 +58,8 @@ public class StockController {
 		// 재고 감소 로직 호출
 		StockResult result = stockService.decreaseStock(request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(StockResponse.from(result)));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.success(StockResponse.from(result)));
 	}
 
 	@Operation(summary = "재고 복원 API", description = "상품 취소시 재고가 복원된다.")
@@ -67,6 +70,7 @@ public class StockController {
 		// 재고 복원 로직 호출
 		StockResult result = stockService.restoreStock(request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(StockResponse.from(result)));
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(ApiResponse.success(StockResponse.from(result)));
 	}
 }
