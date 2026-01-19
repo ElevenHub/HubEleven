@@ -1,6 +1,5 @@
 package com.hubEleven.notification.ai.domain.model;
 
-import com.commonLib.common.annotation.SoftDeletable;
 import com.commonLib.common.model.BaseEntity;
 import com.hubEleven.notification.ai.domain.vo.RequestStatus;
 import jakarta.persistence.*;
@@ -17,7 +16,6 @@ import lombok.NoArgsConstructor;
 			@Index(name = "idx_ai_req_order", columnList = "order_id"),
 			@Index(name = "idx_ai_req_status", columnList = "request_status")
 		})
-@SoftDeletable
 @NoArgsConstructor
 public class AiRequestLog extends BaseEntity {
 

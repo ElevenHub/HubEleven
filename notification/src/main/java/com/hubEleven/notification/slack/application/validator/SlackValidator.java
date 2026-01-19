@@ -3,7 +3,7 @@ package com.hubEleven.notification.slack.application.validator;
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
-import com.hubEleven.notification.slack.exception.SlackMessageErrorCode;
+import com.hubEleven.notification.slack.exception.SlackErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -19,7 +19,7 @@ public class SlackValidator {
 				.findFirstByOrderIdAndStatus(orderId, SlackMessageStatus.SENT)
 				.ifPresent(
 						m -> {
-							throw new GlobalException(SlackMessageErrorCode.SLACK_MESSAGE_ALREADY_SENT);
+							throw new GlobalException(SlackErrorCode.SLACK_MESSAGE_ALREADY_SENT);
 						});
 	}
 

@@ -1,7 +1,7 @@
 package com.hubEleven.notification.ai.infrastructure.client;
 
 import com.commonLib.common.exception.GlobalException;
-import com.hubEleven.notification.ai.exception.NotificationErrorCode;
+import com.hubEleven.notification.ai.exception.AiErrorCode;
 import com.hubEleven.notification.ai.infrastructure.client.dto.request.GeminiRequest;
 import com.hubEleven.notification.ai.infrastructure.client.dto.response.GeminiResponse;
 import lombok.RequiredArgsConstructor;
@@ -39,32 +39,26 @@ public class GeminiClient {
 						s -> s.value() == 400,
 						resp ->
 								resp.bodyToMono(String.class)
-										.flatMap(
-												msg ->
-														Mono.error(new GlobalException(NotificationErrorCode.AI_BAD_REQUEST))))
+										.flatMap(msg -> Mono.error(new GlobalException(AiErrorCode.AI_BAD_REQUEST))))
 				.onStatus(
 						s -> s.value() == 429,
 						resp ->
 								resp.bodyToMono(String.class)
-										.flatMap(
-												msg ->
-														Mono.error(new GlobalException(NotificationErrorCode.AI_RATE_LIMITED))))
+										.flatMap(msg -> Mono.error(new GlobalException(AiErrorCode.AI_RATE_LIMITED))))
 				.onStatus(
 						HttpStatusCode::is5xxServerError,
 						resp ->
 								resp.bodyToMono(String.class)
 										.flatMap(
 												msg ->
-														Mono.error(
-																new GlobalException(
-																		NotificationErrorCode.AI_UPSTREAM_UNAVAILABLE))))
+														Mono.error(new GlobalException(AiErrorCode.AI_UPSTREAM_UNAVAILABLE))))
 				.bodyToMono(GeminiResponse.class)
 				.onErrorMap(
 						ex ->
 								(ex instanceof GlobalException)
 										? ex
-										: new GlobalException(NotificationErrorCode.AI_UPSTREAM_UNAVAILABLE))
+										: new GlobalException(AiErrorCode.AI_UPSTREAM_UNAVAILABLE))
 				.blockOptional()
-				.orElseThrow(() -> new GlobalException(NotificationErrorCode.AI_UPSTREAM_UNAVAILABLE));
+				.orElseThrow(() -> new GlobalException(AiErrorCode.AI_UPSTREAM_UNAVAILABLE));
 	}
 }

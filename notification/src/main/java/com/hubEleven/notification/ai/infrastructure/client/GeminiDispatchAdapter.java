@@ -4,7 +4,7 @@ import com.commonLib.common.exception.GlobalException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubEleven.notification.ai.application.port.DispatchAiPort;
 import com.hubEleven.notification.ai.domain.vo.DispatchResult;
-import com.hubEleven.notification.ai.exception.NotificationErrorCode;
+import com.hubEleven.notification.ai.exception.AiErrorCode;
 import com.hubEleven.notification.ai.infrastructure.client.dto.response.GeminiResponse;
 import com.hubEleven.notification.ai.infrastructure.config.AiProperties;
 import lombok.RequiredArgsConstructor;
@@ -22,11 +22,11 @@ public class GeminiDispatchAdapter implements DispatchAiPort {
 	public DispatchResult generate(String prompt) {
 		GeminiResponse response =
 				geminiClient.generate(aiProperties.model(), aiProperties.api().key(), prompt);
-		if (response == null) throw new GlobalException(NotificationErrorCode.AI_UPSTREAM_UNAVAILABLE);
+		if (response == null) throw new GlobalException(AiErrorCode.AI_UPSTREAM_UNAVAILABLE);
 
 		String raw = response.primaryText();
 		if (raw == null || raw.isBlank())
-			throw new GlobalException(NotificationErrorCode.AI_UPSTREAM_UNAVAILABLE);
+			throw new GlobalException(AiErrorCode.AI_UPSTREAM_UNAVAILABLE);
 
 		String cleaned = cleanJsonResponse(raw);
 		String json = extractFirstJsonObject(cleaned);
@@ -35,15 +35,15 @@ public class GeminiDispatchAdapter implements DispatchAiPort {
 			Payload payload = objectMapper.readValue(json, Payload.class);
 
 			if (payload.finalDispatchDeadline() == null || payload.finalDispatchDeadline().isBlank()) {
-				throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
+				throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
 			}
 			if (payload.messageBody() == null || payload.messageBody().isBlank()) {
-				throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
+				throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
 			}
 
 			return new DispatchResult(payload.finalDispatchDeadline(), payload.messageBody(), raw);
 		} catch (Exception e) {
-			throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
+			throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
 		}
 	}
 

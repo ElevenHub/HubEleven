@@ -1,13 +1,13 @@
 package com.hubEleven.company.exception;
 
-import com.commonLib.common.code.StatusCode;
+import com.commonLib.common.code.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum CompanyErrorCode implements StatusCode {
+public enum CompanyErrorCode implements ErrorCode {
 	// 업체
 	COMPANY_DUPLICATED(HttpStatus.CONFLICT, "같은 허브에 동일한 업체명이 이미 존재합니다."),
 	COMPANY_NOT_FOUND(HttpStatus.NOT_FOUND, "업체를 찾을 수 없습니다."),
@@ -21,9 +21,4 @@ public enum CompanyErrorCode implements StatusCode {
 
 	private final HttpStatus httpStatus;
 	private final String message;
-
-	@Override
-	public String getName() {
-		return name();
-	}
 }

@@ -1,13 +1,13 @@
 package com.hubEleven.notification.ai.exception;
 
-import com.commonLib.common.code.StatusCode;
+import com.commonLib.common.code.ErrorCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
 @RequiredArgsConstructor
-public enum NotificationErrorCode implements StatusCode {
+public enum AiErrorCode implements ErrorCode {
 	PROMPT_BUILD_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "프롬프트 생성에 실패했습니다."),
 	AI_UPSTREAM_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE, "AI 제공자와 통신할 수 없습니다."),
 	AI_BAD_REQUEST(HttpStatus.BAD_REQUEST, "AI 제공자에 잘못된 요청이 전달되었습니다."),
@@ -18,9 +18,4 @@ public enum NotificationErrorCode implements StatusCode {
 
 	private final HttpStatus httpStatus;
 	private final String message;
-
-	@Override
-	public String getName() {
-		return name();
-	}
 }

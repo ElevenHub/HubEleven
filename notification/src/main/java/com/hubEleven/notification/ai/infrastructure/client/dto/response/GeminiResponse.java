@@ -2,7 +2,7 @@ package com.hubEleven.notification.ai.infrastructure.client.dto.response;
 
 import com.commonLib.common.exception.GlobalException;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.hubEleven.notification.ai.exception.NotificationErrorCode;
+import com.hubEleven.notification.ai.exception.AiErrorCode;
 import java.util.List;
 import java.util.Optional;
 
@@ -11,7 +11,7 @@ public record GeminiResponse(List<Candidate> candidates) {
 
 	public String primaryText() {
 		if (candidates == null || candidates.isEmpty()) {
-			throw new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL);
+			throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
 		}
 
 		Optional<String> text =
@@ -28,8 +28,7 @@ public record GeminiResponse(List<Candidate> candidates) {
 											.findFirst();
 								});
 
-		return text.orElseThrow(
-				() -> new GlobalException(NotificationErrorCode.AI_RESPONSE_PARSE_FAIL));
+		return text.orElseThrow(() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
 	}
 
 	@JsonIgnoreProperties(ignoreUnknown = true)
