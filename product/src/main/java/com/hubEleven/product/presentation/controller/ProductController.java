@@ -1,6 +1,7 @@
 package com.hubEleven.product.presentation.controller;
 
 import com.commonLib.common.request.CommonPageRequest;
+import com.commonLib.common.response.ApiResponse;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
 import com.hubEleven.product.application.dto.ProductResult;
@@ -35,17 +36,17 @@ public class ProductController {
 
 	@Operation(summary = "상품 생성 API", description = "새로운 상품을 생성한다.")
 	@PostMapping
-	public ResponseEntity<ProductResponse> create(
+	public ResponseEntity<ApiResponse<ProductResponse>> create(
 			@Valid @RequestBody ProductRequests.Create request) {
 
 		ProductResult result = productService.create(request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ProductResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ProductResponse.from(result)));
 	}
 
 	@Operation(summary = "상품 전체  조회 API", description = "상품 전체 목록을 조회한다.")
 	@GetMapping
-	public ResponseEntity<CommonPageResponse<ProductResponse>> getProducts(
+	public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> getProducts(
 			CommonPageRequest request) {
 
 		// Service 계층에서 Product 도메인 엔티티를 ProductResult DTO로 변환하여 조회
@@ -58,40 +59,40 @@ public class ProductController {
 		CommonPageResponse<ProductResponse> response =
 				PagingUtils.convert(products, ProductResponse::from);
 
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@Operation(summary = "상품 단건 조회 API", description = "상품 ID로 상품을 조회한다.")
 	@GetMapping("/{productId}")
-	public ResponseEntity<ProductResponse> getProductDetail(@PathVariable UUID productId) {
+	public ResponseEntity<ApiResponse<ProductResponse>> getProductDetail(@PathVariable UUID productId) {
 
 		ProductResult result = productService.getProduct(productId);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ProductResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ProductResponse.from(result)));
 	}
 
 	@Operation(summary = "상품 수정 API", description = "상품 정보를 수정한다.")
 	@PatchMapping("/{productId}")
-	public ResponseEntity<ProductResponse> updateProduct(
+	public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
 			@PathVariable UUID productId, @Valid @RequestBody ProductRequests.Update request) {
 
 		ProductResult result = productService.updateProduct(productId, request);
 
-		return ResponseEntity.status(HttpStatus.OK).body(ProductResponse.from(result));
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(ProductResponse.from(result)));
 	}
 
 	@Operation(summary = "상품 삭제 API", description = "상품을 삭제한다.")
 	@DeleteMapping("/{productId}")
-	public ResponseEntity<Void> deleteProduct(@PathVariable UUID productId, Long userId) {
+	public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable UUID productId, Long userId) {
 
 		productService.deleteProduct(productId, userId);
 
-		return ResponseEntity.status(HttpStatus.OK).body(null);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 
 	@Operation(summary = "상품 검색 API", description = "키워드 기반으로 상품을 검색한다.")
 	@GetMapping("/search")
-	public ResponseEntity<CommonPageResponse<ProductResponse>> searchProducts(
+	public ResponseEntity<ApiResponse<CommonPageResponse<ProductResponse>>> searchProducts(
 			CommonPageRequest request) {
 
 		Page<ProductResult> products =
@@ -100,6 +101,6 @@ public class ProductController {
 		CommonPageResponse<ProductResponse> response =
 				PagingUtils.convert(products, ProductResponse::from);
 
-		return ResponseEntity.status(HttpStatus.OK).body(response);
+		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 }
