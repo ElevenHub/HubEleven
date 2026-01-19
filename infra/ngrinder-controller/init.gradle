@@ -1,8 +1,0 @@
-allprojects {
-    apply plugin: "java"
-
-    task __copyDependencies(type: Copy) {
-        from configurations.default
-        into project.hasProperty("outputDirectory") ? outputDirectory : "lib"
-    }
-}
