@@ -13,20 +13,20 @@ import com.hubEleven.notification.slack.application.command.UpdateSlackMessageCo
 import com.hubEleven.notification.slack.application.dto.response.SlackMessageResult;
 import com.hubEleven.notification.slack.application.service.SlackService;
 import com.hubEleven.notification.slack.application.validator.SlackValidator;
+import com.hubEleven.notification.slack.domain.event.SlackMessageSavedEvent;
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
 import com.hubEleven.notification.slack.domain.service.SlackDomainService;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageContext;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageItem;
-import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
 import com.hubEleven.notification.slack.exception.SlackErrorCode;
-import com.hubEleven.notification.slack.infrastructure.client.SlackWebhookClient;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,11 +37,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class SlackServiceImpl implements SlackService {
 
 	private final SlackMessageRepository slackMessageRepository;
-	private final SlackWebhookClient slackWebhookClient;
 	private final SlackDomainService slackDomainService;
 	private final AiRequestLogRepository aiRequestLogRepository;
 	private final ObjectMapper objectMapper;
 	private final SlackValidator slackValidator;
+	private final ApplicationEventPublisher eventPublisher;
 
 	@Override
 	@Transactional
@@ -60,7 +60,9 @@ public class SlackServiceImpl implements SlackService {
 
 		SlackMessage saved = slackMessageRepository.save(slackMessage);
 
-		sendToSlackAsync(saved.getId(), formattedMessage);
+		eventPublisher.publishEvent(SlackMessageSavedEvent.of(saved.getId()));
+
+		log.info("슬랙 메시지 저장 완료 - messageId={}", saved.getId());
 
 		return SlackMessageResult.from(saved);
 	}
@@ -77,6 +79,8 @@ public class SlackServiceImpl implements SlackService {
 
 		slackMessage.updateMessage(command.message());
 		SlackMessage updated = slackMessageRepository.save(slackMessage);
+
+		log.info("슬랙 메시지 수정 완료 - messageId={}", command.messageId());
 
 		return SlackMessageResult.from(updated);
 	}
@@ -110,50 +114,58 @@ public class SlackServiceImpl implements SlackService {
 			SearchSlackMessageCommand command, CommonPageRequest pageReq) {
 		slackValidator.slackRead();
 
-		var page =
+		return PagingUtils.convert(
 				slackMessageRepository.search(
 						command.status(),
 						command.channel(),
 						command.dateFrom(),
 						command.dateTo(),
-						pageReq.toPageable());
-
-		return PagingUtils.convert(page, SlackMessageResult::from);
+						pageReq.toPageable()),
+				SlackMessageResult::from);
 	}
 
 	private ResponsePayload findAiPayloadOrThrow(UUID orderId) {
-		var logEntry =
-				aiRequestLogRepository
-						.findByOrderId(orderId)
-						.orElseThrow(() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
+		return aiRequestLogRepository
+				.findByOrderId(orderId)
+				.map(
+						logEntry -> {
+							String raw = logEntry.getRawResponse();
+							String cleaned = cleanJsonResponse(raw);
 
-		String raw = logEntry.getRawResponse();
-		String cleaned = cleanJsonResponse(raw);
+							try {
+								ResponsePayload payload = objectMapper.readValue(cleaned, ResponsePayload.class);
 
-		try {
-			var payload = objectMapper.readValue(cleaned, ResponsePayload.class);
-
-			if (payload.finalDispatchDeadline == null || payload.finalDispatchDeadline.isBlank()) {
-				throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-			}
-			if (payload.messageBody == null || payload.messageBody.isBlank()) {
-				throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-			}
-			return payload;
-		} catch (Exception e) {
-			throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-		}
+								if (payload.finalDispatchDeadline == null
+										|| payload.finalDispatchDeadline.isBlank()) {
+									throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+								}
+								if (payload.messageBody == null || payload.messageBody.isBlank()) {
+									throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+								}
+								return payload;
+							} catch (Exception e) {
+								throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+							}
+						})
+				.orElseThrow(() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
 	}
 
 	private String cleanJsonResponse(String rawJson) {
-		if (rawJson == null || rawJson.isBlank()) return rawJson;
+		if (rawJson == null || rawJson.isBlank()) {
+			return rawJson;
+		}
 
 		String cleaned = rawJson.trim();
 
-		if (cleaned.startsWith("```json")) cleaned = cleaned.substring(7);
-		else if (cleaned.startsWith("```")) cleaned = cleaned.substring(3);
+		if (cleaned.startsWith("```json")) {
+			cleaned = cleaned.substring(7);
+		} else if (cleaned.startsWith("```")) {
+			cleaned = cleaned.substring(3);
+		}
 
-		if (cleaned.endsWith("```")) cleaned = cleaned.substring(0, cleaned.length() - 3);
+		if (cleaned.endsWith("```")) {
+			cleaned = cleaned.substring(0, cleaned.length() - 3);
+		}
 
 		return cleaned.trim();
 	}
@@ -189,7 +201,9 @@ public class SlackServiceImpl implements SlackService {
 	}
 
 	private LocalDateTime parseLocalDateTime(String value) {
-		if (value == null || value.isBlank()) return null;
+		if (value == null || value.isBlank()) {
+			return null;
+		}
 		try {
 			return LocalDateTime.parse(value.trim());
 		} catch (Exception ignore) {
@@ -203,42 +217,6 @@ public class SlackServiceImpl implements SlackService {
 
 	private String nullToEmpty(String s) {
 		return (s == null) ? "" : s;
-	}
-
-	private void sendToSlackAsync(UUID messageId, String messageText) {
-		String title = "배송 예상 시간 알림";
-
-		slackWebhookClient
-				.sendMessage(title, messageText)
-				.subscribe(
-						ok -> {
-							if (Boolean.TRUE.equals(ok)) {
-								updateMessageStatus(messageId, SlackMessageStatus.SENT);
-								log.info("슬랙 메시지 전송 성공 messageId={}", messageId);
-							} else {
-								updateMessageStatus(messageId, SlackMessageStatus.FAILED);
-								log.error("슬랙 웹훅 응답이 실패 messageId={}", messageId);
-							}
-						},
-						error -> {
-							updateMessageStatus(messageId, SlackMessageStatus.FAILED);
-							log.error("슬랙 메시지 전송 중 오류가 발생 messageId={}", messageId, error);
-						});
-	}
-
-	@Transactional
-	protected void updateMessageStatus(UUID messageId, SlackMessageStatus status) {
-		slackMessageRepository
-				.findById(messageId)
-				.ifPresent(
-						message -> {
-							if (status == SlackMessageStatus.SENT) {
-								message.markAsSent();
-							} else if (status == SlackMessageStatus.FAILED) {
-								message.markAsFailed();
-							}
-							slackMessageRepository.save(message);
-						});
 	}
 
 	private static final class ResponsePayload {
