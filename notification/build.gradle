@@ -34,6 +34,9 @@ dependencies {
     // Slack SDK
     implementation "com.slack.api:slack-api-client:1.46.0"
 
+    // webflux
+    implementation 'org.springframework.boot:spring-boot-starter-webflux'
+
     // Spring Cloud (Config / Eureka / Feign / Bootstrap)
     implementation 'org.springframework.cloud:spring-cloud-starter-config'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
