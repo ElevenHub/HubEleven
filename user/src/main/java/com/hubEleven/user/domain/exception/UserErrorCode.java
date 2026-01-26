@@ -17,16 +17,6 @@ public enum UserErrorCode implements ErrorCode {
 	NOT_APPROVED_USER(HttpStatus.FORBIDDEN, "승인되지 않은 사용자입니다."),
 	UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "본인의 정보만 조회할 수 있습니다.");
 
-	private final HttpStatus code;
-	private final String description;
-
-	@Override
-	public HttpStatus getHttpStatus() {
-		return code;
-	}
-
-	@Override
-	public String getMessage() {
-		return description;
-	}
+	private final HttpStatus httpStatus;
+	private final String message;
 }

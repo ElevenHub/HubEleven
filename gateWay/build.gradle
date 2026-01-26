@@ -35,6 +35,13 @@ dependencies {
     // WebFlux Security
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'  // JWT 검증
 
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 공통 모듈
+    implementation 'com.github.ElevenHub:HubEleven-common:v0.0.1'
+
     // OpenAPI (WebFlux용)
     implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:${springdocVersion}"
 

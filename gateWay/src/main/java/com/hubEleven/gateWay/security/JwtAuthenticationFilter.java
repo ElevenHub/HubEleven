@@ -1,18 +1,21 @@
 package com.hubEleven.gateWay.security;
 
+import static com.hubEleven.gateWay.exception.GateWayException.*;
+
+import com.commonLib.common.exception.GlobalException;
 import java.util.Arrays;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
-import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
 	private final JwtValidator jwtValidator;
@@ -29,15 +32,8 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 					"/webjars",
 					"/swagger-resources");
 
-	public JwtAuthenticationFilter(JwtValidator jwtValidator) {
-		this.jwtValidator = jwtValidator;
-	}
-
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-		System.out.println(
-				">>> JwtAuthenticationFilter 실행됨. 경로: " + exchange.getRequest().getURI().getPath());
-
 		ServerHttpRequest request = exchange.getRequest();
 		String path = request.getURI().getPath();
 
@@ -50,14 +46,14 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 		String authHeader = request.getHeaders().getFirst("Authorization");
 
 		if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-			return onError(exchange, "Missing or invalid Authorization header", HttpStatus.UNAUTHORIZED);
+			throw new GlobalException(INVALID_AUTHORIZATION_HEADER);
 		}
 
 		String token = authHeader.substring(7);
 
 		// JWT 토큰 검증
 		if (!jwtValidator.isTokenValid(token)) {
-			return onError(exchange, "Invalid JWT token", HttpStatus.UNAUTHORIZED);
+			throw new GlobalException(INVALID_JWT_TOKEN);
 		}
 
 		try {
@@ -77,20 +73,12 @@ public class JwtAuthenticationFilter implements GlobalFilter, Ordered {
 
 			return chain.filter(exchange.mutate().request(modifiedRequest).build());
 		} catch (Exception e) {
-			return onError(exchange, "JWT processing error: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
+			throw new GlobalException(JWT_PROCESSING_ERROR);
 		}
 	}
 
 	private boolean isPublicPath(String path) {
 		return PUBLIC_PATHS.stream().anyMatch(path::startsWith);
-	}
-
-	private Mono<Void> onError(ServerWebExchange exchange, String message, HttpStatus status) {
-		ServerHttpResponse response = exchange.getResponse();
-		response.setStatusCode(status);
-		response.getHeaders().add("Content-Type", "application/json");
-		String body = String.format("{\"error\":\"%s\",\"message\":\"%s\"}", status.name(), message);
-		return response.writeWith(Mono.just(response.bufferFactory().wrap(body.getBytes())));
 	}
 
 	@Override

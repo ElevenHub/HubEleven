@@ -1,4 +1,4 @@
-package com.hubEleven.gateWay;
+package com.hubEleven.gateWay.config;
 
 import java.util.HashSet;
 import java.util.List;
