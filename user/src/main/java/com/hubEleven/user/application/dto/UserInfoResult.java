@@ -8,7 +8,6 @@ import java.util.UUID;
 public record UserInfoResult(
 		Long userId,
 		String username,
-		String password,
 		String name,
 		String slackId,
 		String phoneNumber,
@@ -19,7 +18,6 @@ public record UserInfoResult(
 		return new UserInfoResult(
 				user.getId(),
 				user.getUsername(),
-				user.getPassword(),
 				user.getName(),
 				user.getSlackId(),
 				user.getPhoneNumber(),

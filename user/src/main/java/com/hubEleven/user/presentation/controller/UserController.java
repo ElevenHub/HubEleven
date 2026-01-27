@@ -55,7 +55,6 @@ public class UserController {
 				new SignupResponse(
 						user.userId(),
 						user.username(),
-						user.password(),
 						user.name(),
 						user.slackId(),
 						user.role(),
@@ -101,7 +100,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
 			@PathVariable("id") Long id,
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
-		var userInfo = userService.findUserById(id, userDetails.getUserId(), userDetails.getUserAuthorities());
+		var userInfo = userService.findUserById(id, userDetails.getUserId());
 
 		UserInfoResponse response =
 				new UserInfoResponse(

@@ -7,7 +7,6 @@ import java.util.UUID;
 public record UserCreateResult(
 		Long userId,
 		String username,
-		String password,
 		String name,
 		String slackId,
 		Role role,
@@ -16,7 +15,6 @@ public record UserCreateResult(
 		return new UserCreateResult(
 				user.getId(),
 				user.getUsername(),
-				user.getPassword(),
 				user.getName(),
 				user.getSlackId(),
 				user.getRole(),

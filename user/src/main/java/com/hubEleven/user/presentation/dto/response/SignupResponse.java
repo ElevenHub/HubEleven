@@ -6,7 +6,6 @@ import java.util.UUID;
 public record SignupResponse(
 		Long userId,
 		String username,
-		String password,
 		String name,
 		String slackId,
 		Role role,
