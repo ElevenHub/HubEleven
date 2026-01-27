@@ -81,16 +81,7 @@ public class UserController {
 			@Valid CommonPageRequest pageRequest) {
 
 		CommonPageResponse<UserInfoResult> result = userService.getAllUsers(pageRequest);
-
-		CommonPageResponse<UserInfoResponse> response =
-				new CommonPageResponse<>(
-						result.content().stream().map(UserInfoResponse::from).toList(),
-						result.page(),
-						result.size(),
-						result.totalElements(),
-						result.totalPages(),
-						result.first(),
-						result.last());
+		CommonPageResponse<UserInfoResponse> response = toUserInfoResponsePage(result);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
@@ -102,16 +93,7 @@ public class UserController {
 			@AuthenticationPrincipal CustomUserDetails userDetails) {
 		var userInfo = userService.findUserById(id, userDetails.getUserId());
 
-		UserInfoResponse response =
-				new UserInfoResponse(
-						userInfo.userId(),
-						userInfo.username(),
-						userInfo.name(),
-						userInfo.slackId(),
-						userInfo.phoneNumber(),
-						userInfo.role(),
-						userInfo.status(),
-						userInfo.companyId());
+		UserInfoResponse response = UserInfoResponse.from(userInfo);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
@@ -130,16 +112,7 @@ public class UserController {
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> searchUsers(
 			@Valid CommonPageRequest pageRequest) {
 		CommonPageResponse<UserInfoResult> result = userService.searchUsers(pageRequest);
-
-		CommonPageResponse<UserInfoResponse> response =
-				new CommonPageResponse<>(
-						result.content().stream().map(UserInfoResponse::from).toList(),
-						result.page(),
-						result.size(),
-						result.totalElements(),
-						result.totalPages(),
-						result.first(),
-						result.last());
+		CommonPageResponse<UserInfoResponse> response = toUserInfoResponsePage(result);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
@@ -169,5 +142,18 @@ public class UserController {
 		userService.deleteUser(id, userDetails.getUserId());
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
+	}
+
+    private CommonPageResponse<UserInfoResponse> toUserInfoResponsePage(CommonPageResponse<UserInfoResult> result) {
+		return new CommonPageResponse<>(
+				result.content()
+						.stream().map(UserInfoResponse::from)
+						.toList()
+						,result.page(),
+				result.size(),
+				result.totalElements(),
+				result.totalPages(),
+				result.first(),
+				result.last());
 	}
 }
