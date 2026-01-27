@@ -33,7 +33,6 @@ public class JwtConfig {
 		return NimbusJwtDecoder.withSecretKey(key).build();
 	}
 
-	@Bean
 	TokenProvider tokenProvider() throws Exception {
 		return new TokenProvider(jwtEncoder());
 	}
