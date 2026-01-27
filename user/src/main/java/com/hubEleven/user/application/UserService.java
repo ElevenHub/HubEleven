@@ -13,7 +13,6 @@ import com.hubEleven.user.application.dto.UserCreateResult;
 import com.hubEleven.user.application.dto.UserInfoResult;
 import com.hubEleven.user.domain.model.User;
 import com.hubEleven.user.domain.repository.UserRepository;
-import com.hubEleven.user.domain.vo.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
