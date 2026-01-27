@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -75,6 +76,7 @@ public class UserController {
 	}
 
 	@GetMapping
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> getAllUsers(
 			@Valid CommonPageRequest pageRequest) {
 
@@ -94,6 +96,7 @@ public class UserController {
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
 			@PathVariable("id") Long id,
 			@RequestHeader("X-User-Id") Long requestUserId,
@@ -115,6 +118,7 @@ public class UserController {
 	}
 
 	@PatchMapping("/{id}/status")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<Void>> updateUserStatus(
 			@PathVariable("id") Long id, @Valid @RequestBody UserStatusUpdateRequest request) {
 		UserStatusUpdateCommand command = new UserStatusUpdateCommand(id, request.status());
@@ -142,6 +146,7 @@ public class UserController {
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> updateUser(
 			@PathVariable("id") Long id, @Valid @RequestBody UserUpdateRequest request) {
 		UserUpdateCommand command =
@@ -159,6 +164,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<Void>> deleteUser(
 			@PathVariable("id") Long id, @RequestHeader("X-User-Id") Long requestUserId) {
 		userService.deleteUser(id, requestUserId);
