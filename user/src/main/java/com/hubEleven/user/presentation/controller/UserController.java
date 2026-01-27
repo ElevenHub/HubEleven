@@ -11,7 +11,7 @@ import com.hubEleven.user.application.command.UserStatusUpdateCommand;
 import com.hubEleven.user.application.command.UserUpdateCommand;
 import com.hubEleven.user.application.dto.UserCreateResult;
 import com.hubEleven.user.application.dto.UserInfoResult;
-import com.hubEleven.user.domain.vo.Role;
+import com.hubEleven.user.infrastructure.security.CustomUserDetails;
 import com.hubEleven.user.presentation.dto.request.LoginRequest;
 import com.hubEleven.user.presentation.dto.request.SignupRequest;
 import com.hubEleven.user.presentation.dto.request.UserStatusUpdateRequest;
@@ -25,6 +25,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -99,9 +100,8 @@ public class UserController {
 	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
 			@PathVariable("id") Long id,
-			@RequestHeader("X-User-Id") Long requestUserId,
-			@RequestHeader("X-User-Role") Role requestUserRole) {
-		var userInfo = userService.findUserById(id, requestUserId, requestUserRole);
+			@AuthenticationPrincipal CustomUserDetails userDetails) {
+		var userInfo = userService.findUserById(id, userDetails.getUserId(), userDetails.getUserAuthorities());
 
 		UserInfoResponse response =
 				new UserInfoResponse(
@@ -166,8 +166,8 @@ public class UserController {
 	@DeleteMapping("/{id}")
 	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<Void>> deleteUser(
-			@PathVariable("id") Long id, @RequestHeader("X-User-Id") Long requestUserId) {
-		userService.deleteUser(id, requestUserId);
+			@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+		userService.deleteUser(id, userDetails.getUserId());
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
