@@ -4,6 +4,7 @@ import com.commonLib.common.exception.GlobalException;
 import com.commonLib.common.request.CommonPageRequest;
 import com.commonLib.common.response.CommonPageResponse;
 import com.commonLib.common.utils.PagingUtils;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubEleven.notification.ai.domain.repository.AiRequestLogRepository;
 import com.hubEleven.notification.ai.exception.AiErrorCode;
@@ -20,7 +21,6 @@ import com.hubEleven.notification.slack.domain.service.SlackDomainService;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageContext;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageItem;
 import com.hubEleven.notification.slack.exception.SlackErrorCode;
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
@@ -48,15 +48,19 @@ public class SlackServiceImpl implements SlackService {
 	public SlackMessageResult createMessage(CreateSlackMessageCommand command) {
 		slackValidator.slackCreate(command.orderId());
 
-		ResponsePayload payload = findAiPayloadOrThrow(command.orderId());
+		SlackMessageContext context = buildSlackMessageContext(command);
 
-		SlackMessageContext context = buildSlackMessageContext(command.orderId(), payload);
+		AiPayload aiPayload = findAiPayloadOrThrow(command.orderId());
 
-		String formattedMessage = slackDomainService.formatMessage(context, payload.messageBody);
+		String formattedMessage = slackDomainService.formatMessage(context, aiPayload.messageBody());
 
 		SlackMessage slackMessage =
 				SlackMessage.create(
-						command.orderId(), command.recipientId(), command.channel(), formattedMessage);
+						command.orderId(),
+						command.recipientId(),
+						command.channel(),
+						formattedMessage
+				);
 
 		SlackMessage saved = slackMessageRepository.save(slackMessage);
 
@@ -124,29 +128,39 @@ public class SlackServiceImpl implements SlackService {
 				SlackMessageResult::from);
 	}
 
-	private ResponsePayload findAiPayloadOrThrow(UUID orderId) {
+	private AiPayload findAiPayloadOrThrow(UUID orderId) {
 		return aiRequestLogRepository
 				.findByOrderId(orderId)
-				.map(
-						logEntry -> {
-							String raw = logEntry.getRawResponse();
-							String cleaned = cleanJsonResponse(raw);
+				.map(logEntry -> {
+					String messageBody = logEntry.getMessageBody();
+					String finalDeadline = logEntry.getFinalDispatchDeadline();
 
-							try {
-								ResponsePayload payload = objectMapper.readValue(cleaned, ResponsePayload.class);
+					if (messageBody != null && !messageBody.isBlank()) {
+						return new AiPayload(finalDeadline, messageBody);
+					}
 
-								if (payload.finalDispatchDeadline == null
-										|| payload.finalDispatchDeadline.isBlank()) {
-									throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-								}
-								if (payload.messageBody == null || payload.messageBody.isBlank()) {
-									throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-								}
-								return payload;
-							} catch (Exception e) {
-								throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-							}
-						})
+					String raw = logEntry.getRawResponse();
+					if (raw == null || raw.isBlank()) {
+						throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+					}
+
+					String cleaned = cleanJsonResponse(raw);
+
+					try {
+						JsonNode node = objectMapper.readTree(cleaned);
+
+						String parsedDeadline = node.path("finalDispatchDeadline").asText(null);
+						String parsedBody = node.path("messageBody").asText(null);
+
+						if (parsedBody == null || parsedBody.isBlank()) {
+							throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+						}
+
+						return new AiPayload(parsedDeadline, parsedBody);
+					} catch (Exception e) {
+						throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+					}
+				})
 				.orElseThrow(() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
 	}
 
@@ -170,45 +184,32 @@ public class SlackServiceImpl implements SlackService {
 		return cleaned.trim();
 	}
 
-	private SlackMessageContext buildSlackMessageContext(UUID orderId, ResponsePayload payload) {
-		LocalDateTime orderDateTime = parseLocalDateTime(payload.orderDateTime);
-
-		List<String> viaHubs = (payload.viaHubs == null) ? Collections.emptyList() : payload.viaHubs;
+	private SlackMessageContext buildSlackMessageContext(CreateSlackMessageCommand cmd) {
+		List<String> viaHubs = (cmd.viaHubs() == null) ? Collections.emptyList() : cmd.viaHubs();
 
 		List<SlackMessageItem> items =
-				(payload.items == null)
+				(cmd.items() == null)
 						? Collections.emptyList()
-						: payload.items.stream()
-								.map(
-										it ->
-												new SlackMessageItem(
-														nullToEmpty(it.name), it.quantity, nullToEmpty(it.note)))
-								.toList();
+						: cmd.items().stream()
+						.map(it -> new SlackMessageItem(
+								nullToEmpty(it.name()),
+								it.quantity(),
+								nullToEmpty(it.note())))
+						.toList();
 
 		return new SlackMessageContext(
-				orderId,
-				blankToNull(payload.customerName),
-				blankToNull(payload.customerEmail),
-				orderDateTime,
-				blankToNull(payload.sourceHub),
+				cmd.orderId(),
+				blankToNull(cmd.customerName()),
+				blankToNull(cmd.customerEmail()),
+				cmd.orderDateTime(),
+				blankToNull(cmd.sourceHub()),
 				viaHubs,
-				blankToNull(payload.destinationHub),
-				blankToNull(payload.destinationAddress),
-				blankToNull(payload.requestNote),
-				blankToNull(payload.deliveryManagerName),
-				blankToNull(payload.deliveryManagerEmail),
+				blankToNull(cmd.destinationHub()),
+				blankToNull(cmd.destinationAddress()),
+				blankToNull(cmd.requestNote()),
+				blankToNull(cmd.deliveryManagerName()),
+				blankToNull(cmd.deliveryManagerEmail()),
 				items);
-	}
-
-	private LocalDateTime parseLocalDateTime(String value) {
-		if (value == null || value.isBlank()) {
-			return null;
-		}
-		try {
-			return LocalDateTime.parse(value.trim());
-		} catch (Exception ignore) {
-			return null;
-		}
 	}
 
 	private String blankToNull(String s) {
@@ -219,26 +220,5 @@ public class SlackServiceImpl implements SlackService {
 		return (s == null) ? "" : s;
 	}
 
-	private static final class ResponsePayload {
-		public String finalDispatchDeadline;
-		public String messageBody;
-
-		public String customerName;
-		public String customerEmail;
-		public String orderDateTime;
-		public String sourceHub;
-		public List<String> viaHubs;
-		public String destinationHub;
-		public String destinationAddress;
-		public String requestNote;
-		public String deliveryManagerName;
-		public String deliveryManagerEmail;
-		public List<ItemPayload> items;
-	}
-
-	private static final class ItemPayload {
-		public String name;
-		public int quantity;
-		public String note;
-	}
+	private record AiPayload(String finalDispatchDeadline, String messageBody) {}
 }
