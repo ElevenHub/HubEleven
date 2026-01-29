@@ -56,11 +56,7 @@ public class SlackServiceImpl implements SlackService {
 
 		SlackMessage slackMessage =
 				SlackMessage.create(
-						command.orderId(),
-						command.recipientId(),
-						command.channel(),
-						formattedMessage
-				);
+						command.orderId(), command.recipientId(), command.channel(), formattedMessage);
 
 		SlackMessage saved = slackMessageRepository.save(slackMessage);
 
@@ -131,36 +127,37 @@ public class SlackServiceImpl implements SlackService {
 	private AiPayload findAiPayloadOrThrow(UUID orderId) {
 		return aiRequestLogRepository
 				.findByOrderId(orderId)
-				.map(logEntry -> {
-					String messageBody = logEntry.getMessageBody();
-					String finalDeadline = logEntry.getFinalDispatchDeadline();
+				.map(
+						logEntry -> {
+							String messageBody = logEntry.getMessageBody();
+							String finalDeadline = logEntry.getFinalDispatchDeadline();
 
-					if (messageBody != null && !messageBody.isBlank()) {
-						return new AiPayload(finalDeadline, messageBody);
-					}
+							if (messageBody != null && !messageBody.isBlank()) {
+								return new AiPayload(finalDeadline, messageBody);
+							}
 
-					String raw = logEntry.getRawResponse();
-					if (raw == null || raw.isBlank()) {
-						throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-					}
+							String raw = logEntry.getRawResponse();
+							if (raw == null || raw.isBlank()) {
+								throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+							}
 
-					String cleaned = cleanJsonResponse(raw);
+							String cleaned = cleanJsonResponse(raw);
 
-					try {
-						JsonNode node = objectMapper.readTree(cleaned);
+							try {
+								JsonNode node = objectMapper.readTree(cleaned);
 
-						String parsedDeadline = node.path("finalDispatchDeadline").asText(null);
-						String parsedBody = node.path("messageBody").asText(null);
+								String parsedDeadline = node.path("finalDispatchDeadline").asText(null);
+								String parsedBody = node.path("messageBody").asText(null);
 
-						if (parsedBody == null || parsedBody.isBlank()) {
-							throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-						}
+								if (parsedBody == null || parsedBody.isBlank()) {
+									throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+								}
 
-						return new AiPayload(parsedDeadline, parsedBody);
-					} catch (Exception e) {
-						throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
-					}
-				})
+								return new AiPayload(parsedDeadline, parsedBody);
+							} catch (Exception e) {
+								throw new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL);
+							}
+						})
 				.orElseThrow(() -> new GlobalException(AiErrorCode.AI_RESPONSE_PARSE_FAIL));
 	}
 
@@ -191,11 +188,11 @@ public class SlackServiceImpl implements SlackService {
 				(cmd.items() == null)
 						? Collections.emptyList()
 						: cmd.items().stream()
-						.map(it -> new SlackMessageItem(
-								nullToEmpty(it.name()),
-								it.quantity(),
-								nullToEmpty(it.note())))
-						.toList();
+								.map(
+										it ->
+												new SlackMessageItem(
+														nullToEmpty(it.name()), it.quantity(), nullToEmpty(it.note())))
+								.toList();
 
 		return new SlackMessageContext(
 				cmd.orderId(),
