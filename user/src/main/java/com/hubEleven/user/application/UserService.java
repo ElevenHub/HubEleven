@@ -29,21 +29,21 @@ public class UserService {
 
 	@Transactional
 	public UserCreateResult createUser(UserCreateCommand command) {
-			String encodedPassword = passwordEncoder.encode(command.password());
+		String encodedPassword = passwordEncoder.encode(command.password());
 
-			User user =
-					User.create(
-							command.username(),
-							encodedPassword,
-							command.name(),
-							command.slackId(),
-							command.phoneNumber(),
-							command.role(),
-							command.companyId());
+		User user =
+				User.create(
+						command.username(),
+						encodedPassword,
+						command.name(),
+						command.slackId(),
+						command.phoneNumber(),
+						command.role(),
+						command.companyId());
 
-			userRepository.save(user);
-			return UserCreateResult.from(user);
-		}
+		userRepository.save(user);
+		return UserCreateResult.from(user);
+	}
 
 	public UserInfoResult findUserById(Long id, Long requestUserId) {
 		if (!id.equals(requestUserId)) {

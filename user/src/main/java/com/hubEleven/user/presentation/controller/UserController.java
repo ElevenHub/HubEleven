@@ -89,8 +89,7 @@ public class UserController {
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
-			@PathVariable("id") Long id,
-			@AuthenticationPrincipal CustomUserDetails userDetails) {
+			@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
 		var userInfo = userService.findUserById(id, userDetails.getUserId());
 
 		UserInfoResponse response = UserInfoResponse.from(userInfo);
@@ -144,12 +143,11 @@ public class UserController {
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
 	}
 
-    private CommonPageResponse<UserInfoResponse> toUserInfoResponsePage(CommonPageResponse<UserInfoResult> result) {
+	private CommonPageResponse<UserInfoResponse> toUserInfoResponsePage(
+			CommonPageResponse<UserInfoResult> result) {
 		return new CommonPageResponse<>(
-				result.content()
-						.stream().map(UserInfoResponse::from)
-						.toList()
-						,result.page(),
+				result.content().stream().map(UserInfoResponse::from).toList(),
+				result.page(),
 				result.size(),
 				result.totalElements(),
 				result.totalPages(),
