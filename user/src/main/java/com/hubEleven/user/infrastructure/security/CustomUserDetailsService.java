@@ -1,6 +1,6 @@
 package com.hubEleven.user.infrastructure.security;
 
-import static com.hubEleven.user.domain.exception.UserErrorCode.FORBIDDEN_USER;
+import static com.hubEleven.user.domain.exception.UserErrorCode.NOT_FOUND_USER;
 
 import com.commonLib.common.exception.GlobalException;
 import com.hubEleven.user.domain.model.User;
@@ -22,7 +22,7 @@ public class CustomUserDetailsService implements UserDetailsService {
 		User user =
 				userRepository
 						.findByUsername(username)
-						.orElseThrow(() -> new GlobalException(FORBIDDEN_USER));
+						.orElseThrow(() -> new GlobalException(NOT_FOUND_USER));
 		return new CustomUserDetails(user);
 	}
 }
