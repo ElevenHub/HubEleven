@@ -40,3 +40,7 @@ gemini:
   api:
     key: ${GEMINI_KEY}
   model: gemini-2.5-flash
+
+slack:
+  sdk:
+    bot-token: ${SLACK_BOT_TOKEN}
