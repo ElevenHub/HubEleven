@@ -254,6 +254,5 @@ services:
       - hubeleven-network
 
 networks:
-  msa-network:
+  hubeleven-network:
     external: true
-    name: hubeleven-network

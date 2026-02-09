@@ -13,7 +13,6 @@ import com.hubEleven.user.application.dto.UserCreateResult;
 import com.hubEleven.user.application.dto.UserInfoResult;
 import com.hubEleven.user.domain.model.User;
 import com.hubEleven.user.domain.repository.UserRepository;
-import com.hubEleven.user.domain.vo.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,7 +29,6 @@ public class UserService {
 
 	@Transactional
 	public UserCreateResult createUser(UserCreateCommand command) {
-		validateUsername(command.username());
 		String encodedPassword = passwordEncoder.encode(command.password());
 
 		User user =
@@ -47,8 +45,8 @@ public class UserService {
 		return UserCreateResult.from(user);
 	}
 
-	public UserInfoResult findUserById(Long id, Long requestUserId, Role requestUserRole) {
-		if (!Role.isMaster(requestUserRole) && !id.equals(requestUserId)) {
+	public UserInfoResult findUserById(Long id, Long requestUserId) {
+		if (!id.equals(requestUserId)) {
 			throw new GlobalException(UNAUTHORIZED_ACCESS);
 		}
 
@@ -107,11 +105,5 @@ public class UserService {
 
 		user.delete(deletedBy);
 		userRepository.save(user);
-	}
-
-	private void validateUsername(String username) {
-		if (userRepository.existsByUsername(username)) {
-			throw new GlobalException(DUPLICATED_USERNAME);
-		}
 	}
 }

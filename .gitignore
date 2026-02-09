@@ -5,6 +5,9 @@
 !**/src/main/**/build/
 !**/src/test/**/build/
 
+### ngrinder ###
+/infra/ngrinder-controller/
+
 ### STS ###
 .apt_generated
 .classpath

@@ -7,6 +7,8 @@ import com.hubEleven.notification.slack.domain.repository.SlackOutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.event.TransactionPhase;
 import org.springframework.transaction.event.TransactionalEventListener;
 
@@ -19,6 +21,7 @@ public class SlackDomainEventHandler {
 	private final ObjectMapper objectMapper;
 
 	@TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
+
 	public void handle(SlackMessageSavedEvent event) {
 		try {
 			String payload = objectMapper.writeValueAsString(event);

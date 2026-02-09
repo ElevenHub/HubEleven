@@ -11,7 +11,7 @@ import com.hubEleven.user.application.command.UserStatusUpdateCommand;
 import com.hubEleven.user.application.command.UserUpdateCommand;
 import com.hubEleven.user.application.dto.UserCreateResult;
 import com.hubEleven.user.application.dto.UserInfoResult;
-import com.hubEleven.user.domain.vo.Role;
+import com.hubEleven.user.infrastructure.security.CustomUserDetails;
 import com.hubEleven.user.presentation.dto.request.LoginRequest;
 import com.hubEleven.user.presentation.dto.request.SignupRequest;
 import com.hubEleven.user.presentation.dto.request.UserStatusUpdateRequest;
@@ -24,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
@@ -53,7 +55,6 @@ public class UserController {
 				new SignupResponse(
 						user.userId(),
 						user.username(),
-						user.password(),
 						user.name(),
 						user.slackId(),
 						user.role(),
@@ -75,46 +76,29 @@ public class UserController {
 	}
 
 	@GetMapping
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> getAllUsers(
 			@Valid CommonPageRequest pageRequest) {
 
 		CommonPageResponse<UserInfoResult> result = userService.getAllUsers(pageRequest);
-
-		CommonPageResponse<UserInfoResponse> response =
-				new CommonPageResponse<>(
-						result.content().stream().map(UserInfoResponse::from).toList(),
-						result.page(),
-						result.size(),
-						result.totalElements(),
-						result.totalPages(),
-						result.first(),
-						result.last());
+		CommonPageResponse<UserInfoResponse> response = toUserInfoResponsePage(result);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> getUser(
-			@PathVariable("id") Long id,
-			@RequestHeader("X-User-Id") Long requestUserId,
-			@RequestHeader("X-User-Role") Role requestUserRole) {
-		var userInfo = userService.findUserById(id, requestUserId, requestUserRole);
+			@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+		var userInfo = userService.findUserById(id, userDetails.getUserId());
 
-		UserInfoResponse response =
-				new UserInfoResponse(
-						userInfo.userId(),
-						userInfo.username(),
-						userInfo.name(),
-						userInfo.slackId(),
-						userInfo.phoneNumber(),
-						userInfo.role(),
-						userInfo.status(),
-						userInfo.companyId());
+		UserInfoResponse response = UserInfoResponse.from(userInfo);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@PatchMapping("/{id}/status")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<Void>> updateUserStatus(
 			@PathVariable("id") Long id, @Valid @RequestBody UserStatusUpdateRequest request) {
 		UserStatusUpdateCommand command = new UserStatusUpdateCommand(id, request.status());
@@ -127,21 +111,13 @@ public class UserController {
 	public ResponseEntity<ApiResponse<CommonPageResponse<UserInfoResponse>>> searchUsers(
 			@Valid CommonPageRequest pageRequest) {
 		CommonPageResponse<UserInfoResult> result = userService.searchUsers(pageRequest);
-
-		CommonPageResponse<UserInfoResponse> response =
-				new CommonPageResponse<>(
-						result.content().stream().map(UserInfoResponse::from).toList(),
-						result.page(),
-						result.size(),
-						result.totalElements(),
-						result.totalPages(),
-						result.first(),
-						result.last());
+		CommonPageResponse<UserInfoResponse> response = toUserInfoResponsePage(result);
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(response));
 	}
 
 	@PutMapping("/{id}")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<UserInfoResponse>> updateUser(
 			@PathVariable("id") Long id, @Valid @RequestBody UserUpdateRequest request) {
 		UserUpdateCommand command =
@@ -159,10 +135,23 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{id}")
+	@PreAuthorize("hasRole('MASTER')")
 	public ResponseEntity<ApiResponse<Void>> deleteUser(
-			@PathVariable("id") Long id, @RequestHeader("X-User-Id") Long requestUserId) {
-		userService.deleteUser(id, requestUserId);
+			@PathVariable("id") Long id, @AuthenticationPrincipal CustomUserDetails userDetails) {
+		userService.deleteUser(id, userDetails.getUserId());
 
 		return ResponseEntity.status(HttpStatus.OK).body(ApiResponse.success(null));
+	}
+
+	private CommonPageResponse<UserInfoResponse> toUserInfoResponsePage(
+			CommonPageResponse<UserInfoResult> result) {
+		return new CommonPageResponse<>(
+				result.content().stream().map(UserInfoResponse::from).toList(),
+				result.page(),
+				result.size(),
+				result.totalElements(),
+				result.totalPages(),
+				result.first(),
+				result.last());
 	}
 }

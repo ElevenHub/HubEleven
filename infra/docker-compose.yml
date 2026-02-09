@@ -169,6 +169,15 @@ services:
     networks:
       - hubeleven-network
 
+  k6:
+    image: grafana/k6:latest
+    container_name: k6-load-test
+    volumes:
+      - ./script.js:/scripts/script.js
+    command: run /scripts/script.js
+    restart: unless-stopped
+    networks:
+      - hubeleven-network
 volumes:
   mysql_data:
   redis_data:
