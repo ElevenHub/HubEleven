@@ -1,13 +1,9 @@
 package com.hubEleven.notification.slack.domain.event.handler;
 
-import com.commonLib.common.exception.GlobalException;
-import com.hubEleven.notification.slack.application.port.SlackClient;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubEleven.notification.slack.domain.event.SlackMessageSavedEvent;
-import com.hubEleven.notification.slack.domain.model.SlackMessage;
-import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
-import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
-import com.hubEleven.notification.slack.exception.SlackErrorCode;
-import java.util.UUID;
+import com.hubEleven.notification.slack.domain.model.SlackOutbox;
+import com.hubEleven.notification.slack.domain.repository.SlackOutboxRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -19,58 +15,19 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @RequiredArgsConstructor
 public class SlackDomainEventHandler {
 
-	private final SlackMessageRepository slackMessageRepository;
-	private final SlackClient slackClient;
+	private final SlackOutboxRepository slackOutboxRepository;
+	private final ObjectMapper objectMapper;
 
-	@TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+	@TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
 	public void handle(SlackMessageSavedEvent event) {
-		UUID messageId = event.messageId();
-
 		try {
-			SlackMessage slackMessage =
-					slackMessageRepository
-							.findById(messageId)
-							.orElseThrow(() -> new GlobalException(SlackErrorCode.SLACK_MESSAGE_NOT_FOUND));
-
-			if (slackMessage.getStatus() == SlackMessageStatus.SENT) {
-				log.info("슬랙 전송 스킵 - messageId={}", messageId);
-				return;
-			}
-
-			String channel = slackMessage.getChannel();
-			String text = slackMessage.getMessage();
-
-			SlackClient.SlackSendResult result;
-			if (channel != null && !channel.isBlank()) {
-				result = slackClient.sendToChannel(channel, text);
-			} else {
-				String email = slackMessage.getRecipientId();
-				result = slackClient.sendDmByEmail(email, text);
-			}
-
-			if (result.success()) {
-				slackMessage.markAsSent();
-				slackMessageRepository.save(slackMessage);
-				log.info(
-						"슬랙 전송 성공 - messageId={}, channelId={}, ts={}",
-						messageId,
-						result.channelId(),
-						result.ts());
-			} else {
-				slackMessage.markAsFailed();
-				slackMessageRepository.save(slackMessage);
-				log.warn("슬랙 전송 실패 - messageId={}, error={}", messageId, result.error());
-			}
-
+			String payload = objectMapper.writeValueAsString(event);
+			SlackOutbox outbox = SlackOutbox.create(event.messageId(), payload);
+			slackOutboxRepository.save(outbox);
+			log.info("Slack Outbox 저장 완료 - messageId={}", event.messageId());
 		} catch (Exception e) {
-			slackMessageRepository
-					.findById(messageId)
-					.ifPresent(
-							m -> {
-								m.markAsFailed();
-								slackMessageRepository.save(m);
-							});
-			log.error("슬랙 전송 처리 중 예외 발생 - messageId={}", messageId, e);
+			log.error("Slack Outbox 저장 실패 - messageId={}", event.messageId(), e);
+			throw new RuntimeException("Slack Outbox 저장 실패", e);
 		}
 	}
 }
