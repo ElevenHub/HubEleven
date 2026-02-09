@@ -6,7 +6,6 @@ import com.hubEleven.notification.slack.domain.event.SlackMessageSavedEvent;
 import com.hubEleven.notification.slack.domain.model.SlackMessage;
 import com.hubEleven.notification.slack.domain.repository.SlackMessageRepository;
 import com.hubEleven.notification.slack.domain.vo.SlackMessageStatus;
-import com.hubEleven.notification.slack.exception.SlackErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +30,10 @@ public class SlackMessageConsumer {
 			SlackMessageSavedEvent event = objectMapper.readValue(message, SlackMessageSavedEvent.class);
 			UUID messageId = event.messageId();
 
-			SlackMessage slackMessage = slackMessageRepository.findById(messageId)
-					.orElseThrow(() -> new RuntimeException("Slack Message not found: " + messageId));
+			SlackMessage slackMessage =
+					slackMessageRepository
+							.findById(messageId)
+							.orElseThrow(() -> new RuntimeException("Slack Message not found: " + messageId));
 
 			if (slackMessage.getStatus() == SlackMessageStatus.SENT) {
 				log.info("이미 전송된 메시지입니다. - messageId={}", messageId);
