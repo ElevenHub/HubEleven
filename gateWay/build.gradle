@@ -45,6 +45,13 @@ dependencies {
     // 공통 모듈
     implementation 'com.github.ElevenHub:HubEleven-common:v0.0.1'
 
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    // 공통 모듈
+    implementation 'com.github.ElevenHub:HubEleven-common:v0.0.1'
+
     // OpenAPI (WebFlux용)
     implementation "org.springdoc:springdoc-openapi-starter-webflux-ui:${springdocVersion}"
 
