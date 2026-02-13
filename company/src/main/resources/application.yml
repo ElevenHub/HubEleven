@@ -9,6 +9,14 @@ spring:
         enabled: true
         service-id: config
 
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  cache:
+    type: redis
+
 springdoc:
   api-docs:
     path: /v3/api-docs
