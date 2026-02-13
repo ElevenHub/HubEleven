@@ -64,7 +64,7 @@ services:
         SERVICE_NAME: user
     container_name: user-service
     ports:
-      - 8082:8082
+      - 8081:8081
     environment:
       - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=${EUREKA_URL}
       - SPRING_CLOUD_CONFIG_URI=${CONFIG_SERVER_URI}

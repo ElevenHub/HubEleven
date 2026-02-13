@@ -18,6 +18,13 @@ repositories {
     mavenCentral()
 }
 
+configurations {
+    all {
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-web'
+        exclude group: 'org.springframework.boot', module: 'spring-boot-starter-tomcat'
+    }
+}
+
 dependencies {
     // JWT (분리된 구조)
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
@@ -26,14 +33,10 @@ dependencies {
 
     // Spring Boot
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
 
     // Spring Cloud
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway-server-webflux'
     implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
-
-    // WebFlux Security
-    implementation 'org.springframework.boot:spring-boot-starter-oauth2-resource-server'  // JWT 검증
 
     // lombok
     compileOnly 'org.projectlombok:lombok'

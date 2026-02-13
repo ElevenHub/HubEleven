@@ -5,6 +5,7 @@ import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -19,6 +20,7 @@ public class OpenApiConfig {
 								.title("User Service API")
 								.version("1.0")
 								.description("User Service API with JWT Authentication"))
+				.addServersItem(new Server().url("http://localhost:8081").description("Local server"))
 				.addSecurityItem(new SecurityRequirement().addList("Bearer Authentication"))
 				.components(
 						new Components()
