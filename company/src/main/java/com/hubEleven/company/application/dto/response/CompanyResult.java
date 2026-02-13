@@ -16,8 +16,8 @@ public record CompanyResult(
 		String slackId,
 		String address,
 		LocalDateTime createdAt,
-		LocalDateTime updatedAt
-) implements Serializable {
+		LocalDateTime updatedAt)
+		implements Serializable {
 
 	public static CompanyResult from(Company company) {
 		return new CompanyResult(
@@ -29,7 +29,6 @@ public record CompanyResult(
 				company.getSlackId(),
 				company.getAddress(),
 				company.getCreatedAt(),
-				company.getUpdatedAt()
-		);
+				company.getUpdatedAt());
 	}
 }
