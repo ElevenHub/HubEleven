@@ -17,6 +17,8 @@ import com.hubEleven.company.exception.CompanyErrorCode;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +32,7 @@ public class CompanyServiceImpl implements CompanyService {
 
 	@Transactional
 	@Override
+	@CacheEvict(cacheNames = "companies", allEntries = true)
 	public CompanyResult createCompany(CreateCompanyCommand cmd, Long userId, String userRole) {
 		companyValidator.assertCreateAccess(cmd.hubId(), userId, userRole);
 		companyValidator.assertHubExists(cmd.hubId());
@@ -39,13 +42,15 @@ public class CompanyServiceImpl implements CompanyService {
 				Company.create(cmd.hubId(), cmd.name(), cmd.type(), cmd.slackId(), cmd.address());
 		Company saved = companyRepository.save(company);
 
-		log.info(
-				"업체 생성 성공 companyId={} hubId={} name={}", saved.getCompanyId(), cmd.hubId(), cmd.name());
+		log.info("업체 생성 성공 companyId={} hubId={} name={}",
+				saved.getCompanyId(), cmd.hubId(), cmd.name());
+
 		return CompanyResult.from(saved);
 	}
 
 	@Transactional
 	@Override
+	@CacheEvict(cacheNames = "companies", allEntries = true)
 	public CompanyResult updateCompany(UpdateCompanyCommand cmd, Long userId, String userRole) {
 		Company company =
 				companyRepository
@@ -61,11 +66,9 @@ public class CompanyServiceImpl implements CompanyService {
 		company.changeType(cmd.type());
 		company.update(cmd.name(), cmd.address(), cmd.slackId());
 
-		log.info(
-				"업체 수정 성공 companyId={} hubId={} name={}",
-				company.getCompanyId(),
-				company.getHubId(),
-				cmd.name());
+		log.info("업체 수정 성공 companyId={} hubId={} name={}",
+				company.getCompanyId(), company.getHubId(), cmd.name());
+
 		return CompanyResult.from(company);
 	}
 
@@ -78,31 +81,38 @@ public class CompanyServiceImpl implements CompanyService {
 				companyRepository
 						.findById(companyId)
 						.orElseThrow(() -> new GlobalException(CompanyErrorCode.COMPANY_NOT_FOUND));
+
 		return CompanyResult.from(company);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public CommonPageResponse<CompanyResult> searchCompany(
-			SearchCompanyCommand cmd, CommonPageRequest pageReq) {
-		log.debug(
-				"업체 검색 hubId={} name={} type={} status={} page={} size={}",
-				cmd.hubId(),
-				cmd.name(),
-				cmd.type(),
-				cmd.status(),
-				pageReq.page(),
-				pageReq.size());
+	@Cacheable(
+			cacheNames = "companies",
+			key =
+					"'hub:' + #cmd.hubId()"
+							+ " + '|name:' + (#cmd.name() == null ? '' : #cmd.name())"
+							+ " + '|type:' + (#cmd.type() == null ? '' : #cmd.type().name())"
+							+ " + '|status:' + (#cmd.status() == null ? '' : #cmd.status().name())"
+							+ " + '|page:' + #pageReq.page()"
+							+ " + '|size:' + #pageReq.size()",
+			sync = true
+	)
+	public CommonPageResponse<CompanyResult> searchCompany(SearchCompanyCommand cmd, CommonPageRequest pageReq) {
+		log.debug("업체 검색 hubId={} name={} type={} status={} page={} size={}",
+				cmd.hubId(), cmd.name(), cmd.type(), cmd.status(), pageReq.page(), pageReq.size());
 
 		var page = companyRepository.search(cmd, pageReq.toPageable());
 
-		log.debug(
-				"업체 검색 결과 totalElements={} totalPages={}", page.getTotalElements(), page.getTotalPages());
+		log.debug("업체 검색 결과 totalElements={} totalPages={}",
+				page.getTotalElements(), page.getTotalPages());
+
 		return PagingUtils.convert(page, CompanyResult::from);
 	}
 
 	@Transactional
 	@Override
+	@CacheEvict(cacheNames = "companies", allEntries = true)
 	public CompanyResult changeStatus(ChangeCompanyStatusCommand cmd, Long userId, String userRole) {
 		Company company =
 				companyRepository
@@ -114,16 +124,15 @@ public class CompanyServiceImpl implements CompanyService {
 
 		company.changeStatus(cmd.status());
 
-		log.info(
-				"업체 상태 변경 성공 companyId={} hubId={} status={}",
-				company.getCompanyId(),
-				company.getHubId(),
-				cmd.status());
+		log.info("업체 상태 변경 성공 companyId={} hubId={} status={}",
+				company.getCompanyId(), company.getHubId(), cmd.status());
+
 		return CompanyResult.from(company);
 	}
 
 	@Transactional
 	@Override
+	@CacheEvict(cacheNames = "companies", allEntries = true)
 	public void deleteCompany(UUID companyId, Long userId, String userRole) {
 		Company company =
 				companyRepository
