@@ -27,8 +27,7 @@ class CompanyServiceTest {
 
 	@MockBean private HubClient hubClient;
 
-	@Autowired
-	org.springframework.cache.CacheManager cacheManager;
+	@Autowired org.springframework.cache.CacheManager cacheManager;
 
 	@BeforeEach
 	void clearCache() {
