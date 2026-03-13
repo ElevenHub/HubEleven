@@ -37,7 +37,7 @@ public class RedisConfig {
 		ObjectMapper objectMapper = new ObjectMapper()
 				.registerModule(new JavaTimeModule())
 				.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-				.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+				.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.EVERYTHING, JsonTypeInfo.As.PROPERTY);
 
 		GenericJackson2JsonRedisSerializer valueSerializer =
 				new GenericJackson2JsonRedisSerializer(objectMapper);
