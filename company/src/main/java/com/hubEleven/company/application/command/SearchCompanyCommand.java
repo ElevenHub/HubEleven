@@ -6,4 +6,6 @@ import java.io.Serializable;
 import java.util.UUID;
 
 public record SearchCompanyCommand(UUID hubId, String name, CompanyType type, CompanyStatus status)
-		implements Serializable {}
+		implements Serializable {
+	private static final long serialVersionUID = 1L;
+}

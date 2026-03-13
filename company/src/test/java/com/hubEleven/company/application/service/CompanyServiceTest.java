@@ -27,6 +27,15 @@ class CompanyServiceTest {
 
 	@MockBean private HubClient hubClient;
 
+	@Autowired
+	org.springframework.cache.CacheManager cacheManager;
+
+	@BeforeEach
+	void clearCache() {
+		var cache = cacheManager.getCache("companies");
+		if (cache != null) cache.clear();
+	}
+
 	@BeforeEach
 	void setUp() {
 		given(hubClient.getHub(ArgumentMatchers.any(UUID.class)))

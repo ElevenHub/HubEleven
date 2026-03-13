@@ -18,6 +18,8 @@ public record CompanyResult(
 		LocalDateTime createdAt,
 		LocalDateTime updatedAt)
 		implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 
 	public static CompanyResult from(Company company) {
 		return new CompanyResult(

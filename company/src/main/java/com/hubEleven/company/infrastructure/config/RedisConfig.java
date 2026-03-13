@@ -24,42 +24,36 @@ public class RedisConfig {
 
 	@Bean
 	public RedisCacheManager cacheManager(RedisConnectionFactory connectionFactory) {
-		ObjectMapper objectMapper =
-				new ObjectMapper()
-						.registerModule(new JavaTimeModule())
-						.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
-		PolymorphicTypeValidator ptv =
-				BasicPolymorphicTypeValidator.builder()
-						.allowIfSubType("com.hubEleven")
-						.allowIfSubType("com.commonLib")
-						.allowIfSubType("java.util")
-						.allowIfSubType("java.time")
-						.build();
+		PolymorphicTypeValidator ptv = BasicPolymorphicTypeValidator.builder()
+				.allowIfSubType("com.hubEleven")
+				.allowIfSubType("com.commonLib")
+				.allowIfSubType("java.util")
+				.allowIfSubType("java.time")
+				.allowIfSubType("java.lang")
+				.allowIfSubType("java.math")
+				.build();
 
-		objectMapper.activateDefaultTyping(
-				ptv, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+		ObjectMapper objectMapper = new ObjectMapper()
+				.registerModule(new JavaTimeModule())
+				.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+				.activateDefaultTyping(ptv, ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
 
 		GenericJackson2JsonRedisSerializer valueSerializer =
 				new GenericJackson2JsonRedisSerializer(objectMapper);
 
-		RedisCacheConfiguration defaultConfig =
-				RedisCacheConfiguration.defaultCacheConfig()
-						.disableCachingNullValues()
-						.prefixCacheNameWith("company::")
-						.serializeKeysWith(
-								RedisSerializationContext.SerializationPair.fromSerializer(
-										new StringRedisSerializer()))
-						.serializeValuesWith(
-								RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer));
+		RedisCacheConfiguration base = RedisCacheConfiguration.defaultCacheConfig()
+				.disableCachingNullValues()
+				.serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
+				.serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(valueSerializer));
 
-		Map<String, RedisCacheConfiguration> perCacheConfig =
-				Map.of("companies", defaultConfig.entryTtl(Duration.ofHours(1)));
+		Map<String, RedisCacheConfiguration> perCache = Map.of(
+				"companies", base.entryTtl(Duration.ofHours(1))
+		);
 
 		return RedisCacheManager.builder(connectionFactory)
-				.cacheDefaults(defaultConfig)
-				.withInitialCacheConfigurations(perCacheConfig)
-				.transactionAware()
+				.cacheDefaults(base)
+				.withInitialCacheConfigurations(perCache)
 				.build();
 	}
 }
